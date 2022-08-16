@@ -20,8 +20,8 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Subreddit   Subreddit? @relation(fields: [subredditId], references: [id])
-  subredditId String?
+  Subreddit   Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  subredditId String
 }
 
 model User {

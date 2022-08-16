@@ -1,17 +1,23 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+// npx prisma db seed
+
 async function seed() {
 	await prisma.post.deleteMany();
 	await prisma.user.deleteMany();
-	const kyle = await prisma.user.create({ data: { name: "Kyle" } });
-	const sally = await prisma.user.create({ data: { name: "Sally" } });
+	const kyle = await prisma.user.create({
+		data: { name: "Kyle", password: "pw", email: "em" },
+	});
+	const sally = await prisma.user.create({
+		data: { name: "Sally", password: "pww", email: "emm" },
+	});
 
 	const subreddit1 = await prisma.subreddit.create({
-		data: { name: "nba", subscribedUsers: [kyle] },
+		data: { name: "nba" },
 	});
 	const subreddit2 = await prisma.subreddit.create({
-		data: { name: "bna", subscribedUsers: [sally] },
+		data: { name: "bna" },
 	});
 
 	const post1 = await prisma.post.create({

@@ -1,33 +1,39 @@
 import fastify from "fastify";
 import sensible from "@fastify/sensible"
 import dotenv from "dotenv"
+
+import {postRoutes} from "./routes/post";
+import { subredditRoutes } from "./routes/subreddit";
+
+import cors from "@fastify/cors"
+
 import {PrismaClient} from "@prisma/client"
+
+
+declare var process : {
+    env: {
+      PORT: number
+      CLIENT_URL: string
+    }
+}
 
 dotenv.config()
 
 const app = fastify()
-app.register(sensible)
-
-declare var process : {
-	env: {
-	  PORT: number
-	}
-}
-
 const prisma = new PrismaClient()
 
-app.get("/posts", async (req, res) => {
-    return await commitToDb(prisma.post.findMany({select: {
-        id: true,
-        title: true
-    }}))
+app.register(sensible)
+app.register(cors, {
+    origin: process.env.CLIENT_URL,
+    credentials: true
 })
 
-async function commitToDb(promise: Promise<any>) {
-    const [error, data]: [any, any] = await app.to(promise)
+app.register( postRoutes )
+app.register( subredditRoutes )
 
-    if (error) return app.httpErrors.internalServerError(error.message) // Status code 500
-    return data
-}
+export {app}
+export {prisma}
+
 
 app.listen({port: process.env.PORT})
+

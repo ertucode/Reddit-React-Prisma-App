@@ -1,19 +1,44 @@
-*, *::before, *::after {
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	color: #c8cbcd;
 }
 
-
 body {
-  $body-bg-color: #030303;
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: $body-bg-color;
-  line-height: 1.4;
+	$body-bg-color: #030303;
+	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: $body-bg-color;
+	line-height: 1.4;
 
-  color: white;
+	color: white;
+
+	--hover-bg-color: rgba(100, 100, 100, 0.4);
 }
 
 .sm-info {
-  opacity: 0.5;
-  font-size: .6rem;
+	opacity: 0.5;
+	font-size: 0.6rem;
+}
+
+.hide {
+	display: none !important;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover,
+	&:focus {
+		text-decoration: underline;
+	}
+}
+
+button {
+	background: none;
+	border: none;
+	font-size: inherit;
+	cursor: pointer;
 }

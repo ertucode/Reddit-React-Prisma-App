@@ -1,6 +1,8 @@
 import { IPost } from 'interfaces'
 import React from 'react'
 import {Link} from "react-router-dom"
+import { DownvoteButton, UpvoteButton } from 'components/icons/icons'
+
 
 interface SmallPostProps {
         post: IPost
@@ -9,9 +11,9 @@ interface SmallPostProps {
 export const SmallPost: React.FC<SmallPostProps> = ({post}) => {
         return (<div className="small-post">
                         <section className="small-post__like-section">
-                                <div>L</div>
-                                <div>{post.likes.length - post.dislikes.length}</div>
-                                <div>D</div>
+                                <UpvoteButton isActive={false}/>
+                                        <div>{post.likes.length - post.dislikes.length}</div>
+                                <DownvoteButton isActive={true}/>
                         </section>
                         <section>
                                 <header>

@@ -87,6 +87,39 @@ async function seed() {
 			postId: post1.id,
 		},
 	});
+
+	const nc1 = await prisma.comment.create({
+		data: {
+			parentId: comment1.id,
+			body: "I am a nested comment",
+			userId: kyle.id,
+			postId: post1.id,
+		},
+	});
+	const nc2 = await prisma.comment.create({
+		data: {
+			parentId: comment1.id,
+			body: "I am a nested comment",
+			userId: kyle.id,
+			postId: post1.id,
+		},
+	});
+	const nnc1_1 = await prisma.comment.create({
+		data: {
+			parentId: nc1.id,
+			body: "I am a nested comment",
+			userId: kyle.id,
+			postId: post1.id,
+		},
+	});
+	const nnc2_1 = await prisma.comment.create({
+		data: {
+			parentId: nc2.id,
+			body: "I am a nested comment",
+			userId: kyle.id,
+			postId: post1.id,
+		},
+	});
 }
 
 seed();

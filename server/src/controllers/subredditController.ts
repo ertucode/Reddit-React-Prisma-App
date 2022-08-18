@@ -22,7 +22,7 @@ export const getAllSubreddits: FastifyCallback = async (req, res) => {
     }}))
 }
 
-// GET - /user/{id}
+// GET - /subreddit/{id}
 export const getSubreddit: FastifyCallback = async (req, res) => {
     return await commitToDb(prisma.subreddit.findUnique({
         where: { id: req.params.id },
@@ -30,10 +30,14 @@ export const getSubreddit: FastifyCallback = async (req, res) => {
             id: true,
             name: true,
             posts: {
+                orderBy: {
+                    createdAt: "desc"
+                },
                 select: {
                     id: true,
                     title: true,
                     body: true,
+                    createdAt: true,
                     likes: true,
                     dislikes: true,
                     user: {

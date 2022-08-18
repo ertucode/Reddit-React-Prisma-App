@@ -1,0 +1,19 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+
+body {
+  $body-bg-color: #030303;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: $body-bg-color;
+  line-height: 1.4;
+
+  color: white;
+}
+
+.sm-info {
+  opacity: 0.5;
+  font-size: .6rem;
+}

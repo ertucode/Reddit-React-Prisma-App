@@ -1,0 +1,94 @@
+.post-card {
+    margin-bottom: .8rem;
+    width: 70%;
+    max-width: 90ch;
+    overflow: hidden;
+
+    color: white;
+    background-color: #1A1A1B;
+    
+    position: relative;
+
+    border-radius: .7rem;
+    border: 1px solid rgba(93, 76, 76, .5);
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 100ch;
+
+    
+    
+    &__like-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    section {
+        margin: 1rem;
+    }
+
+    &__top-section {
+        display: grid;
+        grid-template-columns: 2rem auto;
+    }
+
+    header {
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        > * {
+            margin-right: .5rem;
+
+        }
+        > span {
+            flex-grow: 1;
+
+            &::before {
+                content: "\00B7";
+                margin-right: .3rem;
+            }
+
+        }
+        div {
+            margin-left: auto;
+        }
+    }
+
+    
+    main {
+        > a {
+            text-decoration: none;
+        }
+    }
+
+    &__new-comment {
+
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(93, 76, 76, .5);
+
+        textarea {
+            resize: vertical;
+            width: 100%;
+            min-height: 5rem;
+        }
+
+        button {
+            margin-left: auto;
+        }
+
+
+    }
+}

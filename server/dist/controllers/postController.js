@@ -20,13 +20,23 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         } }));
 });
 exports.getAllPosts = getAllPosts;
-// GET - /user/{id}
+// GET - /posts/{id}
 const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findUnique({
         where: { id: req.params.id },
         select: {
-            body: true,
+            id: true,
             title: true,
+            body: true,
+            createdAt: true,
+            likes: true,
+            dislikes: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
             comments: {
                 orderBy: {
                     createdAt: "desc"
@@ -42,6 +52,12 @@ const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                             name: true,
                         }
                     }
+                }
+            },
+            subreddit: {
+                select: {
+                    id: true,
+                    name: true
                 }
             }
         }

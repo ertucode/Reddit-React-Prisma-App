@@ -20,7 +20,7 @@ const getAllSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, functio
         } }));
 });
 exports.getAllSubreddits = getAllSubreddits;
-// GET - /user/{id}
+// GET - /subreddit/{id}
 const getSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
         where: { id: req.params.id },
@@ -28,10 +28,14 @@ const getSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             id: true,
             name: true,
             posts: {
+                orderBy: {
+                    createdAt: "desc"
+                },
                 select: {
                     id: true,
                     title: true,
                     body: true,
+                    createdAt: true,
                     likes: true,
                     dislikes: true,
                     user: {

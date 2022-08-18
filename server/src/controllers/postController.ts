@@ -22,13 +22,23 @@ export const getAllPosts: FastifyCallback = async (req, res) => {
     }}))
 }
 
-// GET - /user/{id}
+// GET - /posts/{id}
 export const getPost: FastifyCallback = async (req, res) => {
     return await commitToDb(prisma.post.findUnique({
         where: { id: req.params.id },
         select: {
-            body: true,
+            id: true,
             title: true,
+            body: true,
+            createdAt: true,
+            likes: true,
+            dislikes: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
             comments: {
                 orderBy: {
                     createdAt: "desc"
@@ -44,6 +54,12 @@ export const getPost: FastifyCallback = async (req, res) => {
                             name: true,
                         }
                     }
+                }
+            },
+            subreddit: {
+                select: {
+                    id: true,
+                    name: true
                 }
             }
         }

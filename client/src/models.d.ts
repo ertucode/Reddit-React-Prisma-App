@@ -1,4 +1,4 @@
-export interface ISubreddit {
+declare interface ISubreddit {
 	id: string;
 	name: string;
 	admins: [];
@@ -6,7 +6,7 @@ export interface ISubreddit {
 	subscribedUsers: IUser[];
 }
 
-export interface IUser {
+declare interface IUser {
 	id: string;
 	name: string;
 	password: string;
@@ -21,7 +21,7 @@ export interface IUser {
 	dislikedPosts: IPost[];
 }
 
-export interface IPost {
+declare interface IPost {
 	id: string;
 	title: string;
 	body: string;
@@ -41,7 +41,7 @@ export interface IPost {
 	likedByMe: -1 | 0 | 1;
 }
 
-export interface IComment {
+declare interface IComment {
 	id: string;
 	body: string;
 	user: IUser;
@@ -62,25 +62,25 @@ export interface IComment {
 	likedByMe: -1 | 0 | 1;
 }
 
-export interface IPostLike {
+declare interface IPostLike {
 	id: string;
 	userId: string;
 	postId: string;
 }
 
-export interface IPostDislike {
+declare interface IPostDislike {
 	id: string;
 	userId: string;
 	postId: string;
 }
 
-export interface ICommentLike {
+declare interface ICommentLike {
 	id: string;
 	userId: string;
 	commentId: string;
 }
 
-export interface ICommentDislike {
+declare interface ICommentDislike {
 	id: string;
 	userId: string;
 	commentId: string;

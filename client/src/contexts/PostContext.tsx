@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAsync } from "../hooks/useAsync";
 import { getPost } from "../services/posts";
-import { IComment, IPost } from "../interfaces";
 import { useMemo } from "react";
 
 interface PostProviderProps {
@@ -13,13 +12,7 @@ interface IPostContext {
 	post: IPost | undefined;
 	getChildrenComments: (parentId: string) => IComment[];
 	rootComments: IComment[];
-	createLocalComment: (comment: IComment) => void;
-	updateLocalComment: (commentId: string, body: string) => void;
-	deleteLocalComment: (commentId: string) => void;
-	toggleLocalCommentLike: (
-		commentId: string,
-		change: ToggleCommentLikeDislike
-	) => void;
+	changeLocalComments: (action: CommentReducerAction) => void;
 	toggleLocalPostLike: (
 		postId: string,
 		change: ToggleCommentLikeDislike
@@ -31,14 +24,59 @@ interface ToggleCommentLikeDislike {
 	dislikeChange: -1 | 0 | 1;
 }
 
+function commentReducer(comments: IComment[], action: CommentReducerAction) {
+	switch (action.type) {
+		case "create":
+			return [action.payload.comment, ...comments];
+		case "delete":
+			return comments.filter(
+				(comment) => comment.id !== action.payload.commentId
+			);
+		case "update":
+			return comments.map((comment) => {
+				if (comment.id === action.payload.commentId) {
+					return { ...comment, body: action.payload.body };
+				}
+				return comment;
+			});
+		case "toggle":
+			const change = action.payload.change;
+			return comments.map((comment) => {
+				if (action.payload.commentId === comment.id) {
+					const likes = comment._count.likes;
+					const dislikes = comment._count.dislikes;
+
+					comment.likedByMe =
+						change.likeChange === 1
+							? 1
+							: change.dislikeChange === 1
+							? -1
+							: 0;
+
+					return {
+						...comment,
+						_count: {
+							likes: likes + change.likeChange,
+							dislikes: dislikes + change.dislikeChange,
+						},
+					};
+				}
+				return comment;
+			});
+		case "set":
+			return action.payload.comments;
+		default:
+			return comments;
+	}
+}
+
+const initialComments: IComment[] = [];
+
 const PostContext = React.createContext<IPostContext>({
 	post: undefined,
 	getChildrenComments: () => [],
 	rootComments: [],
-	createLocalComment: () => {},
-	updateLocalComment: () => {},
-	deleteLocalComment: () => {},
-	toggleLocalCommentLike: () => {},
+	changeLocalComments: () => {},
 	toggleLocalPostLike: () => {},
 });
 
@@ -54,7 +92,11 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 		value: _post,
 	} = useAsync<IPost>(() => getPost(id as string), [id]);
 
-	const [comments, setComments] = useState<IComment[]>([]);
+	const [comments, changeLocalComments] = useReducer(
+		commentReducer,
+		initialComments
+	);
+
 	const [post, setPost] = useState<IPost>();
 
 	useEffect(() => {
@@ -63,57 +105,11 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		if (post?.comments == null) return;
-		setComments(post.comments);
+		changeLocalComments({
+			type: "set",
+			payload: { comments: post.comments },
+		});
 	}, [post?.comments]);
-
-	function createLocalComment(comment: IComment) {
-		setComments((prev) => [comment, ...prev]);
-	}
-	function updateLocalComment(commentId: string, body: string) {
-		setComments((prevComments) => {
-			return prevComments.map((comment) => {
-				if (comment.id === commentId) {
-					return { ...comment, body };
-				}
-				return comment;
-			});
-		});
-	}
-
-	function deleteLocalComment(commentId: string) {
-		setComments((prevComments) =>
-			prevComments.filter((comment) => comment.id !== commentId)
-		);
-	}
-
-	function toggleLocalCommentLike(
-		commentId: string,
-		change: ToggleCommentLikeDislike
-	) {
-		setComments((prevComments) => {
-			return prevComments.map((comment) => {
-				if (commentId === comment.id) {
-					const likes = comment._count.likes;
-					const dislikes = comment._count.dislikes;
-
-					return {
-						...comment,
-						_count: {
-							likes: likes + change.likeChange,
-							dislikes: dislikes + change.dislikeChange,
-						},
-						likedByMe:
-							change.likeChange === 1
-								? 1
-								: change.dislikeChange === 1
-								? -1
-								: 0,
-					};
-				}
-				return comment;
-			});
-		});
-	}
 
 	function toggleLocalPostLike(
 		postId: string,
@@ -161,10 +157,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 				post,
 				getChildrenComments,
 				rootComments: commentsByParentId["null"] || [],
-				createLocalComment,
-				updateLocalComment,
-				deleteLocalComment,
-				toggleLocalCommentLike,
+				changeLocalComments,
 				toggleLocalPostLike,
 			}}
 		>

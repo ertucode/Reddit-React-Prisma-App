@@ -1,4 +1,3 @@
-import { IComment } from "interfaces";
 import React, { useState } from "react";
 import {
 	DownvoteButton,
@@ -37,14 +36,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 
 	const currentUser = useUser();
 
-	const {
-		getChildrenComments,
-		createLocalComment,
-		post,
-		updateLocalComment,
-		deleteLocalComment,
-		toggleLocalCommentLike,
-	} = usePost();
+	const { getChildrenComments, post, changeLocalComments } = usePost();
 	const createReplyFn = useAsyncFn(createComment);
 	const updateCommentFn = useAsyncFn(updateComment);
 	const deleteCommentFn = useAsyncFn(deleteComment);
@@ -56,7 +48,13 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 		return createReplyFn
 			.execute({ postId: post?.id, body, parentId: comment.id })
 			.then((c: IComment) => {
-				createLocalComment({ ...c, likes: [], dislikes: [] });
+				changeLocalComments({
+					type: "create",
+					payload: {
+						comment: { ...c, likes: [], dislikes: [] },
+					},
+				});
+
 				setIsReplying(false);
 			});
 	}
@@ -65,7 +63,13 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 		return updateCommentFn
 			.execute({ postId: post?.id, body: body, commentId: comment.id })
 			.then((c: IComment) => {
-				updateLocalComment(comment.id, body);
+				changeLocalComments({
+					type: "update",
+					payload: {
+						commentId: comment.id,
+						body,
+					},
+				});
 				setIsUpdating(false);
 			});
 	}
@@ -74,15 +78,26 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 		return deleteCommentFn
 			.execute({ postId: post?.id, commentId: comment.id })
 			.then((c) => {
-				deleteLocalComment(c.id);
+				changeLocalComments({
+					type: "delete",
+					payload: {
+						commentId: c.id,
+					},
+				});
 			});
 	}
 
 	async function onToggleCommentLikeDislike(option: ToggleOptions) {
 		return toggleCommentLikeDislikeFn
 			.execute({ postId: post?.id, commentId: comment.id }, option)
-			.then((e) => {
-				toggleLocalCommentLike(comment.id, e);
+			.then((change) => {
+				changeLocalComments({
+					type: "toggle",
+					payload: {
+						commentId: comment.id,
+						change,
+					},
+				});
 			});
 	}
 
@@ -106,7 +121,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 					className={`${collapsed ? "hide" : ""} collapse-line`}
 					aria-label="hide comment"
 				></button>
-				<div>
+				<div className="comment__body">
 					<main className={`${collapsed ? "hide" : ""}`}>
 						{isUpdating ? (
 							<CommentForm

@@ -9,18 +9,13 @@ import { CommentList } from "./CommentList";
 import { UserLink } from "components/general/UserLink";
 import { CommentForm } from "./CommentForm";
 import { useAsyncFn } from "hooks/useAsync";
-import {
-	createComment,
-	toggleCommentLikeDislike,
-	ToggleOptions,
-} from "services/comments";
-import { IComment } from "interfaces";
+import { createComment, ToggleOptions } from "services/comments";
 import { togglePostLikeDislike } from "services/posts";
 
 interface PostProps {}
 
 export const Post: React.FC<PostProps> = () => {
-	const { post, rootComments, createLocalComment, toggleLocalPostLike } =
+	const { post, rootComments, changeLocalComments, toggleLocalPostLike } =
 		usePost();
 	const {
 		loading,
@@ -33,7 +28,12 @@ export const Post: React.FC<PostProps> = () => {
 		return createCommentFn({ postId: post?.id, body }).then(
 			(comment: IComment) => {
 				// CHECK THIS
-				createLocalComment({ ...comment, likes: [], dislikes: [] });
+				changeLocalComments({
+					type: "create",
+					payload: {
+						comment: { ...comment, likes: [], dislikes: [] },
+					},
+				});
 			}
 		);
 	}

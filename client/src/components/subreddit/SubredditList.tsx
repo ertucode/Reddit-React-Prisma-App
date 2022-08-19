@@ -1,36 +1,30 @@
-import { getSubreddits } from '../../services/subreddits';
+import { getSubreddits } from "../../services/subreddits";
 
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 
-import {ISubreddit} from "../../interfaces"
-import { useAsync } from '../../hooks/useAsync';
+import { useAsync } from "../../hooks/useAsync";
 
-interface SubredditListProps {
+export const SubredditList: React.FC = () => {
+	const {
+		loading,
+		error,
+		value: subreddits,
+	} = useAsync<ISubreddit[]>(getSubreddits);
 
-}
+	if (loading) return <h1>Loading</h1>;
+	if (error) return <h1>{error}</h1>;
 
-export const SubredditList: React.FC<SubredditListProps> = ({}) => {
-
-    const {loading, error, value: subreddits} = useAsync<ISubreddit[]>(getSubreddits)
-
-    if (loading) return <h1>Loading</h1>
-    if (error) return <h1>{error}</h1>
-
-    return (
-        <>
-            {
-                (subreddits as ISubreddit[]).map(subreddit => {
-                    return (
-                        <h1 key={subreddit.id}>
-                            <Link to={`/subreddits/${subreddit.id}`}>
-                                {subreddit.name}
-                            </Link>
-
-                        </h1>
-                    )
-                })
-            }
-        
-        </>
-    );
-}
+	return (
+		<>
+			{(subreddits as ISubreddit[]).map((subreddit) => {
+				return (
+					<h1 key={subreddit.id}>
+						<Link to={`/subreddits/${subreddit.id}`}>
+							{subreddit.name}
+						</Link>
+					</h1>
+				);
+			})}
+		</>
+	);
+};

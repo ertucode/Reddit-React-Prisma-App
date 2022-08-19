@@ -43,8 +43,7 @@ function useAsyncInternal<T>(
 				.finally(() => {
 					setLoading(false);
 				});
-			// eslint-disable-next-line
-		},
+		}, // eslint-disable-next-line
 		dependencies
 	);
 

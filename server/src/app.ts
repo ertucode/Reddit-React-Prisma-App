@@ -7,6 +7,8 @@ import { postRoutes } from "./routes/post";
 import { subredditRoutes } from "./routes/subreddit";
 import { commentRoutes } from "./routes/comment";
 import { likeRoutes } from "./routes/like";
+import { authRoutes } from "./routes/auth";
+import { userRoutes } from "./routes/user";
 
 import cors from "@fastify/cors";
 
@@ -50,6 +52,8 @@ app.register(cors, {
 	credentials: true,
 });
 
+app.register(authRoutes);
+app.register(userRoutes);
 app.register(postRoutes);
 app.register(subredditRoutes);
 app.register(commentRoutes);

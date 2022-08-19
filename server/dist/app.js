@@ -21,6 +21,8 @@ const post_1 = require("./routes/post");
 const subreddit_1 = require("./routes/subreddit");
 const comment_1 = require("./routes/comment");
 const like_1 = require("./routes/like");
+const auth_1 = require("./routes/auth");
+const user_1 = require("./routes/user");
 const cors_1 = __importDefault(require("@fastify/cors"));
 const client_1 = require("@prisma/client");
 dotenv_1.default.config();
@@ -53,6 +55,8 @@ app.register(cors_1.default, {
     origin: process.env.CLIENT_URL,
     credentials: true,
 });
+app.register(auth_1.authRoutes);
+app.register(user_1.userRoutes);
 app.register(post_1.postRoutes);
 app.register(subreddit_1.subredditRoutes);
 app.register(comment_1.commentRoutes);

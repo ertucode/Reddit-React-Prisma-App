@@ -9,8 +9,8 @@ import { CommentList } from "./CommentList";
 import { UserLink } from "components/general/UserLink";
 import { CommentForm } from "./CommentForm";
 import { useAsyncFn } from "hooks/useAsync";
-import { createComment, ToggleOptions } from "services/comments";
-import { togglePostLikeDislike } from "services/posts";
+import { createComment, ToggleOptions } from "services/comment";
+import { togglePostLikeDislike } from "services/post";
 
 interface PostProps {}
 
@@ -27,6 +27,7 @@ export const Post: React.FC<PostProps> = () => {
 	async function onCommentCreate(body: string) {
 		return createCommentFn({ postId: post?.id, body }).then(
 			(comment: IComment) => {
+				console.log(comment);
 				// CHECK THIS
 				changeLocalComments({
 					type: "create",

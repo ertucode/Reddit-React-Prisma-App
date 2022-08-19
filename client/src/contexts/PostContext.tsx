@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAsync } from "../hooks/useAsync";
-import { getPost } from "../services/posts";
+import { getPost } from "../services/post";
 import { useMemo } from "react";
 
 interface PostProviderProps {
@@ -70,8 +70,6 @@ function commentReducer(comments: IComment[], action: CommentReducerAction) {
 	}
 }
 
-const initialComments: IComment[] = [];
-
 const PostContext = React.createContext<IPostContext>({
 	post: undefined,
 	getChildrenComments: () => [],
@@ -92,10 +90,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 		value: _post,
 	} = useAsync<IPost>(() => getPost(id as string), [id]);
 
-	const [comments, changeLocalComments] = useReducer(
-		commentReducer,
-		initialComments
-	);
+	const [comments, changeLocalComments] = useReducer(commentReducer, []);
 
 	const [post, setPost] = useState<IPost>();
 

@@ -1,4 +1,4 @@
-import { getSubreddits } from "../../services/subreddits";
+import { getSubreddits } from "../../services/subreddit";
 
 import { Link } from "react-router-dom";
 

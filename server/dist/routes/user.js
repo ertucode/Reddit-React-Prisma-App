@@ -30,6 +30,8 @@ const userRoutes = (app, options, done) => {
     // Can add validator in the middle
     app.put("/users/:id", { preHandler: [verifyToken_1.verifyToken] }, userController.updateUser);
     app.delete("/users/:id", { preHandler: [verifyToken_1.verifyToken] }, userController.deleteUser);
+    app.get("/users/cookie", userController.getUserFromCookie);
+    app.get("/users/:id", userController.getUser);
     done();
 };
 exports.userRoutes = userRoutes;

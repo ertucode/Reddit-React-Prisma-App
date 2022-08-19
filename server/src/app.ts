@@ -2,6 +2,7 @@ import fastify from "fastify";
 import sensible from "@fastify/sensible";
 import cookie from "@fastify/cookie";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 import { postRoutes } from "./routes/post";
 import { subredditRoutes } from "./routes/subreddit";
@@ -13,12 +14,14 @@ import { userRoutes } from "./routes/user";
 import cors from "@fastify/cors";
 
 import { PrismaClient } from "@prisma/client";
+import { getUserIdFromToken } from "./verifyToken";
 
 declare var process: {
 	env: {
 		PORT: number;
 		CLIENT_URL: string;
 		COOKIE_SECRET: string;
+		JWT_SECRET: string;
 	};
 };
 
@@ -37,13 +40,22 @@ getUserId();
 
 app.register(cookie, { secret: process.env.COOKIE_SECRET });
 // DON'T PUT ASYNC
-app.addHook("onRequest", (req, res, done) => {
-	if (req.cookies.userId !== USER_ID) {
-		req.cookies.userId = USER_ID;
-		res.clearCookie("userId");
-		res.setCookie("userId", USER_ID);
+// app.addHook("onRequest", (req, res, done) => {
+// 	if (req.cookies.userId !== USER_ID) {
+// 		req.cookies.userId = USER_ID;
+// 		res.clearCookie("userId");
+// 		res.setCookie("userId", USER_ID);
+// 	}
+// 	done();
+// });
+
+app.addHook("onRequest", async (req, res) => {
+	const userId = getUserIdFromToken(req);
+	if (userId != null) {
+		req.cookies.userId = userId;
+	} else {
+		res.setCookie("userId", "");
 	}
-	done();
 });
 
 app.register(sensible);

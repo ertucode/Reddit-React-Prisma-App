@@ -95,5 +95,5 @@ export const loginUser: FastifyCallback = async (req, res) => {
 
 	const { name, email } = user;
 
-	res.send({ name, email });
+	res.send({ id: user.id, name, email });
 };

@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DownvoteButton, UpvoteButton } from "components/icons/icons";
+import { useSubreddit } from "contexts/SubredditContext";
 
 interface SmallPostProps {
 	post: IPost;
 }
 
 export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
+	const { id: subredditId, name: subredditName } = useSubreddit();
+
 	return (
 		<div className="small-post">
 			<section className="small-post__like-section">
@@ -16,8 +19,8 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 			</section>
 			<section>
 				<header>
-					<Link to={`/subreddits/${post.subreddit.id}`}>
-						r/{post.subreddit.name}
+					<Link to={`/subreddits/${subredditId}`}>
+						r/{subredditName}
 					</Link>
 					<span className="sm-info">
 						Posted by{" "}

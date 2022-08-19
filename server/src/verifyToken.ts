@@ -16,3 +16,16 @@ export const verifyToken = (req: MyRequest, res: FastifyReply, next: any) => {
 	});
 	next();
 };
+
+export const getUserIdFromToken = (req: any) => {
+	const token = req?.cookies?.userToken;
+
+	if (!token) return;
+
+	try {
+		const user = jwt.verify(token, process.env.JWT_SECRET!);
+		return user && typeof user !== "string" && user.id;
+	} catch (err) {
+		console.log(err);
+	}
+};

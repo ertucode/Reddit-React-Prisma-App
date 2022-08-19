@@ -1,4 +1,4 @@
-import { ToggleOptions } from "./comments";
+import { ToggleOptions } from "./comment";
 import { makeRequest } from "./makeRequest";
 
 export function getPosts() {

@@ -16,9 +16,9 @@ import {
 	toggleCommentLikeDislike,
 	ToggleOptions,
 	updateComment,
-} from "services/comments";
+} from "services/comment";
+import { useUser } from "contexts/UserContext";
 import { useAsyncFn } from "hooks/useAsync";
-import { useUser } from "hooks/useUser";
 
 interface CommentProps {
 	comment: IComment;
@@ -34,7 +34,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 	const [isReplying, setIsReplying] = useState(false);
 	const [isUpdating, setIsUpdating] = useState(false);
 
-	const currentUser = useUser();
+	const { currentUser } = useUser();
 
 	const { getChildrenComments, post, changeLocalComments } = usePost();
 	const createReplyFn = useAsyncFn(createComment);
@@ -151,7 +151,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 						/>
 						<ReplyButton onClick={() => setIsReplying((r) => !r)} />
 						<div>Save</div>
-						{comment.user.id === currentUser.id && (
+						{comment.user.id === currentUser?.id && (
 							<>
 								<button
 									onClick={() => setIsUpdating((r) => !r)}

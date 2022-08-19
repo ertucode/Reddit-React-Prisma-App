@@ -25,6 +25,7 @@ const auth_1 = require("./routes/auth");
 const user_1 = require("./routes/user");
 const cors_1 = __importDefault(require("@fastify/cors"));
 const client_1 = require("@prisma/client");
+const verifyToken_1 = require("./verifyToken");
 dotenv_1.default.config();
 const app = (0, fastify_1.default)();
 exports.app = app;
@@ -42,14 +43,23 @@ function getUserId() {
 getUserId();
 app.register(cookie_1.default, { secret: process.env.COOKIE_SECRET });
 // DON'T PUT ASYNC
-app.addHook("onRequest", (req, res, done) => {
-    if (req.cookies.userId !== USER_ID) {
-        req.cookies.userId = USER_ID;
-        res.clearCookie("userId");
-        res.setCookie("userId", USER_ID);
+// app.addHook("onRequest", (req, res, done) => {
+// 	if (req.cookies.userId !== USER_ID) {
+// 		req.cookies.userId = USER_ID;
+// 		res.clearCookie("userId");
+// 		res.setCookie("userId", USER_ID);
+// 	}
+// 	done();
+// });
+app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = (0, verifyToken_1.getUserIdFromToken)(req);
+    if (userId != null) {
+        req.cookies.userId = userId;
     }
-    done();
-});
+    else {
+        res.setCookie("userId", "");
+    }
+}));
 app.register(sensible_1.default);
 app.register(cors_1.default, {
     origin: process.env.CLIENT_URL,

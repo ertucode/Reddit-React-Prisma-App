@@ -72,6 +72,6 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
     res.setCookie("userToken", token);
     const { name, email } = user;
-    res.send({ name, email });
+    res.send({ id: user.id, name, email });
 });
 exports.loginUser = loginUser;

@@ -23,7 +23,7 @@ type FastifyCallback = (req: MyRequest, res: FastifyReply) => void;
 export const updateUser: FastifyCallback = async (req, res) => {
 	const userId = req.params.id;
 
-	if (userId !== req.params.tokenId) {
+	if (userId !== req.cookies.userId) {
 		return res.send(app.httpErrors.unauthorized("Token does not match"));
 	}
 
@@ -32,8 +32,6 @@ export const updateUser: FastifyCallback = async (req, res) => {
 			id: userId,
 		},
 	});
-
-	console.log(req.body);
 
 	const userWithSameName =
 		req.body.name &&
@@ -86,7 +84,7 @@ export const updateUser: FastifyCallback = async (req, res) => {
 export const deleteUser: FastifyCallback = async (req, res) => {
 	const userId = req.params.id;
 
-	if (userId !== req.params.tokenId) {
+	if (userId !== req.cookies.userId) {
 		return res.send(app.httpErrors.unauthorized("Token does not match"));
 	}
 
@@ -97,6 +95,45 @@ export const deleteUser: FastifyCallback = async (req, res) => {
 			},
 			select: {
 				id: true,
+			},
+		})
+	);
+};
+
+export const getUserFromCookie: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (userId == null) {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
+	return await commitToDb(
+		prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			select: {
+				id: true,
+				name: true,
+			},
+		})
+	);
+};
+
+export const getUser: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	// Implement conditional returning of some properties
+
+	return await commitToDb(
+		prisma.user.findUnique({
+			where: {
+				id: req.params.id,
+			},
+			select: {
+				id: true,
+				name: true,
+				posts: true,
 			},
 		})
 	);

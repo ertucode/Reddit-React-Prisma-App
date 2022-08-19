@@ -16,6 +16,9 @@ const userRoutes: FastifyPluginCallback = (app, options, done) => {
 		userController.deleteUser
 	);
 
+	app.get("/users/cookie", userController.getUserFromCookie);
+	app.get("/users/:id", userController.getUser);
+
 	done();
 };
 

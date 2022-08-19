@@ -14,14 +14,17 @@ const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 // POST - /posts/post{id}/comment
 const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     if (req.body.body === "" || req.body.body == null) {
         return res.send(app_1.app.httpErrors.badRequest("Message is required"));
+    }
+    const userId = req.cookies.userId;
+    if (userId == null) {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
     }
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.comment.create({
         data: {
             body: req.body.body,
-            userId: ((_a = (yield app_1.prisma.user.findFirst({ where: { name: "Kyle" } }))) === null || _a === void 0 ? void 0 : _a.id) || "no id",
+            userId,
             parentId: req.body.parentId,
             postId: req.params.id,
         },

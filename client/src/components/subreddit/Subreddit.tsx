@@ -1,26 +1,23 @@
-import React from 'react'
-import { useSubreddit } from 'contexts/SubredditContext'
-import { PostList } from './PostList'
+import React from "react";
+import { useSubreddit } from "contexts/SubredditContext";
+import { PostList } from "./PostList";
 
-import "components/subreddit/styles.scss"
+import "components/subreddit/styles.scss";
+import { SmallPost } from "./SmallPost";
 
-interface SubredditProps {
-
-}
+interface SubredditProps {}
 
 export const Subreddit: React.FC<SubredditProps> = () => {
+	const { name: subredditName, posts, id: subredditId } = useSubreddit();
 
-    const { subreddit } = useSubreddit()
-
-    subreddit?.posts.forEach(post => {
-        post.subreddit = subreddit
-    })
-
-    return (
-        subreddit ? 
-        <>
-            <h1>{subreddit.name}</h1>
-            <PostList posts={subreddit.posts}/>
-        </> : null
-    )
-}
+	return subredditId ? (
+		<>
+			<h1>{subredditName}</h1>
+			<div className="post-list">
+				{posts?.map((post) => (
+					<SmallPost key={post.id} post={post} />
+				))}
+			</div>
+		</>
+	) : null;
+};

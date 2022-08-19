@@ -35,9 +35,60 @@ type SetLocalComments = {
 	};
 };
 
+type SetLocalPosts = {
+	type: "set";
+	payload: {
+		posts: IPost[];
+	};
+};
+
 declare type CommentReducerAction =
 	| CreateLocalCommentAction
 	| UpdateLocalCommentAction
 	| DeleteLocalCommentAction
 	| ToggleLocalCommentLike
 	| SetLocalComments;
+
+type CreateLocalPostAction = {
+	type: "create";
+	payload: {
+		post: IPost;
+	};
+};
+
+type UpdateLocalPostAction = {
+	type: "update";
+	payload: {
+		postId: string;
+		body: string;
+	};
+};
+
+type DeleteLocalPostAction = {
+	type: "delete";
+	payload: {
+		postId: string;
+	};
+};
+
+type ToggleLocalPostLike = {
+	type: "toggle";
+	payload: {
+		postId: string;
+		change: TogglePostLikeDislike;
+	};
+};
+
+type SetLocalPosts = {
+	type: "set";
+	payload: {
+		posts: IPost[];
+	};
+};
+
+declare type PostReducerAction =
+	| CreateLocalPostAction
+	| UpdateLocalPostAction
+	| DeleteLocalPostAction
+	| ToggleLocalPostLike
+	| setLocalPosts;

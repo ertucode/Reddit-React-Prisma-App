@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = void 0;
+exports.getUser = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 // PUT -
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
-    if (userId !== req.params.tokenId) {
+    if (userId !== req.cookies.userId) {
         return res.send(app_1.app.httpErrors.unauthorized("Token does not match"));
     }
     const user = yield app_1.prisma.user.findUnique({
@@ -27,7 +27,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             id: userId,
         },
     });
-    console.log(req.body);
     const userWithSameName = req.body.name &&
         (yield app_1.prisma.user.findFirst({
             where: {
@@ -69,7 +68,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
-    if (userId !== req.params.tokenId) {
+    if (userId !== req.cookies.userId) {
         return res.send(app_1.app.httpErrors.unauthorized("Token does not match"));
     }
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.delete({
@@ -82,3 +81,34 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }));
 });
 exports.deleteUser = deleteUser;
+const getUserFromCookie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if (userId == null) {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
+    }
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            name: true,
+        },
+    }));
+});
+exports.getUserFromCookie = getUserFromCookie;
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    // Implement conditional returning of some properties
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique({
+        where: {
+            id: req.params.id,
+        },
+        select: {
+            id: true,
+            name: true,
+            posts: true,
+        },
+    }));
+});
+exports.getUser = getUser;

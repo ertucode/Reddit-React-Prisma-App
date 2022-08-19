@@ -25,14 +25,17 @@ export const postComment: FastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Message is required"));
 	}
 
+	const userId = req.cookies.userId;
+
+	if (userId == null) {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
 	return await commitToDb(
 		prisma.comment.create({
 			data: {
 				body: req.body.body,
-				userId:
-					(
-						await prisma.user.findFirst({ where: { name: "Kyle" } })
-					)?.id || "no id",
+				userId,
 				parentId: req.body.parentId,
 				postId: req.params.id,
 			},

@@ -53,6 +53,13 @@ const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (post == null) {
             return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
         }
+        const userId = req.cookies.userId;
+        if (userId == null || userId === "") {
+            const comments = post.comments.map((comment) => {
+                return Object.assign(Object.assign({}, comment), { likedByMe: 0 });
+            });
+            return Object.assign(Object.assign({}, post), { comments, likedByMe: 0 });
+        }
         const likes = yield app_1.prisma.user.findFirst({
             where: {
                 id: req.cookies.userId,

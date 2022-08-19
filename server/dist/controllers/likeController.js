@@ -14,15 +14,19 @@ const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 // POST - /posts/postId/comments/commentId/toggleLike
 const toggleCommentLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if (userId == null || userId === "") {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
+    }
     const data = {
         commentId: req.params.commentId,
-        userId: req.cookies.userId || "",
+        userId,
     };
     if (data.commentId == null) {
         return res.send(app_1.app.httpErrors.badRequest("You need to include a comment"));
     }
     if (data.userId == null) {
-        return res.send(app_1.app.httpErrors.badRequest("You can not update someone else's like"));
+        return res.send(app_1.app.httpErrors.badRequest("You can not update while logged out"));
     }
     const like = yield app_1.prisma.commentLike.findUnique({
         where: { userId_commentId: data },
@@ -62,9 +66,13 @@ const toggleCommentLike = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.toggleCommentLike = toggleCommentLike;
 // POST - /posts/postId/comments/commentId/toggleDislike
 const toggleCommentDislike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if (userId == null || userId === "") {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
+    }
     const data = {
         commentId: req.params.commentId,
-        userId: req.cookies.userId || "",
+        userId: userId,
     };
     if (data.commentId == null) {
         return res.send(app_1.app.httpErrors.badRequest("You need to include a comment"));
@@ -110,6 +118,10 @@ const toggleCommentDislike = (req, res) => __awaiter(void 0, void 0, void 0, fun
 exports.toggleCommentDislike = toggleCommentDislike;
 // POST - /posts/postId/toggleLike
 const togglePostLike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if (userId == null || userId === "") {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
+    }
     const data = {
         postId: req.params.postId,
         userId: req.cookies.userId || "",
@@ -158,9 +170,13 @@ const togglePostLike = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.togglePostLike = togglePostLike;
 // POST - /posts/postId/toggleDislike
 const togglePostDislike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if (userId == null || userId === "") {
+        return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
+    }
     const data = {
         postId: req.params.postId,
-        userId: req.cookies.userId || "",
+        userId,
     };
     if (data.postId == null) {
         return res.send(app_1.app.httpErrors.badRequest("You need to include a post"));

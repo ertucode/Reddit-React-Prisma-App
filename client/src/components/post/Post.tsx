@@ -27,7 +27,6 @@ export const Post: React.FC<PostProps> = () => {
 	async function onCommentCreate(body: string) {
 		return createCommentFn({ postId: post?.id, body }).then(
 			(comment: IComment) => {
-				console.log(comment);
 				// CHECK THIS
 				changeLocalComments({
 					type: "create",

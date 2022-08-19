@@ -73,6 +73,20 @@ export const getPost: FastifyCallback = async (req, res) => {
 			return res.send(app.httpErrors.badRequest("Post does not exist"));
 		}
 
+		const userId = req.cookies.userId;
+
+		if (userId == null || userId === "") {
+			const comments = post.comments.map((comment: Comment) => {
+				return { ...comment, likedByMe: 0 };
+			});
+
+			return {
+				...post,
+				comments,
+				likedByMe: 0,
+			};
+		}
+
 		const likes = await prisma.user.findFirst({
 			where: {
 				id: req.cookies.userId,

@@ -21,9 +21,15 @@ type FastifyCallback = (
 
 // POST - /posts/postId/comments/commentId/toggleLike
 export const toggleCommentLike: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (userId == null || userId === "") {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
 	const data = {
 		commentId: req.params.commentId,
-		userId: req.cookies.userId || "",
+		userId,
 	};
 
 	if (data.commentId == null) {
@@ -34,7 +40,7 @@ export const toggleCommentLike: FastifyCallback = async (req, res) => {
 
 	if (data.userId == null) {
 		return res.send(
-			app.httpErrors.badRequest("You can not update someone else's like")
+			app.httpErrors.badRequest("You can not update while logged out")
 		);
 	}
 
@@ -84,9 +90,15 @@ export const toggleCommentLike: FastifyCallback = async (req, res) => {
 
 // POST - /posts/postId/comments/commentId/toggleDislike
 export const toggleCommentDislike: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (userId == null || userId === "") {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
 	const data = {
 		commentId: req.params.commentId,
-		userId: req.cookies.userId || "",
+		userId: userId,
 	};
 
 	if (data.commentId == null) {
@@ -147,6 +159,12 @@ export const toggleCommentDislike: FastifyCallback = async (req, res) => {
 
 // POST - /posts/postId/toggleLike
 export const togglePostLike: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (userId == null || userId === "") {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
 	const data = {
 		postId: req.params.postId,
 		userId: req.cookies.userId || "",
@@ -210,9 +228,15 @@ export const togglePostLike: FastifyCallback = async (req, res) => {
 
 // POST - /posts/postId/toggleDislike
 export const togglePostDislike: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (userId == null || userId === "") {
+		return res.send(app.httpErrors.badRequest("You are not logged in"));
+	}
+
 	const data = {
 		postId: req.params.postId,
-		userId: req.cookies.userId || "",
+		userId,
 	};
 
 	if (data.postId == null) {

@@ -11,12 +11,14 @@ interface ISubredditContext {
 	posts: IPost[] | undefined;
 	name: string | undefined;
 	id: string | undefined;
+	changeLocalPosts: (action: PostReducerAction) => void;
 }
 
 const SubredditContext = React.createContext<ISubredditContext>({
 	posts: [],
 	name: "",
 	id: "",
+	changeLocalPosts: () => {},
 });
 
 function postReducer(posts: IPost[], action: PostReducerAction) {
@@ -93,6 +95,7 @@ export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 				name: subreddit?.name,
 				posts,
 				id: subreddit?.id,
+				changeLocalPosts,
 			}}
 		>
 			{loading && <h1>Loading</h1>}

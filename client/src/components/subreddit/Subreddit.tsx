@@ -1,6 +1,5 @@
 import React from "react";
 import { useSubreddit } from "contexts/SubredditContext";
-import { PostList } from "./PostList";
 
 import "components/subreddit/styles.scss";
 import { SmallPost } from "./SmallPost";

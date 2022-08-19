@@ -24,7 +24,10 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 	}
 
 	return (
-		<form className="post-card__new-comment" onSubmit={handleSubmit}>
+		<form
+			className="post-card__right-section__new-comment"
+			onSubmit={handleSubmit}
+		>
 			<div>Create a new comment</div>
 			<textarea
 				autoFocus={autoFocus}

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubreddit = exports.getAllSubreddits = void 0;
+exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditByName = exports.getSubredditById = exports.getAllSubreddits = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 // GET - /subreddits
@@ -24,6 +24,7 @@ const getAllSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getAllSubreddits = getAllSubreddits;
 const POST_FIELDS = {
     id: true,
+    title: true,
     body: true,
     createdAt: true,
     user: {
@@ -35,7 +36,7 @@ const POST_FIELDS = {
     _count: { select: { likes: true, dislikes: true } },
 };
 // GET - /subreddit/{id}
-const getSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSubredditById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
         where: { id: req.params.id },
         select: {
@@ -107,7 +108,81 @@ const getSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             likedByMe });
     }));
 });
-exports.getSubreddit = getSubreddit;
+exports.getSubredditById = getSubredditById;
+// GET - /subreddit/name/:name
+const getSubredditByName = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
+        where: { name: req.params.name },
+        select: {
+            id: true,
+            name: true,
+            posts: {
+                orderBy: {
+                    createdAt: "desc",
+                },
+                select: Object.assign({}, POST_FIELDS),
+            },
+        },
+    })).then((subreddit) => __awaiter(void 0, void 0, void 0, function* () {
+        if (subreddit == null) {
+            return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
+        }
+        // If no cookie early return
+        const userId = req.cookies.userId;
+        if (userId == null || userId === "") {
+            const posts = subreddit.posts.map((post) => {
+                return Object.assign(Object.assign({}, post), { likedByMe: 0 });
+            });
+            return Object.assign(Object.assign({}, subreddit), { posts, likedByMe: 0 });
+        }
+        const likes = yield app_1.prisma.user.findFirst({
+            where: {
+                id: req.cookies.userId,
+            },
+            select: {
+                likedPosts: {
+                    where: {
+                        postId: {
+                            in: subreddit.posts.map((post) => post.id),
+                        },
+                    },
+                    select: {
+                        postId: true,
+                    },
+                },
+                dislikedPosts: {
+                    where: {
+                        postId: {
+                            in: subreddit.posts.map((post) => post.id),
+                        },
+                    },
+                    select: {
+                        postId: true,
+                    },
+                },
+            },
+        });
+        const likedPosts = likes != null ? likes.likedPosts.map((post) => post.postId) : [];
+        const dislikedPosts = likes != null ? likes.dislikedPosts.map((post) => post.postId) : [];
+        const posts = subreddit.posts.map((post) => {
+            if (likedPosts.includes(post.id)) {
+                return Object.assign(Object.assign({}, post), { likedByMe: 1 });
+            }
+            else if (dislikedPosts.includes(post.id)) {
+                return Object.assign(Object.assign({}, post), { likedByMe: -1 });
+            }
+            return Object.assign(Object.assign({}, post), { likedByMe: 0 });
+        });
+        const likedByMe = (likes === null || likes === void 0 ? void 0 : likes.likedPosts.length)
+            ? 1
+            : (likes === null || likes === void 0 ? void 0 : likes.dislikedPosts.length)
+                ? -1
+                : 0;
+        return Object.assign(Object.assign({}, subreddit), { posts,
+            likedByMe });
+    }));
+});
+exports.getSubredditByName = getSubredditByName;
 // PUT - /subreddit
 const createSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
 exports.createSubreddit = createSubreddit;

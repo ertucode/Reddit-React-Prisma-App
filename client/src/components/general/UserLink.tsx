@@ -6,5 +6,5 @@ interface UserLinkProps {
 }
 
 export const UserLink: React.FC<UserLinkProps> = ({ user }) => {
-	return <Link to={`/users/${user.id}`}>u/{user.name}</Link>;
+	return <Link to={`/u/${user.name}`}>u/{user.name}</Link>;
 };

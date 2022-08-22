@@ -26,9 +26,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.subredditRoutes = void 0;
 const subredditController = __importStar(require("../controllers/subredditController"));
 const subredditRoutes = (app, options, done) => {
-    // Can add validator in the middle 
+    // Can add validator in the middle
     app.get("/subreddits", subredditController.getAllSubreddits);
-    app.get("/subreddits/:id", subredditController.getSubreddit);
+    app.get("/subreddits/:id", subredditController.getSubredditById);
+    app.get("/subreddit/:name", subredditController.getSubredditByName);
     done();
 };
 exports.subredditRoutes = subredditRoutes;

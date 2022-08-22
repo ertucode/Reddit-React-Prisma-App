@@ -35,7 +35,7 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 				value={comment}
 				onChange={(e) => setComment(e.target.value)}
 			></textarea>
-			<button disabled={loading} type="submit">
+			<button className="generic-btn" disabled={loading} type="submit">
 				{loading ? "Loading" : "Comment"}
 			</button>
 			{error && <div>{error}</div>}

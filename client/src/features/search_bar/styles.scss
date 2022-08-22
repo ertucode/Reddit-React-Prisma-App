@@ -1,0 +1,23 @@
+.search-bar {
+	display: flex;
+	align-items: center;
+	background-color: var(--input-bg-color);
+	padding: 0 0.5rem;
+	border-radius: 4px;
+
+	svg {
+		width: 25px;
+		fill: #818384;
+	}
+
+	&:hover,
+	&.focus {
+		outline: 1px solid white;
+	}
+
+	input {
+		border: none;
+		outline: none;
+		width: 100%;
+	}
+}

@@ -12,14 +12,25 @@ body {
 	--btn-bg-color: #ddd;
 	--btn-hover-color: rgb(231, 200, 200);
 	--btn-color: #1a1a1b;
+	--border-color: #343536;
 	margin: 0;
 	font-family: Arial, Helvetica, sans-serif;
 	background-color: $body-bg-color;
 	line-height: 1.4;
 
-	color: white;
+	--input-bg-color: #272729;
+	--text-color: #d7dadc;
+
+	color: var(--text-color);
 
 	--hover-bg-color: rgba(100, 100, 100, 0.4);
+
+	--positive-color: #ff4500;
+	--negative-color: #7193ff;
+}
+
+.site-body {
+	padding-top: 48px;
 }
 
 .sm-info {
@@ -41,9 +52,45 @@ a {
 	}
 }
 
+input,
+textarea {
+	background-color: var(--input-bg-color);
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	line-height: 21px;
+	border: 1px solid var(--border-color);
+}
+
 button {
 	background: none;
 	border: none;
 	font-size: inherit;
 	cursor: pointer;
+}
+
+.generic-btn {
+	background-color: var(--btn-bg-color);
+	padding: 0.4rem 1.1rem;
+	color: var(--btn-color);
+	font-weight: 700;
+	font-size: 0.8em;
+	border-radius: 100vmax;
+
+	&:hover {
+		background-color: var(--btn-hover-color);
+	}
+}
+
+.generic-btn-dark {
+	background-color: transparent;
+	padding: 0.4rem 1.1rem;
+	color: var(--btn-bg-color);
+	border: 1px solid var(--btn-bg-color);
+	font-weight: 700;
+	font-size: 0.8em;
+	border-radius: 100vmax;
+
+	&:hover {
+		background-color: var(--hover-bg-color);
+	}
 }

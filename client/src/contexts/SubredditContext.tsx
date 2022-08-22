@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { useAsync } from "../hooks/useAsync";
-import { getSubreddit } from "../services/subreddit";
+import { getSubredditByName } from "../services/subreddit";
 
 interface SubredditProviderProps {
 	children: React.ReactNode;
@@ -9,15 +9,13 @@ interface SubredditProviderProps {
 
 interface ISubredditContext {
 	posts: IPost[] | undefined;
-	name: string | undefined;
-	id: string | undefined;
+	subreddit: ISubreddit | undefined;
 	changeLocalPosts: (action: PostReducerAction) => void;
 }
 
 const SubredditContext = React.createContext<ISubredditContext>({
 	posts: [],
-	name: "",
-	id: "",
+	subreddit: undefined,
 	changeLocalPosts: () => {},
 });
 
@@ -72,12 +70,12 @@ export function useSubreddit() {
 export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 	children,
 }) => {
-	const { id } = useParams();
+	const { name } = useParams();
 	const {
 		loading,
 		error,
 		value: subreddit,
-	} = useAsync<ISubreddit>(() => getSubreddit(id as string), [id]);
+	} = useAsync<ISubreddit>(() => getSubredditByName(name as string), [name]);
 
 	const [posts, changeLocalPosts] = useReducer(postReducer, []);
 
@@ -85,16 +83,20 @@ export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 		if (subreddit?.posts == null) return;
 		changeLocalPosts({
 			type: "set",
-			payload: { posts: subreddit.posts },
+			payload: {
+				posts: subreddit.posts.map((post) => {
+					post.subreddit = subreddit;
+					return post;
+				}),
+			},
 		});
-	}, [subreddit?.posts]);
+	}, [subreddit?.posts, subreddit]);
 
 	return (
 		<SubredditContext.Provider
 			value={{
-				name: subreddit?.name,
 				posts,
-				id: subreddit?.id,
+				subreddit,
 				changeLocalPosts,
 			}}
 		>

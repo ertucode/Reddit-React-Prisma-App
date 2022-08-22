@@ -19,3 +19,7 @@ export function getUserFromCookie() {
 		method: "GET",
 	});
 }
+
+export function getUserFromName(name: string) {
+	return makeRequest(`/users/name/${name}`);
+}

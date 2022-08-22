@@ -5,17 +5,15 @@ import { useSubreddit } from "contexts/SubredditContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";
+import { UserLink } from "components/general/UserLink";
+import { SubredditLink } from "components/general/SubredditLink";
 
 interface SmallPostProps {
 	post: IPost;
 }
 
 export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
-	const {
-		id: subredditId,
-		name: subredditName,
-		changeLocalPosts,
-	} = useSubreddit();
+	const { changeLocalPosts } = useSubreddit();
 
 	const togglePostLikeDislikeFn = useAsyncFn(togglePostLikeDislike);
 
@@ -33,6 +31,8 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 			});
 	}
 
+	console.log(post);
+
 	return (
 		<div className="small-post">
 			<section className="small-post__like-section">
@@ -48,20 +48,15 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 			</section>
 			<section>
 				<header>
-					<Link to={`/subreddits/${subredditId}`}>
-						r/{subredditName}
-					</Link>
+					<SubredditLink subreddit={post.subreddit} />
 					<span className="sm-info">
-						Posted by{" "}
-						<Link to={`/users/${post.user.id}`}>
-							u/{post.user.name}
-						</Link>{" "}
+						Posted by <UserLink user={post.user} />
 					</span>
 					<div className="sm-info">{post.createdAt}</div>
 				</header>
 				<main>
 					<Link to={`/posts/${post.id}`}>
-						<h3>{post.title}</h3>
+						<h3 className="extra-small">{post.title}</h3>
 						<article>{post.body}</article>
 					</Link>
 				</main>

@@ -1,8 +1,7 @@
 import { getSubreddits } from "../../services/subreddit";
 
-import { Link } from "react-router-dom";
-
 import { useAsync } from "../../hooks/useAsync";
+import { SubredditLink } from "components/general/SubredditLink";
 
 export const SubredditList: React.FC = () => {
 	const {
@@ -19,9 +18,7 @@ export const SubredditList: React.FC = () => {
 			{(subreddits as ISubreddit[]).map((subreddit) => {
 				return (
 					<h1 key={subreddit.id}>
-						<Link to={`/subreddits/${subreddit.id}`}>
-							{subreddit.name}
-						</Link>
+						<SubredditLink subreddit={subreddit} />
 					</h1>
 				);
 			})}

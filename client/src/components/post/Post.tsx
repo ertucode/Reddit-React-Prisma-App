@@ -2,8 +2,6 @@ import { usePost } from "contexts/PostContext";
 import React from "react";
 import { DownvoteButton, UpvoteButton } from "components/icons/icons";
 
-import { Link } from "react-router-dom";
-
 import "./styles.scss";
 import { CommentList } from "./CommentList";
 import { UserLink } from "components/general/UserLink";
@@ -11,6 +9,7 @@ import { CommentForm } from "./CommentForm";
 import { useAsyncFn } from "hooks/useAsync";
 import { createComment, ToggleOptions } from "services/comment";
 import { togglePostLikeDislike } from "services/post";
+import { SubredditLink } from "components/general/SubredditLink";
 
 interface PostProps {}
 
@@ -60,9 +59,7 @@ export const Post: React.FC<PostProps> = () => {
 				</section>
 				<section className="post-card__right-section">
 					<header>
-						<Link to={`/subreddits/${post.subreddit.id}`}>
-							r/{post.subreddit.name}
-						</Link>
+						<SubredditLink subreddit={post.subreddit} />
 						<span className="sm-info">
 							Posted by <UserLink user={post.user} />{" "}
 						</span>

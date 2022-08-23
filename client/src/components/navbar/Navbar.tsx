@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { SearchBar } from "features/search_bar/SearchBar";
 import "./styles.scss";
 
 import { ReactComponent as RedditIcon } from "./svg/reddit-icon.svg";
 import { ReactComponent as RedditName } from "./svg/reddit-name.svg";
 import { ReactComponent as RedditUserIcon } from "./svg/reddit-profile.svg";
+import { ReactComponent as DownIcon } from "./svg/down-arrow.svg";
 import { ReactComponent as GenericProfileIcon } from "./svg/generic-profile.svg";
 import { ReactComponent as LogoutIcon } from "./svg/logout.svg";
 import { useUser } from "contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useAsyncFn } from "hooks/useAsync";
 import { logoutUser } from "services/user";
+import { userLink } from "components/general/UserLink";
 
 export const Navbar: React.FC = () => {
 	const { currentUser, changeCurrentUser } = useUser();
+
+	const [expanded, setExpanded] = useState(false);
+
 	const navigate = useNavigate();
 
 	const { execute: logout } = useAsyncFn(logoutUser);
@@ -57,20 +62,37 @@ export const Navbar: React.FC = () => {
 					</button>
 				</div>
 			) : (
-				<div className="navbar-item user-card expanded">
+				<div
+					className={`navbar-item user-card ${
+						expanded ? "expanded" : ""
+					}`}
+					onClick={() => setExpanded((e) => !e)}
+					onBlur={(e) => {
+						setExpanded(false);
+					}}
+				>
 					<button className="user-card__button">
 						<div>
 							<RedditUserIcon />
 						</div>
 						<div>{currentUser.name}</div>
 						<div>0 karma</div>
+						<DownIcon />
 					</button>
-					<div className="dropdown HIDE">
-						<button className="dropdown__button">
+					<div className={`dropdown ${expanded ? "" : "hide"}`}>
+						<button
+							className="dropdown__button"
+							onMouseDown={() => {
+								navigate(userLink(currentUser));
+							}}
+						>
 							<GenericProfileIcon />
 							<div>Profile</div>
 						</button>
-						<button className="dropdown__button" onClick={onLogout}>
+						<button
+							className="dropdown__button"
+							onMouseDown={onLogout}
+						>
 							<LogoutIcon fill="currentcolor" />
 							<div>Logout</div>
 						</button>

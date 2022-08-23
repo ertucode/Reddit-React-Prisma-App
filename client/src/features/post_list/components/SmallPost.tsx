@@ -1,22 +1,26 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DownvoteButton, UpvoteButton } from "components/icons/icons";
-import { useSubreddit } from "contexts/MultiplePostsContext";
+import { useMultiplePosts } from "features/post_list/contexts/MultiplePostsContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";
 import { UserLink } from "components/general/UserLink";
 import { SubredditLink } from "components/general/SubredditLink";
 
-import { ReactComponent as CommentSvg } from "./svg/comment.svg";
+import { ReactComponent as CommentSvg } from "../svg/comment.svg";
 
 interface SmallPostProps {
 	post: IPost;
+	mini: boolean;
+	changeLocalPosts: (action: PostReducerAction) => void;
 }
 
-export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
-	const { changeLocalPosts } = useSubreddit();
-
+export const SmallPost: React.FC<SmallPostProps> = ({
+	post,
+	mini,
+	changeLocalPosts,
+}) => {
 	const togglePostLikeDislikeFn = useAsyncFn(togglePostLikeDislike);
 
 	async function onTogglePostLikeDislike(option: ToggleOptions) {
@@ -46,8 +50,7 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 					onClick={() => onTogglePostLikeDislike("Dislike")}
 				/>
 			</section>
-			{/* mini-post-right */}
-			<section>
+			<section className={`${mini ? "mini-post-right" : ""}`}>
 				<header>
 					<SubredditLink subreddit={post.subreddit} />
 					<span className="sm-info">

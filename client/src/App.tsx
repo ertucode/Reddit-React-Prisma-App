@@ -3,7 +3,7 @@ import React from "react";
 import "app.scss";
 
 import { SubredditList } from "components/subreddit/SubredditList";
-import { SubredditProvider } from "contexts/MultiplePostsContext";
+import { MultiplePostsProvider } from "features/post_list/contexts/MultiplePostsContext";
 import { Routes, Route } from "react-router-dom";
 import { Subreddit } from "components/subreddit/Subreddit";
 import { PostProvider } from "contexts/PostContext";
@@ -21,14 +21,7 @@ function App() {
 			<div className="site-body">
 				<Routes>
 					<Route path="/" element={<SubredditList />} />
-					<Route
-						path="/r/:name"
-						element={
-							<SubredditProvider>
-								<Subreddit />
-							</SubredditProvider>
-						}
-					/>
+					<Route path="/r/:subredditName" element={<Subreddit />} />
 					<Route
 						path="/posts/:id"
 						element={
@@ -37,7 +30,7 @@ function App() {
 							</PostProvider>
 						}
 					/>
-					<Route path="/u/:name" element={<UserPage />} />
+					<Route path="/u/:userName" element={<UserPage />} />
 					<Route path="/sign_up" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
 				</Routes>

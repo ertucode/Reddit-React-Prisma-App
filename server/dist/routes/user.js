@@ -31,7 +31,8 @@ const userRoutes = (app, options, done) => {
     app.put("/users/:id", { preHandler: [verifyToken_1.verifyToken] }, userController.updateUser);
     app.delete("/users/:id", { preHandler: [verifyToken_1.verifyToken] }, userController.deleteUser);
     app.get("/users/cookie", userController.getUserFromCookie);
-    app.get("/users/:id", userController.getUser);
+    app.get("/users/:id", userController.getUserById);
+    app.get("/users/posts/:name", userController.getUserPosts);
     done();
 };
 exports.userRoutes = userRoutes;

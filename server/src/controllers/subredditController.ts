@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 import { Post, Subreddit } from "@prisma/client";
+import formatPosts from "./utils/formatPosts";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -31,7 +32,7 @@ export const getAllSubreddits: FastifyCallback = async (req, res) => {
 	);
 };
 
-const POST_FIELDS = {
+export const POST_FIELDS = {
 	id: true,
 	title: true,
 	body: true,
@@ -43,6 +44,12 @@ const POST_FIELDS = {
 		},
 	},
 	_count: { select: { likes: true, dislikes: true, comments: true } },
+	subreddit: {
+		select: {
+			name: true,
+			id: true,
+		},
+	},
 };
 
 // GET - /subreddit/{id}
@@ -80,62 +87,14 @@ export const getSubredditById: FastifyCallback = async (req, res) => {
 			return {
 				...subreddit,
 				posts,
-				likedByMe: 0,
 			};
 		}
 
-		const likes = await prisma.user.findFirst({
-			where: {
-				id: req.cookies.userId,
-			},
-			select: {
-				likedPosts: {
-					where: {
-						postId: {
-							in: subreddit.posts.map((post: Post) => post.id),
-						},
-					},
-					select: {
-						postId: true,
-					},
-				},
-				dislikedPosts: {
-					where: {
-						postId: {
-							in: subreddit.posts.map((post: Post) => post.id),
-						},
-					},
-					select: {
-						postId: true,
-					},
-				},
-			},
-		});
-
-		const likedPosts =
-			likes != null ? likes.likedPosts.map((post) => post.postId) : [];
-		const dislikedPosts =
-			likes != null ? likes.dislikedPosts.map((post) => post.postId) : [];
-
-		const posts = subreddit.posts.map((post: Post) => {
-			if (likedPosts.includes(post.id)) {
-				return { ...post, likedByMe: 1 };
-			} else if (dislikedPosts.includes(post.id)) {
-				return { ...post, likedByMe: -1 };
-			}
-			return { ...post, likedByMe: 0 };
-		});
-
-		const likedByMe = likes?.likedPosts.length
-			? 1
-			: likes?.dislikedPosts.length
-			? -1
-			: 0;
+		const posts = await formatPosts(subreddit.posts, userId);
 
 		return {
 			...subreddit,
 			posts,
-			likedByMe,
 		};
 	});
 };
@@ -179,58 +138,11 @@ export const getSubredditByName: FastifyCallback = async (req, res) => {
 			};
 		}
 
-		const likes = await prisma.user.findFirst({
-			where: {
-				id: req.cookies.userId,
-			},
-			select: {
-				likedPosts: {
-					where: {
-						postId: {
-							in: subreddit.posts.map((post: Post) => post.id),
-						},
-					},
-					select: {
-						postId: true,
-					},
-				},
-				dislikedPosts: {
-					where: {
-						postId: {
-							in: subreddit.posts.map((post: Post) => post.id),
-						},
-					},
-					select: {
-						postId: true,
-					},
-				},
-			},
-		});
-
-		const likedPosts =
-			likes != null ? likes.likedPosts.map((post) => post.postId) : [];
-		const dislikedPosts =
-			likes != null ? likes.dislikedPosts.map((post) => post.postId) : [];
-
-		const posts = subreddit.posts.map((post: Post) => {
-			if (likedPosts.includes(post.id)) {
-				return { ...post, likedByMe: 1 };
-			} else if (dislikedPosts.includes(post.id)) {
-				return { ...post, likedByMe: -1 };
-			}
-			return { ...post, likedByMe: 0 };
-		});
-
-		const likedByMe = likes?.likedPosts.length
-			? 1
-			: likes?.dislikedPosts.length
-			? -1
-			: 0;
+		const posts = await formatPosts(subreddit.posts, userId);
 
 		return {
 			...subreddit,
 			posts,
-			likedByMe,
 		};
 	});
 };

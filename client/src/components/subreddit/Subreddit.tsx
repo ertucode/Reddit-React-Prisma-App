@@ -1,29 +1,25 @@
 import React from "react";
-import { useSubreddit } from "contexts/MultiplePostsContext";
 
 import "components/subreddit/styles.scss";
-import { SmallPost } from "./SmallPost";
+import { BodyHeader } from "features/body_header/BodyHeader";
+import { PostListWrapper } from "features/post_list/components/PostListWrapper";
+import { getSubredditByName } from "services/subreddit";
 import { useParams } from "react-router-dom";
 
 interface SubredditProps {}
 
 export const Subreddit: React.FC<SubredditProps> = () => {
-	const { posts } = useSubreddit();
-
-	const { name } = useParams();
+	const { subredditName } = useParams();
 
 	return (
 		<>
-			<div className="subreddit-header">
-				<div>
-					<h1>r/{name}</h1>
-				</div>
-			</div>
-			<div className="post-list">
-				{posts?.map((post) => (
-					<SmallPost key={post.id} post={post} />
-				))}
-			</div>
+			<BodyHeader header={`r/${subredditName}`} />
+			<PostListWrapper
+				getter={{
+					callback: getSubredditByName,
+					params: [subredditName],
+				}}
+			/>
 		</>
 	);
 };

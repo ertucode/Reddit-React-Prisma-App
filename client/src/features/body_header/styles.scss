@@ -1,0 +1,18 @@
+.body-header {
+	width: 100%;
+	background-color: var(--card-bg-color);
+	padding: 1rem 0;
+	margin-bottom: 1rem;
+	display: flex;
+	justify-content: center;
+
+	> div {
+		width: 70%;
+		max-width: 90ch;
+
+		h1 {
+			margin: 0;
+			padding: 0;
+		}
+	}
+}

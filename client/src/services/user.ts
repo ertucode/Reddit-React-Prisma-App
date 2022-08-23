@@ -24,6 +24,6 @@ export function getUserFromCookie() {
 	});
 }
 
-export function getUserFromName(name: string) {
-	return makeRequest(`/users/name/${name}`);
+export function getUserPostsFromName(name: string) {
+	return makeRequest(`/users/posts/${name}`);
 }

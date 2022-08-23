@@ -1,18 +1,16 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { useAsync } from "../hooks/useAsync";
-import { getSubredditByName } from "../services/subreddit";
+import { getUserPostsFromName } from "services/user";
+import { useAsync } from "../../../hooks/useAsync";
+import { getSubredditByName } from "../../../services/subreddit";
+import { PostList } from "./PostList";
 
-interface SubredditProviderProps {
-	children: React.ReactNode;
-}
-
-interface ISubredditContext {
+interface IMultiplePostsContext {
 	posts: IPost[] | undefined;
 	changeLocalPosts: (action: PostReducerAction) => void;
 }
 
-const SubredditContext = React.createContext<ISubredditContext>({
+const MultiplePostsContext = React.createContext<IMultiplePostsContext>({
 	posts: [],
 	changeLocalPosts: () => {},
 });
@@ -62,44 +60,40 @@ function postReducer(posts: IPost[], action: PostReducerAction) {
 	}
 }
 
-export function useSubreddit() {
-	return useContext(SubredditContext);
+interface PostListWrapperProps {
+	mini?: boolean;
+	getter: any;
 }
 
-const getterMap = {
-	subreddit: "subreddit func",
-	user: "user func",
-};
-
-export const SubredditProvider: React.FC<SubredditProviderProps> = ({
-	children,
+export const PostListWrapper: React.FC<PostListWrapperProps> = ({
+	mini = false,
+	getter,
 }) => {
-	const { name } = useParams();
-	// const location = useLocation();
-	// console.log(location.pathname);
 	const {
 		loading,
 		error,
-		value: subreddit,
-	} = useAsync<ISubreddit>(() => getSubredditByName(name as string), [name]);
+		value: list,
+	} = useAsync<ISubreddit | IUser>(
+		() => getter.callback(...getter.params),
+		getter.params
+	);
 
 	const [posts, changeLocalPosts] = useReducer(postReducer, []);
 
 	useEffect(() => {
-		if (subreddit?.posts == null) return;
+		if (list?.posts == null) return;
 		changeLocalPosts({
 			type: "set",
 			payload: {
-				posts: subreddit.posts.map((post) => {
-					post.subreddit = subreddit;
-					return post;
-				}),
+				posts: list.posts,
 			},
 		});
-	}, [subreddit?.posts, subreddit]);
+	}, [list?.posts, list]);
+
+	useEffect(() => {}, [loading]);
 
 	return (
-		<SubredditContext.Provider
+		<MultiplePostsContext.Provider
 			value={{
 				posts,
 				changeLocalPosts,
@@ -107,7 +101,11 @@ export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 		>
 			{loading && <h1>Loading</h1>}
 			{error && <h1>Error</h1>}
-			{children}
-		</SubredditContext.Provider>
+			<PostList
+				posts={posts}
+				mini={mini}
+				changeLocalPosts={changeLocalPosts}
+			/>
+		</MultiplePostsContext.Provider>
 	);
 };

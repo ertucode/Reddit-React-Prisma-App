@@ -29,6 +29,7 @@ const authRoutes = (app, options, done) => {
     // Can add validator in the middle
     app.post("/signup", authController.createUser);
     app.post("/login", authController.loginUser);
+    app.post("/logout", authController.logoutUser);
     done();
 };
 exports.authRoutes = authRoutes;

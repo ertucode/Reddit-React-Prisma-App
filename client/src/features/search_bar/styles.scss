@@ -11,7 +11,7 @@
 	}
 
 	&:hover,
-	&.focus {
+	&:focus-within {
 		outline: 1px solid white;
 	}
 

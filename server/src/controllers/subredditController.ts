@@ -42,7 +42,7 @@ const POST_FIELDS = {
 			name: true,
 		},
 	},
-	_count: { select: { likes: true, dislikes: true } },
+	_count: { select: { likes: true, dislikes: true, comments: true } },
 };
 
 // GET - /subreddit/{id}

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.createUser = void 0;
+exports.logoutUser = exports.loginUser = exports.createUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -75,3 +75,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ id: user.id, name, email });
 });
 exports.loginUser = loginUser;
+const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.setCookie("userToken", "");
+});
+exports.logoutUser = logoutUser;

@@ -3,7 +3,7 @@ import React from "react";
 import "app.scss";
 
 import { SubredditList } from "components/subreddit/SubredditList";
-import { SubredditProvider } from "contexts/SubredditContext";
+import { SubredditProvider } from "contexts/MultiplePostsContext";
 import { Routes, Route } from "react-router-dom";
 import { Subreddit } from "components/subreddit/Subreddit";
 import { PostProvider } from "contexts/PostContext";

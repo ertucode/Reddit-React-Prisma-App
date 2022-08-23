@@ -37,6 +37,7 @@ declare interface IPost {
 	_count: {
 		likes: number;
 		dislikes: number;
+		comments: number;
 	};
 	likedByMe: -1 | 0 | 1;
 }

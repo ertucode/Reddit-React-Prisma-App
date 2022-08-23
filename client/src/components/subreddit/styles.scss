@@ -56,6 +56,10 @@
 			padding: 1rem;
 		}
 
+		> :last-child {
+			padding-bottom: 0;
+		}
+
 		header {
 			display: flex;
 			justify-content: flex-start;
@@ -98,6 +102,52 @@
 					var(--card-bg-color)
 				);
 				pointer-events: none;
+			}
+
+			overflow: hidden;
+		}
+
+		footer {
+			margin: 0.5rem 0;
+
+			button {
+				font-weight: 700;
+				font-size: 0.8rem;
+				opacity: 0.6;
+
+				svg {
+					width: 3ex;
+				}
+
+				a {
+					text-decoration: none;
+					display: flex;
+					align-items: center;
+					gap: 0.3rem;
+				}
+
+				&:hover,
+				&:focus-visible {
+					background-color: var(--hover-bg-color);
+				}
+
+				padding: 0.5rem 1rem;
+
+				display: flex;
+				align-items: center;
+			}
+		}
+
+		.mini-post-right {
+			h3 {
+				margin: 0;
+				margin-top: 0.5rem;
+			}
+			article {
+				display: none;
+			}
+			button {
+				padding: 0 1rem;
 			}
 		}
 	}

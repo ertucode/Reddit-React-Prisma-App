@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DownvoteButton, UpvoteButton } from "components/icons/icons";
-import { useSubreddit } from "contexts/SubredditContext";
+import { useSubreddit } from "contexts/MultiplePostsContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";
 import { UserLink } from "components/general/UserLink";
 import { SubredditLink } from "components/general/SubredditLink";
+
+import { ReactComponent as CommentSvg } from "./svg/comment.svg";
 
 interface SmallPostProps {
 	post: IPost;
@@ -31,8 +33,6 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 			});
 	}
 
-	console.log(post);
-
 	return (
 		<div className="small-post">
 			<section className="small-post__like-section">
@@ -46,6 +46,7 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 					onClick={() => onTogglePostLikeDislike("Dislike")}
 				/>
 			</section>
+			{/* mini-post-right */}
 			<section>
 				<header>
 					<SubredditLink subreddit={post.subreddit} />
@@ -56,10 +57,17 @@ export const SmallPost: React.FC<SmallPostProps> = ({ post }) => {
 				</header>
 				<main>
 					<Link to={`/posts/${post.id}`}>
-						<h3 className="extra-small">{post.title}</h3>
+						<h3>{post.title}</h3>
 						<article>{post.body}</article>
 					</Link>
 				</main>
+				<footer>
+					<button>
+						<Link to={`/posts/${post.id}`}>
+							<CommentSvg /> {post._count.comments} comments
+						</Link>
+					</button>
+				</footer>
 			</section>
 		</div>
 	);

@@ -118,6 +118,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 				return {
 					...prevPost,
 					_count: {
+						...prevPost._count,
 						likes: likes + change.likeChange,
 						dislikes: dislikes + change.dislikeChange,
 					},

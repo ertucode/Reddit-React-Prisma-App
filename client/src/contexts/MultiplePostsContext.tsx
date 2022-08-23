@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useAsync } from "../hooks/useAsync";
 import { getSubredditByName } from "../services/subreddit";
 
@@ -9,13 +9,11 @@ interface SubredditProviderProps {
 
 interface ISubredditContext {
 	posts: IPost[] | undefined;
-	subreddit: ISubreddit | undefined;
 	changeLocalPosts: (action: PostReducerAction) => void;
 }
 
 const SubredditContext = React.createContext<ISubredditContext>({
 	posts: [],
-	subreddit: undefined,
 	changeLocalPosts: () => {},
 });
 
@@ -49,6 +47,7 @@ function postReducer(posts: IPost[], action: PostReducerAction) {
 					return {
 						...post,
 						_count: {
+							...post._count,
 							likes: likes + change.likeChange,
 							dislikes: dislikes + change.dislikeChange,
 						},
@@ -67,10 +66,17 @@ export function useSubreddit() {
 	return useContext(SubredditContext);
 }
 
+const getterMap = {
+	subreddit: "subreddit func",
+	user: "user func",
+};
+
 export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 	children,
 }) => {
 	const { name } = useParams();
+	// const location = useLocation();
+	// console.log(location.pathname);
 	const {
 		loading,
 		error,
@@ -96,7 +102,6 @@ export const SubredditProvider: React.FC<SubredditProviderProps> = ({
 		<SubredditContext.Provider
 			value={{
 				posts,
-				subreddit,
 				changeLocalPosts,
 			}}
 		>

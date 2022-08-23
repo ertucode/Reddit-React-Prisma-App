@@ -14,6 +14,10 @@ export function login(name: string, password: string) {
 	});
 }
 
+export function logoutUser() {
+	return makeRequest(`logout`, { method: "POST" });
+}
+
 export function getUserFromCookie() {
 	return makeRequest(`/users/cookie`, {
 		method: "GET",

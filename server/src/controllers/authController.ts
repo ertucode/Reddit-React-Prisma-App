@@ -97,3 +97,7 @@ export const loginUser: FastifyCallback = async (req, res) => {
 
 	res.send({ id: user.id, name, email });
 };
+
+export const logoutUser: FastifyCallback = async (req, res) => {
+	res.setCookie("userToken", "");
+};

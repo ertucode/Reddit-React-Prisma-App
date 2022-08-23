@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./styles.scss";
 import { ReactComponent as Magnifier } from "./svg/magnifier.svg";
 
@@ -11,18 +11,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 	ariaLabel,
 	className = "",
 }) => {
-	const [focusState, setFocusState] = useState(false);
-
 	return (
-		<form
-			className={`${className} search-bar ${focusState ? "focus" : ""}`}
-		>
+		<form className={`${className} search-bar `}>
 			<Magnifier />
-			<input
-				onFocus={() => setFocusState(true)}
-				onBlur={() => setFocusState(false)}
-				aria-label={ariaLabel}
-			/>
+			<input aria-label={ariaLabel} />
 		</form>
 	);
 };

@@ -8,6 +8,8 @@ const authRoutes: FastifyPluginCallback = (app, options, done) => {
 
 	app.post("/login", authController.loginUser);
 
+	app.post("/logout", authController.logoutUser);
+
 	done();
 };
 

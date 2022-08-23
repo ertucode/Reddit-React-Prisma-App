@@ -1,3 +1,5 @@
+@use "styles/animations";
+
 .post-list {
 	display: flex;
 	flex-direction: column;
@@ -130,6 +132,29 @@
 			button {
 				padding: 0 1rem;
 			}
+		}
+	}
+}
+
+#placeholder {
+	.small-post {
+		min-height: 300px;
+	}
+
+	&__right {
+		padding: 1rem;
+		row-gap: 1rem;
+
+		display: grid;
+		grid-template-rows: 1fr 8fr 1fr;
+
+		> * {
+			border-radius: 4px;
+			@include animations.animate-loading();
+		}
+
+		> :nth-child(1) {
+			width: 50%;
 		}
 	}
 }

@@ -3,9 +3,7 @@ import React from "react";
 import "./styles.scss";
 import { getPosts } from "services/post";
 
-interface MainPageProps {}
-
-export const MainPage: React.FC<MainPageProps> = ({}) => {
+export const MainPage: React.FC = () => {
 	return (
 		<div className="main-page-container">
 			<PostListWrapper getter={{ callback: getPosts, params: [] }} />

@@ -87,8 +87,6 @@ export const PostListWrapper: React.FC<PostListWrapperProps> = ({
 		});
 	}, [list?.posts, list]);
 
-	useEffect(() => {}, [loading]);
-
 	return (
 		<MultiplePostsContext.Provider
 			value={{
@@ -96,12 +94,12 @@ export const PostListWrapper: React.FC<PostListWrapperProps> = ({
 				changeLocalPosts,
 			}}
 		>
-			{loading && <h1>Loading</h1>}
-			{error && <h1>Error</h1>}
 			<PostList
 				posts={posts}
 				mini={mini}
 				changeLocalPosts={changeLocalPosts}
+				loading={loading}
+				error={error}
 			/>
 		</MultiplePostsContext.Provider>
 	);

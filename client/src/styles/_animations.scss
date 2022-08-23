@@ -1,0 +1,19 @@
+@mixin animate-loading {
+	animation: loading-animation 1.5s ease infinite;
+	background: linear-gradient(
+		90deg,
+		var(--hover-bg-color),
+		hsla(0, 16%, 36%, 0.364),
+		var(--hover-bg-color)
+	);
+	background-size: 200%;
+}
+
+@keyframes loading-animation {
+	from {
+		background-position: 0 0;
+	}
+	to {
+		background-position: -200% 0;
+	}
+}

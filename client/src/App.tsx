@@ -1,8 +1,7 @@
 import React from "react";
 
-import "app.scss";
+import "styles/app.scss";
 
-import { SubredditList } from "components/subreddit/SubredditList";
 import { Routes, Route } from "react-router-dom";
 import { Subreddit } from "components/subreddit/Subreddit";
 import { PostProvider } from "contexts/PostContext";

@@ -8,6 +8,10 @@ import { useParams } from "react-router-dom";
 export const UserPage: React.FC = () => {
 	const { userName } = useParams();
 
+	// await username -> sorry nobody on reddit goes by that name
+
+	// or this
+
 	return (
 		<>
 			<BodyHeader header={`u/${userName}`} />

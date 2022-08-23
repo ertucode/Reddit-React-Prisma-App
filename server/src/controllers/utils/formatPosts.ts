@@ -1,10 +1,8 @@
 import { Post, User } from "@prisma/client";
-import { MyRequest } from "../userController";
-import { prisma } from "../../app";
+import { app, prisma } from "../../app";
+import { checkEarlyReturn, earlyReturn } from "./checkEarlyReturn";
 
-type UserWithPosts = User & { posts: Post[] };
-
-export default async function formatPosts(posts: Post[], userId: string) {
+async function formatPosts(posts: Post[], userId: string) {
 	const likes = await prisma.user.findFirst({
 		where: {
 			id: userId,
@@ -50,3 +48,29 @@ export default async function formatPosts(posts: Post[], userId: string) {
 
 	return formattedPosts;
 }
+
+export const formatPostContainer = async (
+	container: ContainerWithPosts,
+	req: ContainerRequest,
+	res: ContainerResponse
+) => {
+	if (container == null) {
+		return res.send(app.httpErrors.badRequest("Post does not exist"));
+	}
+
+	// If no cookie early return
+
+	const userId = req.cookies.userId;
+	const shouldReturn = checkEarlyReturn(userId);
+
+	if (shouldReturn) {
+		return earlyReturn(container);
+	}
+
+	const posts = await formatPosts(container.posts, userId!);
+
+	return {
+		...container,
+		posts,
+	};
+};

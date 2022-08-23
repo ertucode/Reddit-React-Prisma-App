@@ -2,26 +2,11 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 import { Post, Subreddit } from "@prisma/client";
-import formatPosts from "./utils/formatPosts";
-
-type FastifyCallback = (
-	req: FastifyRequest<{
-		Params: {
-			id: string;
-			name: string;
-		};
-		Body: {
-			body: string;
-			parentId: string;
-			title: string;
-			subredditId: string;
-		};
-	}>,
-	res: FastifyReply
-) => void;
+import { formatPostContainer } from "./utils/formatPosts";
+import { checkEarlyReturn, earlyReturn } from "./utils/checkEarlyReturn";
 
 // GET - /subreddits
-export const getAllSubreddits: FastifyCallback = async (req, res) => {
+export const getAllSubreddits: SubredditFastifyCallback = async (req, res) => {
 	return await commitToDb(
 		prisma.subreddit.findMany({
 			select: {
@@ -52,106 +37,53 @@ export const POST_FIELDS = {
 	},
 };
 
+const SUBREDDIT_SELECT = {
+	select: {
+		id: true,
+		name: true,
+		posts: {
+			orderBy: {
+				createdAt: "desc" as const,
+			},
+			select: {
+				...POST_FIELDS,
+			},
+		},
+	},
+};
+
 // GET - /subreddit/{id}
-export const getSubredditById: FastifyCallback = async (req, res) => {
+export const getSubredditById: SubredditFastifyCallback = async (req, res) => {
 	return await commitToDb(
 		prisma.subreddit.findUnique({
 			where: { id: req.params.id },
-			select: {
-				id: true,
-				name: true,
-				posts: {
-					orderBy: {
-						createdAt: "desc",
-					},
-					select: {
-						...POST_FIELDS,
-					},
-				},
-			},
+			...SUBREDDIT_SELECT,
 		})
 	).then(async (subreddit) => {
-		if (subreddit == null) {
-			return res.send(app.httpErrors.badRequest("Post does not exist"));
-		}
-
-		// If no cookie early return
-
-		const userId = req.cookies.userId;
-
-		if (userId == null || userId === "") {
-			const posts = subreddit.posts.map((post: Post) => {
-				return { ...post, likedByMe: 0 };
-			});
-
-			return {
-				...subreddit,
-				posts,
-			};
-		}
-
-		const posts = await formatPosts(subreddit.posts, userId);
-
-		return {
-			...subreddit,
-			posts,
-		};
+		return await formatPostContainer(subreddit, req, res);
 	});
 };
 
 // GET - /subreddit/name/:name
-export const getSubredditByName: FastifyCallback = async (req, res) => {
+export const getSubredditByName: SubredditFastifyCallback = async (
+	req,
+	res
+) => {
 	return await commitToDb(
 		prisma.subreddit.findUnique({
 			where: { name: req.params.name },
-			select: {
-				id: true,
-				name: true,
-				posts: {
-					orderBy: {
-						createdAt: "desc",
-					},
-					select: {
-						...POST_FIELDS,
-					},
-				},
-			},
+			...SUBREDDIT_SELECT,
 		})
 	).then(async (subreddit) => {
-		if (subreddit == null) {
-			return res.send(app.httpErrors.badRequest("Post does not exist"));
-		}
-
-		// If no cookie early return
-
-		const userId = req.cookies.userId;
-
-		if (userId == null || userId === "") {
-			const posts = subreddit.posts.map((post: Post) => {
-				return { ...post, likedByMe: 0 };
-			});
-
-			return {
-				...subreddit,
-				posts,
-				likedByMe: 0,
-			};
-		}
-
-		const posts = await formatPosts(subreddit.posts, userId);
-
-		return {
-			...subreddit,
-			posts,
-		};
+		return await formatPostContainer(subreddit, req, res);
 	});
 };
 
 // PUT - /subreddit
-export const createSubreddit: FastifyCallback = async (req, res) => {};
+export const createSubreddit: SubredditFastifyCallback = async (req, res) => {};
 
 // DELETE - /user/{id}
-export const deleteSubreddit: FastifyCallback = async (req, res) => {};
+export const deleteSubreddit: SubredditFastifyCallback = async (req, res) => {};
 
 // POST - /user/{id}
-export const updateSubreddit: FastifyCallback = async (req, res) => {};
+export const updateSubreddit: SubredditFastifyCallback = async (req, res) => {};

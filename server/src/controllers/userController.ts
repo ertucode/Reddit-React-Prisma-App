@@ -1,30 +1,12 @@
-import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { POST_FIELDS } from "./subredditController";
-import { Post } from "@prisma/client";
-import formatPosts from "./utils/formatPosts";
-
-export type MyRequest = FastifyRequest<{
-	Params: {
-		id: string;
-		name: string;
-		tokenId: string | jwt.JwtPayload | undefined;
-	};
-	Body: {
-		name: string;
-		password: string;
-		email: string;
-	};
-}>;
-
-type FastifyCallback = (req: MyRequest, res: FastifyReply) => void;
+import { formatPostContainer } from "./utils/formatPosts";
 
 // PUT -
-export const updateUser: FastifyCallback = async (req, res) => {
+export const updateUser: UserFastifyCallback = async (req, res) => {
 	const userId = req.params.id;
 
 	if (userId !== req.cookies.userId) {
@@ -85,7 +67,7 @@ export const updateUser: FastifyCallback = async (req, res) => {
 		})
 	);
 };
-export const deleteUser: FastifyCallback = async (req, res) => {
+export const deleteUser: UserFastifyCallback = async (req, res) => {
 	const userId = req.params.id;
 
 	if (userId !== req.cookies.userId) {
@@ -104,7 +86,7 @@ export const deleteUser: FastifyCallback = async (req, res) => {
 	);
 };
 
-export const getUserFromCookie: FastifyCallback = async (req, res) => {
+export const getUserFromCookie: UserFastifyCallback = async (req, res) => {
 	const userId = req.cookies.userId;
 
 	if (userId == null) {
@@ -136,7 +118,7 @@ const USER_SELECT = {
 	},
 };
 
-export const getUserById: FastifyCallback = async (req, res) => {
+export const getUserById: UserFastifyCallback = async (req, res) => {
 	const userId = req.cookies.userId;
 
 	// Implement conditional returning of some properties
@@ -151,7 +133,7 @@ export const getUserById: FastifyCallback = async (req, res) => {
 	);
 };
 
-export const getUserPosts: FastifyCallback = async (req, res) => {
+export const getUserPosts: UserFastifyCallback = async (req, res) => {
 	// const userId = req.cookies.userId;
 	// Implement conditional returning of some properties
 
@@ -178,75 +160,6 @@ export const getUserPosts: FastifyCallback = async (req, res) => {
 			...USER_SELECT,
 		})
 	).then(async (user) => {
-		if (user == null) {
-			return res.send(app.httpErrors.badRequest("Post does not exist"));
-		}
-
-		// If no cookie early return
-
-		const userId = req.cookies.userId;
-
-		if (userId == null || userId === "") {
-			const posts = user.posts.map((post: Post) => {
-				return { ...post, likedByMe: 0 };
-			});
-
-			return {
-				...user,
-				posts,
-			};
-		}
-
-		// const likes = await prisma.user.findFirst({
-		// 	where: {
-		// 		id: req.cookies.userId,
-		// 	},
-		// 	select: {
-		// 		likedPosts: {
-		// 			where: {
-		// 				postId: {
-		// 					in: user.posts.map((post: Post) => post.id),
-		// 				},
-		// 			},
-		// 			select: {
-		// 				postId: true,
-		// 			},
-		// 		},
-		// 		dislikedPosts: {
-		// 			where: {
-		// 				postId: {
-		// 					in: user.posts.map((post: Post) => post.id),
-		// 				},
-		// 			},
-		// 			select: {
-		// 				postId: true,
-		// 			},
-		// 		},
-		// 	},
-		// });
-
-		// const posts = user.posts.map((post: Post) => {
-		// 	if (
-		// 		likes?.likedPosts?.find(
-		// 			(likedPost) => likedPost.postId === post.id
-		// 		)
-		// 	) {
-		// 		return { ...post, likedByMe: 1 };
-		// 	} else if (
-		// 		likes?.dislikedPosts?.find(
-		// 			(dislikedPost) => dislikedPost.postId === post.id
-		// 		)
-		// 	) {
-		// 		return { ...post, likedByMe: -1 };
-		// 	}
-		// 	return { ...post, likedByMe: 0 };
-		// });
-
-		const posts = await formatPosts(user.posts, userId);
-
-		return {
-			...user,
-			posts,
-		};
+		return await formatPostContainer(user, req, res);
 	});
 };

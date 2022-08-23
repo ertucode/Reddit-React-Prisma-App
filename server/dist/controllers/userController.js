@@ -17,7 +17,7 @@ const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const subredditController_1 = require("./subredditController");
-const formatPosts_1 = __importDefault(require("./utils/formatPosts"));
+const formatPosts_1 = require("./utils/formatPosts");
 // PUT -
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
@@ -133,62 +133,7 @@ const getUserPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
             name: req.params.name,
         } }, USER_SELECT))).then((user) => __awaiter(void 0, void 0, void 0, function* () {
-        if (user == null) {
-            return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
-        }
-        // If no cookie early return
-        const userId = req.cookies.userId;
-        if (userId == null || userId === "") {
-            const posts = user.posts.map((post) => {
-                return Object.assign(Object.assign({}, post), { likedByMe: 0 });
-            });
-            return Object.assign(Object.assign({}, user), { posts });
-        }
-        // const likes = await prisma.user.findFirst({
-        // 	where: {
-        // 		id: req.cookies.userId,
-        // 	},
-        // 	select: {
-        // 		likedPosts: {
-        // 			where: {
-        // 				postId: {
-        // 					in: user.posts.map((post: Post) => post.id),
-        // 				},
-        // 			},
-        // 			select: {
-        // 				postId: true,
-        // 			},
-        // 		},
-        // 		dislikedPosts: {
-        // 			where: {
-        // 				postId: {
-        // 					in: user.posts.map((post: Post) => post.id),
-        // 				},
-        // 			},
-        // 			select: {
-        // 				postId: true,
-        // 			},
-        // 		},
-        // 	},
-        // });
-        // const posts = user.posts.map((post: Post) => {
-        // 	if (
-        // 		likes?.likedPosts?.find(
-        // 			(likedPost) => likedPost.postId === post.id
-        // 		)
-        // 	) {
-        // 		return { ...post, likedByMe: 1 };
-        // 	} else if (
-        // 		likes?.dislikedPosts?.find(
-        // 			(dislikedPost) => dislikedPost.postId === post.id
-        // 		)
-        // 	) {
-        // 		return { ...post, likedByMe: -1 };
-        // 	}
-        // 	return { ...post, likedByMe: 0 };
-        // });
-        const posts = yield (0, formatPosts_1.default)(user.posts, userId);
-        return Object.assign(Object.assign({}, user), { posts });
+        return yield (0, formatPosts_1.formatPostContainer)(user, req, res);
     }));
 });
 exports.getUserPosts = getUserPosts;

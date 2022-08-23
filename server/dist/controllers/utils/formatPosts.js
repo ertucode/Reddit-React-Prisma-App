@@ -9,7 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.formatPostContainer = void 0;
 const app_1 = require("../../app");
+const checkEarlyReturn_1 = require("./checkEarlyReturn");
 function formatPosts(posts, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const likes = yield app_1.prisma.user.findFirst({
@@ -52,4 +54,17 @@ function formatPosts(posts, userId) {
         return formattedPosts;
     });
 }
-exports.default = formatPosts;
+const formatPostContainer = (container, req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (container == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
+    }
+    // If no cookie early return
+    const userId = req.cookies.userId;
+    const shouldReturn = (0, checkEarlyReturn_1.checkEarlyReturn)(userId);
+    if (shouldReturn) {
+        return (0, checkEarlyReturn_1.earlyReturn)(container);
+    }
+    const posts = yield formatPosts(container.posts, userId);
+    return Object.assign(Object.assign({}, container), { posts });
+});
+exports.formatPostContainer = formatPostContainer;

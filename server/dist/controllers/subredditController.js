@@ -8,14 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditByName = exports.getSubredditById = exports.POST_FIELDS = exports.getAllSubreddits = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
-const formatPosts_1 = __importDefault(require("./utils/formatPosts"));
+const formatPosts_1 = require("./utils/formatPosts");
 // GET - /subreddits
 const getAllSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findMany({
@@ -45,65 +42,29 @@ exports.POST_FIELDS = {
         },
     },
 };
+const SUBREDDIT_SELECT = {
+    select: {
+        id: true,
+        name: true,
+        posts: {
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: Object.assign({}, exports.POST_FIELDS),
+        },
+    },
+};
 // GET - /subreddit/{id}
 const getSubredditById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
-        where: { id: req.params.id },
-        select: {
-            id: true,
-            name: true,
-            posts: {
-                orderBy: {
-                    createdAt: "desc",
-                },
-                select: Object.assign({}, exports.POST_FIELDS),
-            },
-        },
-    })).then((subreddit) => __awaiter(void 0, void 0, void 0, function* () {
-        if (subreddit == null) {
-            return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
-        }
-        // If no cookie early return
-        const userId = req.cookies.userId;
-        if (userId == null || userId === "") {
-            const posts = subreddit.posts.map((post) => {
-                return Object.assign(Object.assign({}, post), { likedByMe: 0 });
-            });
-            return Object.assign(Object.assign({}, subreddit), { posts });
-        }
-        const posts = yield (0, formatPosts_1.default)(subreddit.posts, userId);
-        return Object.assign(Object.assign({}, subreddit), { posts });
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique(Object.assign({ where: { id: req.params.id } }, SUBREDDIT_SELECT))).then((subreddit) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield (0, formatPosts_1.formatPostContainer)(subreddit, req, res);
     }));
 });
 exports.getSubredditById = getSubredditById;
 // GET - /subreddit/name/:name
 const getSubredditByName = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
-        where: { name: req.params.name },
-        select: {
-            id: true,
-            name: true,
-            posts: {
-                orderBy: {
-                    createdAt: "desc",
-                },
-                select: Object.assign({}, exports.POST_FIELDS),
-            },
-        },
-    })).then((subreddit) => __awaiter(void 0, void 0, void 0, function* () {
-        if (subreddit == null) {
-            return res.send(app_1.app.httpErrors.badRequest("Post does not exist"));
-        }
-        // If no cookie early return
-        const userId = req.cookies.userId;
-        if (userId == null || userId === "") {
-            const posts = subreddit.posts.map((post) => {
-                return Object.assign(Object.assign({}, post), { likedByMe: 0 });
-            });
-            return Object.assign(Object.assign({}, subreddit), { posts, likedByMe: 0 });
-        }
-        const posts = yield (0, formatPosts_1.default)(subreddit.posts, userId);
-        return Object.assign(Object.assign({}, subreddit), { posts });
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique(Object.assign({ where: { name: req.params.name } }, SUBREDDIT_SELECT))).then((subreddit) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield (0, formatPosts_1.formatPostContainer)(subreddit, req, res);
     }));
 });
 exports.getSubredditByName = getSubredditByName;

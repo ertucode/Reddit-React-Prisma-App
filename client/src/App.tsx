@@ -3,7 +3,6 @@ import React from "react";
 import "app.scss";
 
 import { SubredditList } from "components/subreddit/SubredditList";
-import { MultiplePostsProvider } from "features/post_list/contexts/MultiplePostsContext";
 import { Routes, Route } from "react-router-dom";
 import { Subreddit } from "components/subreddit/Subreddit";
 import { PostProvider } from "contexts/PostContext";
@@ -13,6 +12,7 @@ import { SignUp } from "components/sign_up/SignUp";
 import { UserContextProvider } from "contexts/UserContext";
 import { Login } from "components/sign_up/Login";
 import { Navbar } from "components/navbar/Navbar";
+import { MainPage } from "components/main_page/MainPage";
 
 function App() {
 	return (
@@ -20,7 +20,7 @@ function App() {
 			<Navbar />
 			<div className="site-body">
 				<Routes>
-					<Route path="/" element={<SubredditList />} />
+					<Route path="/" element={<MainPage />} />
 					<Route path="/r/:subredditName" element={<Subreddit />} />
 					<Route
 						path="/posts/:id"

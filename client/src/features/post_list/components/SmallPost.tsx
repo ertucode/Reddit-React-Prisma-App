@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DownvoteButton, UpvoteButton } from "components/icons/icons";
-import { useMultiplePosts } from "features/post_list/contexts/MultiplePostsContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";

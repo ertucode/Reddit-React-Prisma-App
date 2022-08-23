@@ -2,6 +2,8 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 import { Comment } from "@prisma/client";
+import { POST_FIELDS } from "./subredditController";
+import { formatPostContainer } from "./utils/formatPosts";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -21,12 +23,18 @@ type FastifyCallback = (
 // GET - /posts
 export const getAllPosts: FastifyCallback = async (req, res) => {
 	return await commitToDb(
-		prisma.post.findMany({
-			select: {
-				id: true,
-				title: true,
-			},
-		})
+		prisma.post
+			.findMany({
+				orderBy: {
+					createdAt: "desc",
+				},
+				select: {
+					...POST_FIELDS,
+				},
+			})
+			.then(async (posts) => {
+				return await formatPostContainer({ posts }, req, res);
+			})
 	);
 };
 

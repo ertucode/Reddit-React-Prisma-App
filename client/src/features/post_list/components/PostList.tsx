@@ -1,7 +1,6 @@
 import { SmallPost } from "./SmallPost";
 import React from "react";
 import "./styles.scss";
-import { useMultiplePosts } from "../contexts/MultiplePostsContext";
 
 interface PostListProps {
 	posts: IPost[] | undefined;

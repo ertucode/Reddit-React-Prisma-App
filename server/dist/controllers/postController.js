@@ -12,14 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePost = exports.deletePost = exports.createPost = exports.getPost = exports.getAllPosts = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
+const subredditController_1 = require("./subredditController");
+const formatPosts_1 = require("./utils/formatPosts");
 // GET - /posts
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findMany({
-        select: {
-            id: true,
-            title: true,
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post
+        .findMany({
+        orderBy: {
+            createdAt: "desc",
         },
-    }));
+        select: Object.assign({}, subredditController_1.POST_FIELDS),
+    })
+        .then((posts) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield (0, formatPosts_1.formatPostContainer)({ posts }, req, res);
+    })));
 });
 exports.getAllPosts = getAllPosts;
 const POST_COMMENT_FIELDS = {

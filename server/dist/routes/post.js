@@ -26,8 +26,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRoutes = void 0;
 const postController = __importStar(require("../controllers/postController"));
 const postRoutes = (app, options, done) => {
-    // Can add validator in the middle 
-    app.get("/posts", postController.getAllPosts);
+    // Can add validator in the middle
+    app.get("/all_posts", postController.getAllPosts);
     app.get("/posts/:id", postController.getPost);
     done();
 };

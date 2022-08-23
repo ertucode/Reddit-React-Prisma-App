@@ -2,7 +2,7 @@ import { ToggleOptions } from "./comment";
 import { makeRequest } from "./makeRequest";
 
 export function getPosts() {
-	return makeRequest("/posts");
+	return makeRequest("/all_posts");
 }
 
 export function getPost(id: string) {

@@ -1,5 +1,4 @@
 import { BodyHeader } from "features/body_header/BodyHeader";
-import { PostList } from "features/post_list/components/PostList";
 import React from "react";
 import { PostListWrapper } from "features/post_list/components/PostListWrapper";
 import { getUserPostsFromName } from "services/user";

@@ -1,8 +1,5 @@
-import React, { useContext, useEffect, useReducer } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { getUserPostsFromName } from "services/user";
+import React, { useEffect, useReducer } from "react";
 import { useAsync } from "../../../hooks/useAsync";
-import { getSubredditByName } from "../../../services/subreddit";
 import { PostList } from "./PostList";
 
 interface IMultiplePostsContext {

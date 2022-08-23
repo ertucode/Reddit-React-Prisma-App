@@ -30,7 +30,7 @@ export const Post: React.FC<PostProps> = () => {
 				changeLocalComments({
 					type: "create",
 					payload: {
-						comment: { ...comment, likes: [], dislikes: [] },
+						comment: { ...comment },
 					},
 				});
 			}
@@ -44,41 +44,43 @@ export const Post: React.FC<PostProps> = () => {
 	}
 
 	return post ? (
-		<div className="post-card">
-			<section className="post-card__top-section">
-				<section className="post-card__like-section">
-					<UpvoteButton
-						isActive={post.likedByMe === 1}
-						onClick={() => onTogglePostLikeDislike("Like")}
-					/>
-					<div>{post._count.likes - post._count.dislikes}</div>
-					<DownvoteButton
-						isActive={post.likedByMe === -1}
-						onClick={() => onTogglePostLikeDislike("Dislike")}
-					/>
+		<div className="post-card-container">
+			<div className="post-card">
+				<section className="post-card__top-section">
+					<section className="post-card__like-section">
+						<UpvoteButton
+							isActive={post.likedByMe === 1}
+							onClick={() => onTogglePostLikeDislike("Like")}
+						/>
+						<div>{post._count.likes - post._count.dislikes}</div>
+						<DownvoteButton
+							isActive={post.likedByMe === -1}
+							onClick={() => onTogglePostLikeDislike("Dislike")}
+						/>
+					</section>
+					<section className="post-card__right-section">
+						<header>
+							<SubredditLink subreddit={post.subreddit} />
+							<span className="sm-info">
+								Posted by <UserLink user={post.user} />{" "}
+							</span>
+							<div className="sm-info">{post.createdAt}</div>
+						</header>
+						<main>
+							<h3>{post.title}</h3>
+							<article>{post.body}</article>
+						</main>
+					</section>
 				</section>
-				<section className="post-card__right-section">
-					<header>
-						<SubredditLink subreddit={post.subreddit} />
-						<span className="sm-info">
-							Posted by <UserLink user={post.user} />{" "}
-						</span>
-						<div className="sm-info">{post.createdAt}</div>
-					</header>
-					<main>
-						<h3>{post.title}</h3>
-						<article>{post.body}</article>
-					</main>
+				<CommentForm
+					loading={loading}
+					error={error}
+					onSubmit={onCommentCreate}
+				/>
+				<section className="post-card__comments">
+					<CommentList comments={rootComments} />
 				</section>
-			</section>
-			<CommentForm
-				loading={loading}
-				error={error}
-				onSubmit={onCommentCreate}
-			/>
-			<section className="post-card__comments">
-				<CommentList comments={rootComments} />
-			</section>
+			</div>
 		</div>
 	) : (
 		<div>Loading</div>

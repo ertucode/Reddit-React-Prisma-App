@@ -14,3 +14,15 @@ export function togglePostLikeDislike(postId: string, option: ToggleOptions) {
 		method: "POST",
 	});
 }
+
+export function createPost(
+	subredditId: string,
+	userId: string,
+	title: string,
+	body: string
+) {
+	return makeRequest(`posts/${subredditId}/post/`, {
+		method: "POST",
+		data: { body, title, userId },
+	});
+}

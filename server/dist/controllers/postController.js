@@ -134,7 +134,7 @@ const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.getPost = getPost;
-// PUT - /post
+// POST - /posts/:subredditName/post
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.body.body === "" || req.body.body == null) {
         return res.send(app_1.app.httpErrors.badRequest("Post body is required"));
@@ -142,14 +142,36 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     if (req.body.title === null || req.body.title == "") {
         return res.send(app_1.app.httpErrors.badRequest("Post title is required"));
     }
+    const userId = req.cookies.userId;
+    if (userId == null || userId != req.body.userId) {
+        return res.send(app_1.app.httpErrors.unauthorized("You cannot create a post"));
+    }
+    const [subreddit, user] = yield Promise.all([
+        app_1.prisma.subreddit.findUnique({
+            where: {
+                name: req.params.subredditName,
+            },
+        }),
+        app_1.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        }),
+    ]);
+    if (subreddit == null || user == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Invalid user or subreddit"));
+    }
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.create({
         data: {
             title: req.body.title,
             body: req.body.body,
-            userId: req.cookies.userId,
-            subredditId: req.body.subredditId,
+            userId: user.id,
+            subredditId: subreddit.id,
         },
-    }));
+        select: Object.assign({}, subredditController_1.POST_FIELDS),
+    })).then((post) => {
+        return Object.assign(Object.assign({}, post), { likedByMe: false, _count: { likes: 0, dislikes: 0, comments: 0 } });
+    });
 });
 exports.createPost = createPost;
 // DELETE - /user/{id}

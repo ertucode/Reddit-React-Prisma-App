@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import { useAsync } from "../../../hooks/useAsync";
 import { PostList } from "./PostList";
 
@@ -60,11 +60,17 @@ function postReducer(posts: IPost[], action: PostReducerAction) {
 interface PostListWrapperProps {
 	mini?: boolean;
 	getter: any;
+	children?: React.ReactNode;
+}
+
+export function useMultiplePosts() {
+	return useContext(MultiplePostsContext);
 }
 
 export const PostListWrapper: React.FC<PostListWrapperProps> = ({
 	mini = false,
 	getter,
+	children,
 }) => {
 	const {
 		loading,
@@ -94,6 +100,7 @@ export const PostListWrapper: React.FC<PostListWrapperProps> = ({
 				changeLocalPosts,
 			}}
 		>
+			{children}
 			<PostList
 				posts={posts}
 				mini={mini}

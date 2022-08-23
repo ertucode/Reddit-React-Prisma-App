@@ -10,6 +10,8 @@ const postRoutes: FastifyPluginCallback<postOptions> = (app, options, done) => {
 
 	app.get("/posts/:id", postController.getPost);
 
+	app.post("/posts/:subredditName/post/", postController.createPost);
+
 	done();
 };
 

@@ -9,12 +9,14 @@ type FastifyCallback = (
 	req: FastifyRequest<{
 		Params: {
 			id: string;
+			subredditName: string;
 		};
 		Body: {
 			body: string;
 			parentId: string;
 			title: string;
 			subredditId: string;
+			userId: string;
 		};
 	}>,
 	res: FastifyReply
@@ -175,7 +177,7 @@ export const getPost: FastifyCallback = async (req, res) => {
 	});
 };
 
-// PUT - /post
+// POST - /posts/:subredditName/post
 export const createPost: FastifyCallback = async (req, res) => {
 	if (req.body.body === "" || req.body.body == null) {
 		return res.send(app.httpErrors.badRequest("Post body is required"));
@@ -184,16 +186,50 @@ export const createPost: FastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Post title is required"));
 	}
 
+	const userId = req.cookies.userId;
+
+	if (userId == null || userId != req.body.userId) {
+		return res.send(
+			app.httpErrors.unauthorized("You cannot create a post")
+		);
+	}
+
+	const [subreddit, user] = await Promise.all([
+		prisma.subreddit.findUnique({
+			where: {
+				name: req.params.subredditName,
+			},
+		}),
+		prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		}),
+	]);
+
+	if (subreddit == null || user == null) {
+		return res.send(app.httpErrors.badRequest("Invalid user or subreddit"));
+	}
+
 	return await commitToDb(
 		prisma.post.create({
 			data: {
 				title: req.body.title,
 				body: req.body.body,
-				userId: req.cookies.userId as string,
-				subredditId: req.body.subredditId,
+				userId: user.id,
+				subredditId: subreddit.id,
+			},
+			select: {
+				...POST_FIELDS,
 			},
 		})
-	);
+	).then((post) => {
+		return {
+			...post,
+			likedByMe: false,
+			_count: { likes: 0, dislikes: 0, comments: 0 },
+		};
+	});
 };
 
 // DELETE - /user/{id}

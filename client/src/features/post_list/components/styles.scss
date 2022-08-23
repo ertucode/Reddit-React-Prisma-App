@@ -13,11 +13,12 @@
 	$small-post-bg-color: #1a1a1b;
 	$small-post-transparency-height: 10rem;
 
+	width: min(90ch, calc(100% - 1rem));
+
 	.small-post {
 		margin-bottom: 0.8rem;
-		width: 70%;
-		max-width: 90ch;
 		overflow: hidden;
+		width: 100%;
 
 		color: white;
 		background-color: $small-post-bg-color;

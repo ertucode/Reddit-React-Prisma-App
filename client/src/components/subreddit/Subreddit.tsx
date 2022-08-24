@@ -5,7 +5,7 @@ import { BodyHeader } from "features/body_header/BodyHeader";
 import { PostListWrapper } from "features/post_list/components/PostListWrapper";
 import { getSubredditByName } from "services/subreddit";
 import { useParams } from "react-router-dom";
-import { PostForm } from "./PostForm";
+import { MockForm } from "./MockForm";
 
 interface SubredditProps {}
 
@@ -21,7 +21,7 @@ export const Subreddit: React.FC<SubredditProps> = () => {
 					params: [subredditName],
 				}}
 			>
-				<PostForm />
+				<MockForm />
 			</PostListWrapper>
 		</>
 	);

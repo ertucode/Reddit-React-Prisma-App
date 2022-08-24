@@ -4,8 +4,6 @@ import { DownvoteButton, UpvoteButton } from "components/icons/icons";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";
-import { UserLink } from "components/general/UserLink";
-import { SubredditLink } from "components/general/SubredditLink";
 
 import { ReactComponent as CommentSvg } from "../svg/comment.svg";
 import { PostHeader } from "components/post/PostHeader";

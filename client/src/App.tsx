@@ -13,37 +13,43 @@ import { Login } from "components/sign_up/Login";
 import { Navbar } from "components/navbar/Navbar";
 import { MainPage } from "components/main_page/MainPage";
 import { SearchPage } from "features/search_page/components/SearchPage";
+import { ModalContextProvider } from "features/modal/contexts/ModalContext";
 
 function App() {
 	return (
 		<UserContextProvider>
-			<Navbar />
-			<div className="site-body">
-				<Routes>
-					<Route path="/" element={<MainPage />} />
-					<Route path="/r/:subredditName" element={<Subreddit />} />
-					<Route
-						path="/posts/:id"
-						element={
-							<PostProvider>
-								<Post />
-							</PostProvider>
-						}
-					/>
-					<Route path="/u/:userName" element={<UserPage />} />
-					<Route path="/sign_up" element={<SignUp />} />
-					<Route path="/login" element={<Login />} />
-					<Route
-						path="/search/q=:query/type=:type"
-						element={<SearchPage />}
-					/>
-					<Route
-						path="/search/q=/type=:type"
-						element={<SearchPage />}
-					/>
-					<Route path="*" element={<h1>Invalid URL</h1>} />
-				</Routes>
-			</div>
+			<ModalContextProvider>
+				<Navbar />
+				<div className="site-body">
+					<Routes>
+						<Route path="/" element={<MainPage />} />
+						<Route
+							path="/r/:subredditName"
+							element={<Subreddit />}
+						/>
+						<Route
+							path="/posts/:id"
+							element={
+								<PostProvider>
+									<Post />
+								</PostProvider>
+							}
+						/>
+						<Route path="/u/:userName" element={<UserPage />} />
+						<Route path="/sign_up" element={<SignUp />} />
+						<Route path="/login" element={<Login />} />
+						<Route
+							path="/search/q=:query/type=:type"
+							element={<SearchPage />}
+						/>
+						<Route
+							path="/search/q=/type=:type"
+							element={<SearchPage />}
+						/>
+						<Route path="*" element={<h1>Invalid URL</h1>} />
+					</Routes>
+				</div>
+			</ModalContextProvider>
 		</UserContextProvider>
 	);
 }

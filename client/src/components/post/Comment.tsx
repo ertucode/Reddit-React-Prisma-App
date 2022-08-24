@@ -5,8 +5,6 @@ import {
 	ReplyButton,
 	UpvoteButton,
 } from "components/icons/icons";
-import formatDate from "utils/formatDate";
-import { UserLink } from "components/general/UserLink";
 import { usePost } from "contexts/PostContext";
 import { CommentList } from "./CommentList";
 import { CommentForm } from "./CommentForm";

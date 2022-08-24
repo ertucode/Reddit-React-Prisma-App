@@ -1,19 +1,20 @@
 import { useUser } from "contexts/UserContext";
-import { useMultiplePosts } from "features/post_list/components/PostListWrapper";
 import { useAsyncFn } from "hooks/useAsync";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { createPost } from "services/post";
 
-interface PostFormProps {}
+interface PostFormProps {
+	subredditName: string;
+	changeLocalPosts: (action: any) => void;
+}
 
-export const PostForm: React.FC<PostFormProps> = () => {
-	const { subredditName } = useParams();
-
+export const PostForm: React.FC<PostFormProps> = ({
+	subredditName,
+	changeLocalPosts,
+}) => {
 	const [postBody, setPostBody] = useState("");
 	const [postTitle, setPostTitle] = useState("");
 
-	const { changeLocalPosts } = useMultiplePosts();
 	const { loading, error, execute: createPostFn } = useAsyncFn(createPost);
 
 	const { currentUser } = useUser();
@@ -44,15 +45,13 @@ export const PostForm: React.FC<PostFormProps> = () => {
 	}
 
 	return (
-		<form
-			className="post-card__right-section__new-postBody"
-			onSubmit={handleSubmit}
-		>
-			<div>Create a new postBody</div>
+		<form className="post-form-body" onSubmit={handleSubmit}>
+			<div>Create a new post</div>
 			<input
 				placeholder="Post title"
 				value={postTitle}
 				onChange={(e) => setPostTitle(e.target.value)}
+				autoFocus={true}
 			></input>
 			<textarea
 				placeholder="Post body"

@@ -4,12 +4,10 @@ import { DownvoteButton, UpvoteButton } from "components/icons/icons";
 
 import "./styles.scss";
 import { CommentList } from "./CommentList";
-import { UserLink } from "components/general/UserLink";
 import { CommentForm } from "./CommentForm";
 import { useAsyncFn } from "hooks/useAsync";
 import { createComment, ToggleOptions } from "services/comment";
 import { togglePostLikeDislike } from "services/post";
-import { SubredditLink } from "components/general/SubredditLink";
 import { PostHeader } from "./PostHeader";
 
 interface PostProps {}

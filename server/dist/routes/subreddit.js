@@ -30,6 +30,8 @@ const subredditRoutes = (app, options, done) => {
     app.get("/subreddits", subredditController.getAllSubreddits);
     app.get("/subreddits/:id", subredditController.getSubredditById);
     app.get("/subreddit/:name", subredditController.getSubredditByName);
+    app.put("/subreddit/join/:name", subredditController.joinSubreddit);
+    app.put("/subreddit/leave/:name", subredditController.leaveSubreddit);
     done();
 };
 exports.subredditRoutes = subredditRoutes;

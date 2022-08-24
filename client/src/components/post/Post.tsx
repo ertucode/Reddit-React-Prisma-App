@@ -10,6 +10,7 @@ import { useAsyncFn } from "hooks/useAsync";
 import { createComment, ToggleOptions } from "services/comment";
 import { togglePostLikeDislike } from "services/post";
 import { SubredditLink } from "components/general/SubredditLink";
+import { PostHeader } from "./PostHeader";
 
 interface PostProps {}
 
@@ -59,13 +60,7 @@ export const Post: React.FC<PostProps> = () => {
 						/>
 					</section>
 					<section className="post-card__right-section">
-						<header>
-							<SubredditLink subreddit={post.subreddit} />
-							<span className="sm-info">
-								Posted by <UserLink user={post.user} />{" "}
-							</span>
-							<div className="sm-info">{post.createdAt}</div>
-						</header>
+						<PostHeader post={post} />
 						<main>
 							<h3>{post.title}</h3>
 							<article>{post.body}</article>

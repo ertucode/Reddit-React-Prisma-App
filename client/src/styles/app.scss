@@ -103,3 +103,10 @@ article {
 		background-color: var(--hover-bg-color);
 	}
 }
+
+.has-left-dot {
+	&::before {
+		content: "\00B7";
+		margin-right: 0.3rem;
+	}
+}

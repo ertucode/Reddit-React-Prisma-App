@@ -8,5 +8,14 @@ interface UserLinkProps {
 export const userLink = (user: IUser) => `/u/${user.name}`;
 
 export const UserLink: React.FC<UserLinkProps> = ({ user }) => {
-	return <Link to={userLink(user)}>u/{user.name}</Link>;
+	return (
+		<Link
+			to={userLink(user)}
+			onClick={(e) => {
+				e.stopPropagation();
+			}}
+		>
+			u/{user.name}{" "}
+		</Link>
+	);
 };

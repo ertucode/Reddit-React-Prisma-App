@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditByName = exports.getSubredditById = exports.POST_FIELDS = exports.getAllSubreddits = void 0;
+exports.leaveSubreddit = exports.joinSubreddit = exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditByName = exports.getSubredditById = exports.POST_FIELDS = exports.getAllSubreddits = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const formatPosts_1 = require("./utils/formatPosts");
+const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
 // GET - /subreddits
 const getAllSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findMany({
@@ -77,3 +78,90 @@ exports.deleteSubreddit = deleteSubreddit;
 // POST - /user/{id}
 const updateSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
 exports.updateSubreddit = updateSubreddit;
+const joinSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(app_1.app.httpErrors.unauthorized("You can not join a subreddit since you are not logged in"));
+    }
+    const user = yield app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.internalServerError("I can't write code, you don't exist"));
+    }
+    const subO = yield app_1.prisma.subreddit.findFirst({
+        where: {
+            name: req.params.name,
+        },
+        select: {
+            subscribedUsers: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+    const toSet = subO ? [...subO.subscribedUsers, user] : [user];
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.update({
+        where: {
+            name: req.params.name,
+        },
+        data: {
+            subscribedUsers: {
+                set: toSet,
+            },
+        },
+        select: {
+            name: true,
+        },
+    }));
+});
+exports.joinSubreddit = joinSubreddit;
+const leaveSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(app_1.app.httpErrors.unauthorized("You can not join a subreddit since you are not logged in"));
+    }
+    const user = yield app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.internalServerError("I can't write code, you don't exist"));
+    }
+    const subO = yield app_1.prisma.subreddit.findFirst({
+        where: {
+            name: req.params.name,
+        },
+        select: {
+            subscribedUsers: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.update({
+        where: {
+            name: req.params.name,
+        },
+        data: {
+            subscribedUsers: {
+                set: (subO === null || subO === void 0 ? void 0 : subO.subscribedUsers.filter((subscribedUser) => subscribedUser.id !== user.id)) || [],
+            },
+        },
+        select: {
+            name: true,
+        },
+    }));
+});
+exports.leaveSubreddit = leaveSubreddit;

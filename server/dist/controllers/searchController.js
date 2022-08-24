@@ -14,6 +14,7 @@ const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const formatPosts_1 = require("./utils/formatPosts");
 const subredditController_1 = require("./subredditController");
+const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
 const searchEverything = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     const query = req.params.query;
@@ -93,14 +94,120 @@ const searchPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.searchPosts = searchPosts;
 const searchComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    `search/comments/{query}/{count}`;
+    const query = req.params.query;
+    let count = parseInt(req.params.count);
+    if (count == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Invalid count"));
+    }
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.comment.findMany({
+        where: {
+            body: { contains: query, mode: "insensitive" },
+        },
+        select: {
+            id: true,
+            body: true,
+            _count: { select: { likes: true, dislikes: true } },
+            createdAt: true,
+            post: {
+                select: {
+                    id: true,
+                    title: true,
+                    createdAt: true,
+                    subreddit: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    user: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            likes: true,
+                            dislikes: true,
+                            comments: true,
+                        },
+                    },
+                },
+            },
+            user: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+        take: count,
+    }));
 });
 exports.searchComments = searchComments;
 const searchUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     `search/users/{query}/{count}`;
 });
 exports.searchUsers = searchUsers;
+const SUBREDDIT_SELECT = {
+    id: true,
+    name: true,
+    description: true,
+    _count: { select: { subscribedUsers: true } },
+};
 const searchSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    `search/subreddits/{query}/{count}`;
+    var _d;
+    const query = req.params.query;
+    let count = parseInt(req.params.count);
+    if (count == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Invalid count"));
+    }
+    const userId = req.cookies.userId;
+    const subreddits = (yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findMany({
+        where: {
+            name: { contains: query, mode: "insensitive" },
+        },
+        select: Object.assign({}, SUBREDDIT_SELECT),
+        take: count,
+    }))) || [];
+    if (!(count <= subreddits.length)) {
+        const subredditIds = subreddits.map((sub) => sub.id);
+        subreddits.push(...((yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findMany({
+            where: {
+                description: { contains: query, mode: "insensitive" },
+                NOT: {
+                    id: {
+                        in: subredditIds,
+                    },
+                },
+            },
+            select: Object.assign({}, SUBREDDIT_SELECT),
+            take: count - subreddits.length,
+        }))) || []));
+    }
+    if (!(0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        const user = yield app_1.prisma.user.findFirst({
+            where: {
+                id: userId,
+            },
+            select: {
+                subbedTo: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+        const joinedSubredditIds = (_d = user === null || user === void 0 ? void 0 : user.subbedTo) === null || _d === void 0 ? void 0 : _d.map((sub) => sub.id);
+        subreddits.map((sub) => {
+            sub.subscribedByMe = joinedSubredditIds === null || joinedSubredditIds === void 0 ? void 0 : joinedSubredditIds.includes(sub.id);
+            return sub;
+        });
+    }
+    else {
+        subreddits.map((sub) => {
+            sub.subscribedByMe = false;
+            return sub;
+        });
+    }
+    return subreddits;
 });
 exports.searchSubreddits = searchSubreddits;

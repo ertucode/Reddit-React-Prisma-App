@@ -33,15 +33,20 @@ model User {
   name          String        @unique
   password      String        @unique
   email         String        @unique
+
   comments      Comment[]
   likedComments CommentLike[]
   likedPosts    PostLike[]
 
-  subbedTo         Subreddit[]      @relation("Subscription")
-  adminTo          Subreddit[]      @relation("Admin")
   posts            Post[]
   dislikedComments CommentDislike[]
   dislikedPosts    PostDislike[]
+
+  subbedTo         Subreddit[]      @relation("Subscription")
+  adminTo          Subreddit[]      @relation("Admin")
+
+  followedUsers User[] @relation("Follow")
+  followedBy User[] @relation("Follow")
 }
 
 model Comment {
@@ -99,6 +104,7 @@ model PostDislike {
 model Subreddit {
   id     String @id @default(uuid())
   name   String @unique
+  description String @default("")
   admins User[] @relation("Admin")
   posts  Post[]
 

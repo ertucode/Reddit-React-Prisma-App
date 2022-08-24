@@ -1,9 +1,12 @@
 declare interface ISubreddit {
 	id: string;
 	name: string;
-	admins: [];
+	admins: IUser[];
 	posts: IPost[];
 	subscribedUsers: IUser[];
+	description: string;
+	_count: { subscribedUsers: number };
+	subscribedByMe: boolean;
 }
 
 declare interface IUser {

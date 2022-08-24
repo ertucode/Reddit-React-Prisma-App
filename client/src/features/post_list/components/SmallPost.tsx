@@ -8,6 +8,7 @@ import { UserLink } from "components/general/UserLink";
 import { SubredditLink } from "components/general/SubredditLink";
 
 import { ReactComponent as CommentSvg } from "../svg/comment.svg";
+import { PostHeader } from "components/post/PostHeader";
 
 interface SmallPostProps {
 	post: IPost;
@@ -50,13 +51,7 @@ export const SmallPost: React.FC<SmallPostProps> = ({
 				/>
 			</section>
 			<section className={`${mini ? "mini-post-right" : ""}`}>
-				<header>
-					<SubredditLink subreddit={post.subreddit} />
-					<span className="sm-info">
-						Posted by <UserLink user={post.user} />
-					</span>
-					<div className="sm-info">{post.createdAt}</div>
-				</header>
+				<PostHeader post={post} />
 				<main>
 					<Link to={`/posts/${post.id}`}>
 						<h3>{post.title}</h3>

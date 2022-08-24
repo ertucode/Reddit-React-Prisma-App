@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 // npx prisma migrate dev
 // npx prisma db seed
 
+// npx prisma studio
+
 async function seed() {
 	await prisma.post.deleteMany();
 	await prisma.user.deleteMany();

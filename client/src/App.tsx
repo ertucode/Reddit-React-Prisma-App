@@ -37,6 +37,10 @@ function App() {
 						path="/search/q=:query/type=:type"
 						element={<SearchPage />}
 					/>
+					<Route
+						path="/search/q=/type=:type"
+						element={<SearchPage />}
+					/>
 					<Route path="*" element={<h1>Invalid URL</h1>} />
 				</Routes>
 			</div>

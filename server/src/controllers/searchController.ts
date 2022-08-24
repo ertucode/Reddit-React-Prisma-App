@@ -1,8 +1,9 @@
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 import { formatPostContainer } from "./utils/formatPosts";
-import { Post, Prisma } from "@prisma/client";
+import { Post, Prisma, Subreddit } from "@prisma/client";
 import { POST_FIELDS } from "./subredditController";
+import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 
 type MockModel = {
 	name: string;
@@ -129,13 +130,142 @@ export const searchPosts: SearchCallback = async (req, res) => {
 };
 
 export const searchComments: SearchCallback = async (req, res) => {
-	`search/comments/{query}/{count}`;
+	const query = req.params.query;
+	let count = parseInt(req.params.count);
+
+	if (count == null) {
+		return res.send(app.httpErrors.badRequest("Invalid count"));
+	}
+
+	return await commitToDb(
+		prisma.comment.findMany({
+			where: {
+				body: { contains: query, mode: "insensitive" },
+			},
+			select: {
+				id: true,
+				body: true,
+				_count: { select: { likes: true, dislikes: true } },
+				createdAt: true,
+				post: {
+					select: {
+						id: true,
+						title: true,
+						createdAt: true,
+						subreddit: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+						user: {
+							select: {
+								name: true,
+							},
+						},
+						_count: {
+							select: {
+								likes: true,
+								dislikes: true,
+								comments: true,
+							},
+						},
+					},
+				},
+				user: {
+					select: {
+						name: true,
+					},
+				},
+			},
+			take: count,
+		})
+	);
 };
 
 export const searchUsers: SearchCallback = async (req, res) => {
 	`search/users/{query}/{count}`;
 };
 
+const SUBREDDIT_SELECT = {
+	id: true,
+	name: true,
+	description: true,
+	_count: { select: { subscribedUsers: true } },
+};
+
 export const searchSubreddits: SearchCallback = async (req, res) => {
-	`search/subreddits/{query}/{count}`;
+	const query = req.params.query;
+	let count = parseInt(req.params.count);
+
+	if (count == null) {
+		return res.send(app.httpErrors.badRequest("Invalid count"));
+	}
+
+	const userId = req.cookies.userId;
+
+	const subreddits: Subreddit[] =
+		(await commitToDb(
+			prisma.subreddit.findMany({
+				where: {
+					name: { contains: query, mode: "insensitive" },
+				},
+				select: {
+					...SUBREDDIT_SELECT,
+				},
+				take: count,
+			})
+		)) || [];
+
+	if (!(count <= subreddits.length)) {
+		const subredditIds = subreddits.map((sub: Subreddit) => sub.id);
+
+		subreddits.push(
+			...((await commitToDb(
+				prisma.subreddit.findMany({
+					where: {
+						description: { contains: query, mode: "insensitive" },
+						NOT: {
+							id: {
+								in: subredditIds,
+							},
+						},
+					},
+					select: {
+						...SUBREDDIT_SELECT,
+					},
+					take: count - subreddits.length,
+				})
+			)) || [])
+		);
+	}
+
+	if (!checkEarlyReturn(userId)) {
+		const user = await prisma.user.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				subbedTo: {
+					select: {
+						id: true,
+					},
+				},
+			},
+		});
+
+		const joinedSubredditIds = user?.subbedTo?.map((sub) => sub.id);
+
+		subreddits.map((sub: any) => {
+			sub.subscribedByMe = joinedSubredditIds?.includes(sub.id);
+			return sub;
+		});
+	} else {
+		subreddits.map((sub: any) => {
+			sub.subscribedByMe = false;
+			return sub;
+		});
+	}
+
+	return subreddits;
 };

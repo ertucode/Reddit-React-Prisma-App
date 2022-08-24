@@ -19,6 +19,7 @@ import {
 } from "services/comment";
 import { useUser } from "contexts/UserContext";
 import { useAsyncFn } from "hooks/useAsync";
+import { CommentHeader } from "./CommentHeader";
 
 interface CommentProps {
 	comment: IComment;
@@ -109,12 +110,7 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 					className="expand-btn"
 				/>
 			)}
-			<header>
-				<span>
-					<UserLink user={comment.user} />
-				</span>
-				<span className="sm-info">{formatDate(comment.createdAt)}</span>
-			</header>
+			<CommentHeader comment={comment} />
 			<div className={`nested-comments-stack`}>
 				<button
 					onClick={() => setCollapsed(true)}

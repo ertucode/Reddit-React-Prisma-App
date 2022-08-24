@@ -37,32 +37,6 @@
 	}
 
 	.post-card__right-section {
-		> header {
-			a {
-				text-decoration: none;
-				color: white;
-			}
-
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
-
-			> * {
-				margin-right: 0.5rem;
-			}
-			> span {
-				flex-grow: 1;
-
-				&::before {
-					content: "\00B7";
-					margin-right: 0.3rem;
-				}
-			}
-			div {
-				margin-left: auto;
-			}
-		}
-
 		main {
 			> a {
 				text-decoration: none;
@@ -101,19 +75,6 @@
 
 			.expand-btn {
 				margin-right: 0.5rem;
-			}
-
-			header {
-				display: flex;
-				flex: 1;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 0.7rem;
-
-				a {
-					font-size: 0.7rem;
-					color: rgba(138, 247, 140, 0.997);
-				}
 			}
 
 			&__body {
@@ -179,5 +140,39 @@
 		width: 1px;
 		background-color: rgba(154, 118, 118, 0.5);
 		transition: background-color 100ms ease-in-out;
+	}
+}
+
+.post-header {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+
+	> * {
+		margin-right: 0.5rem;
+	}
+	> span {
+		flex-grow: 1;
+
+		&::before {
+			content: "\00B7";
+			margin-right: 0.3rem;
+		}
+	}
+	div {
+		margin-left: auto;
+	}
+}
+
+.comment-header {
+	display: flex;
+	flex: 1;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.7rem;
+
+	a {
+		font-size: 0.7rem;
+		color: rgba(138, 247, 140, 0.997);
 	}
 }

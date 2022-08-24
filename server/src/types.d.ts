@@ -43,3 +43,13 @@ type UserResponse = Parameters<UserFastifyCallback>[1];
 
 type ContainerRequest = UserRequest & SubredditRequest;
 type ContainerResponse = UserResponse & SubredditResponse;
+
+type SearchCallback = (
+	req: FastifyRequest<{
+		Params: {
+			query: string;
+			count: number;
+		};
+	}>,
+	res: FastifyReply
+) => void;

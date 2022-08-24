@@ -1,0 +1,26 @@
+@mixin active-button() {
+	background-color: var(--btn-bg-color);
+	padding: 0.4rem 1.1rem;
+	color: var(--btn-color);
+	font-weight: 700;
+	font-size: 0.8em;
+	border-radius: 100vmax;
+
+	&:hover {
+		background-color: var(--btn-hover-color);
+	}
+}
+
+@mixin inactive-button() {
+	background-color: transparent;
+	padding: 0.4rem 1.1rem;
+	color: var(--btn-bg-color);
+	border: 1px solid var(--btn-bg-color);
+	font-weight: 700;
+	font-size: 0.8em;
+	border-radius: 100vmax;
+
+	&:hover {
+		background-color: var(--hover-bg-color);
+	}
+}

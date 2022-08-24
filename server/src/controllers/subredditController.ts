@@ -1,9 +1,6 @@
-import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
-import { Post, Subreddit } from "@prisma/client";
 import { formatPostContainer } from "./utils/formatPosts";
-import { checkEarlyReturn, earlyReturn } from "./utils/checkEarlyReturn";
 
 // GET - /subreddits
 export const getAllSubreddits: SubredditFastifyCallback = async (req, res) => {

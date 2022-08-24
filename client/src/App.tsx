@@ -12,6 +12,7 @@ import { UserContextProvider } from "contexts/UserContext";
 import { Login } from "components/sign_up/Login";
 import { Navbar } from "components/navbar/Navbar";
 import { MainPage } from "components/main_page/MainPage";
+import { SearchPage } from "features/search_page/components/SearchPage";
 
 function App() {
 	return (
@@ -32,6 +33,11 @@ function App() {
 					<Route path="/u/:userName" element={<UserPage />} />
 					<Route path="/sign_up" element={<SignUp />} />
 					<Route path="/login" element={<Login />} />
+					<Route
+						path="/search/q=:query/type=:type"
+						element={<SearchPage />}
+					/>
+					<Route path="*" element={<h1>Invalid URL</h1>} />
 				</Routes>
 			</div>
 		</UserContextProvider>

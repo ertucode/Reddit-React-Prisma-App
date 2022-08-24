@@ -104,6 +104,9 @@ const USER_SELECT = {
         id: true,
         name: true,
         posts: {
+            orderBy: {
+                createdAt: "desc",
+            },
             select: Object.assign({}, subredditController_1.POST_FIELDS),
         },
     },

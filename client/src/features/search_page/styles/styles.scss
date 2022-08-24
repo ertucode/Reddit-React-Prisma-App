@@ -1,0 +1,19 @@
+@use "styles/buttons";
+
+.search-page-navigation {
+	display: flex;
+	column-gap: 1rem;
+
+	li {
+		list-style: none;
+
+		a {
+			text-decoration: none;
+			@include buttons.inactive-button;
+
+			&.active {
+				@include buttons.active-button;
+			}
+		}
+	}
+}

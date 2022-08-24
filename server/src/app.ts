@@ -10,6 +10,7 @@ import { commentRoutes } from "./routes/comment";
 import { likeRoutes } from "./routes/like";
 import { authRoutes } from "./routes/auth";
 import { userRoutes } from "./routes/user";
+import { searchRoutes } from "./routes/search";
 
 import cors from "@fastify/cors";
 
@@ -70,6 +71,7 @@ app.register(postRoutes);
 app.register(subredditRoutes);
 app.register(commentRoutes);
 app.register(likeRoutes);
+app.register(searchRoutes);
 
 export { app };
 export { prisma };

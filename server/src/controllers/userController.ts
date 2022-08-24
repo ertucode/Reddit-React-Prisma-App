@@ -111,6 +111,9 @@ const USER_SELECT = {
 		id: true,
 		name: true,
 		posts: {
+			orderBy: {
+				createdAt: "desc" as const,
+			},
 			select: {
 				...POST_FIELDS,
 			},

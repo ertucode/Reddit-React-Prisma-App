@@ -22,6 +22,13 @@ declare interface IUser {
 	posts: IPost[];
 	dislikedComments: IComment[];
 	dislikedPosts: IPost[];
+	followedByMe: boolean;
+	_count: {
+		likedComments: number;
+		dislikedComments: number;
+		likedPosts: number;
+		dislikedPosts: number;
+	};
 }
 
 declare interface IPost {

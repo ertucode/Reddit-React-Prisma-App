@@ -96,7 +96,7 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 					<div className="searched-subreddit__right-side">
 						{subreddit.subscribedByMe ? (
 							<button
-								className="generic-btn"
+								className="generic-btn-dark"
 								onClick={() => onLeaveClicked(subreddit.name)}
 							>
 								Leave

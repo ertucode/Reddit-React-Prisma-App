@@ -125,7 +125,7 @@ exports.joinSubreddit = joinSubreddit;
 const leaveSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.cookies.userId;
     if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
-        return res.send(app_1.app.httpErrors.unauthorized("You can not join a subreddit since you are not logged in"));
+        return res.send(app_1.app.httpErrors.unauthorized("You can not leave a subreddit since you are not logged in"));
     }
     const user = yield app_1.prisma.user.findFirst({
         where: {

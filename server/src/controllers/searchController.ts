@@ -183,8 +183,70 @@ export const searchComments: SearchCallback = async (req, res) => {
 	);
 };
 
+const USER_SELECT = {
+	id: true,
+	name: true,
+	_count: {
+		select: {
+			likedPosts: true,
+			likedComments: true,
+			dislikedPosts: true,
+			dislikedComments: true,
+		},
+	},
+};
+
 export const searchUsers: SearchCallback = async (req, res) => {
-	`search/users/{query}/{count}`;
+	const query = req.params.query;
+	let count = parseInt(req.params.count);
+
+	if (count == null) {
+		return res.send(app.httpErrors.badRequest("Invalid count"));
+	}
+
+	const userId = req.cookies.userId;
+
+	const users: Subreddit[] =
+		(await commitToDb(
+			prisma.user.findMany({
+				where: {
+					name: { contains: query, mode: "insensitive" },
+				},
+				select: {
+					...USER_SELECT,
+				},
+				take: count,
+			})
+		)) || [];
+
+	if (!checkEarlyReturn(userId)) {
+		const user = await prisma.user.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				followedUsers: {
+					select: {
+						id: true,
+					},
+				},
+			},
+		});
+
+		const followedUserIds = user?.followedUsers?.map((_user) => _user.id);
+
+		users.map((_user: any) => {
+			_user.followedByMe = followedUserIds?.includes(_user.id);
+			return _user;
+		});
+	} else {
+		users.map((_user: any) => {
+			_user.followedByMe = false;
+			return _user;
+		});
+	}
+
+	return users;
 };
 
 const SUBREDDIT_SELECT = {

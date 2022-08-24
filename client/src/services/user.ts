@@ -27,3 +27,15 @@ export function getUserFromCookie() {
 export function getUserPostsFromName(name: string) {
 	return makeRequest(`/users/posts/${name}`);
 }
+
+export function followUser(name: string) {
+	return makeRequest(`/user/follow/${name}`, {
+		method: "PUT",
+	});
+}
+
+export function unfollowUser(name: string) {
+	return makeRequest(`/user/unfollow/${name}`, {
+		method: "PUT",
+	});
+}

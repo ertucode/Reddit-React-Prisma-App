@@ -143,8 +143,59 @@ const searchComments = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }));
 });
 exports.searchComments = searchComments;
+const USER_SELECT = {
+    id: true,
+    name: true,
+    _count: {
+        select: {
+            likedPosts: true,
+            likedComments: true,
+            dislikedPosts: true,
+            dislikedComments: true,
+        },
+    },
+};
 const searchUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    `search/users/{query}/{count}`;
+    var _d;
+    const query = req.params.query;
+    let count = parseInt(req.params.count);
+    if (count == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Invalid count"));
+    }
+    const userId = req.cookies.userId;
+    const users = (yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findMany({
+        where: {
+            name: { contains: query, mode: "insensitive" },
+        },
+        select: Object.assign({}, USER_SELECT),
+        take: count,
+    }))) || [];
+    if (!(0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        const user = yield app_1.prisma.user.findFirst({
+            where: {
+                id: userId,
+            },
+            select: {
+                followedUsers: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+        const followedUserIds = (_d = user === null || user === void 0 ? void 0 : user.followedUsers) === null || _d === void 0 ? void 0 : _d.map((_user) => _user.id);
+        users.map((_user) => {
+            _user.followedByMe = followedUserIds === null || followedUserIds === void 0 ? void 0 : followedUserIds.includes(_user.id);
+            return _user;
+        });
+    }
+    else {
+        users.map((_user) => {
+            _user.followedByMe = false;
+            return _user;
+        });
+    }
+    return users;
 });
 exports.searchUsers = searchUsers;
 const SUBREDDIT_SELECT = {
@@ -154,7 +205,7 @@ const SUBREDDIT_SELECT = {
     _count: { select: { subscribedUsers: true } },
 };
 const searchSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d;
+    var _e;
     const query = req.params.query;
     let count = parseInt(req.params.count);
     if (count == null) {
@@ -196,7 +247,7 @@ const searchSubreddits = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 },
             },
         });
-        const joinedSubredditIds = (_d = user === null || user === void 0 ? void 0 : user.subbedTo) === null || _d === void 0 ? void 0 : _d.map((sub) => sub.id);
+        const joinedSubredditIds = (_e = user === null || user === void 0 ? void 0 : user.subbedTo) === null || _e === void 0 ? void 0 : _e.map((sub) => sub.id);
         subreddits.map((sub) => {
             sub.subscribedByMe = joinedSubredditIds === null || joinedSubredditIds === void 0 ? void 0 : joinedSubredditIds.includes(sub.id);
             return sub;

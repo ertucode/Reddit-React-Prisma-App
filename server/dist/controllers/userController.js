@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
+exports.unfollowUser = exports.followUser = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const subredditController_1 = require("./subredditController");
 const formatPosts_1 = require("./utils/formatPosts");
+const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
 // PUT -
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
@@ -140,3 +141,90 @@ const getUserPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }));
 });
 exports.getUserPosts = getUserPosts;
+const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(app_1.app.httpErrors.unauthorized("You can not follow a user since you are not logged in"));
+    }
+    const user = yield app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.internalServerError("I can't write code, you don't exist"));
+    }
+    const userO = yield app_1.prisma.user.findFirst({
+        where: {
+            name: req.params.name,
+        },
+        select: {
+            followedBy: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+    const toSet = userO ? [...userO.followedBy, user] : [user];
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.update({
+        where: {
+            name: req.params.name,
+        },
+        data: {
+            followedBy: {
+                set: toSet,
+            },
+        },
+        select: {
+            name: true,
+        },
+    }));
+});
+exports.followUser = followUser;
+const unfollowUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(app_1.app.httpErrors.unauthorized("You can not unfollow a user since you are not logged in"));
+    }
+    const user = yield app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.internalServerError("I can't write code, you don't exist"));
+    }
+    const userO = yield app_1.prisma.user.findFirst({
+        where: {
+            name: req.params.name,
+        },
+        select: {
+            followedBy: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.update({
+        where: {
+            name: req.params.name,
+        },
+        data: {
+            followedBy: {
+                set: (userO === null || userO === void 0 ? void 0 : userO.followedBy.filter((follower) => follower.id !== user.id)) || [],
+            },
+        },
+        select: {
+            name: true,
+        },
+    }));
+});
+exports.unfollowUser = unfollowUser;

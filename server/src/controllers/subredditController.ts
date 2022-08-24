@@ -152,7 +152,7 @@ export const leaveSubreddit: SubredditFastifyCallback = async (req, res) => {
 	if (checkEarlyReturn(userId)) {
 		return res.send(
 			app.httpErrors.unauthorized(
-				"You can not join a subreddit since you are not logged in"
+				"You can not leave a subreddit since you are not logged in"
 			)
 		);
 	}

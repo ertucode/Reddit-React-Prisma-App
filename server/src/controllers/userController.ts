@@ -4,6 +4,7 @@ import { app, prisma } from "../app";
 import bcrypt from "bcrypt";
 import { POST_FIELDS } from "./subredditController";
 import { formatPostContainer } from "./utils/formatPosts";
+import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 
 // PUT -
 export const updateUser: UserFastifyCallback = async (req, res) => {
@@ -165,4 +166,125 @@ export const getUserPosts: UserFastifyCallback = async (req, res) => {
 	).then(async (user) => {
 		return await formatPostContainer(user, req, res);
 	});
+};
+
+export const followUser: UserFastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (checkEarlyReturn(userId)) {
+		return res.send(
+			app.httpErrors.unauthorized(
+				"You can not follow a user since you are not logged in"
+			)
+		);
+	}
+
+	const user = await prisma.user.findFirst({
+		where: {
+			id: userId,
+		},
+		select: {
+			id: true,
+		},
+	});
+
+	if (user == null) {
+		return res.send(
+			app.httpErrors.internalServerError(
+				"I can't write code, you don't exist"
+			)
+		);
+	}
+
+	const userO = await prisma.user.findFirst({
+		where: {
+			name: req.params.name,
+		},
+		select: {
+			followedBy: {
+				select: {
+					id: true,
+				},
+			},
+		},
+	});
+
+	const toSet = userO ? [...userO.followedBy, user] : [user];
+
+	return await commitToDb(
+		prisma.user.update({
+			where: {
+				name: req.params.name,
+			},
+			data: {
+				followedBy: {
+					set: toSet,
+				},
+			},
+			select: {
+				name: true,
+			},
+		})
+	);
+};
+
+export const unfollowUser: UserFastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (checkEarlyReturn(userId)) {
+		return res.send(
+			app.httpErrors.unauthorized(
+				"You can not unfollow a user since you are not logged in"
+			)
+		);
+	}
+
+	const user = await prisma.user.findFirst({
+		where: {
+			id: userId,
+		},
+		select: {
+			id: true,
+		},
+	});
+
+	if (user == null) {
+		return res.send(
+			app.httpErrors.internalServerError(
+				"I can't write code, you don't exist"
+			)
+		);
+	}
+
+	const userO = await prisma.user.findFirst({
+		where: {
+			name: req.params.name,
+		},
+		select: {
+			followedBy: {
+				select: {
+					id: true,
+				},
+			},
+		},
+	});
+
+	return await commitToDb(
+		prisma.user.update({
+			where: {
+				name: req.params.name,
+			},
+			data: {
+				followedBy: {
+					set:
+						userO?.followedBy.filter(
+							(follower) => follower.id !== user.id
+						) || [],
+				},
+			},
+			select: {
+				name: true,
+			},
+		})
+	);
 };

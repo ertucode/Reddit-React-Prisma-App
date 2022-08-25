@@ -31,14 +31,6 @@ dotenv.config();
 const app = fastify();
 const prisma = new PrismaClient();
 
-let USER_ID: string = "";
-async function getUserId() {
-	USER_ID =
-		(await prisma.user.findFirst({ where: { name: "Kyle" } }))?.id ||
-		"no id";
-}
-getUserId();
-
 app.register(cookie, { secret: process.env.COOKIE_SECRET });
 // DON'T PUT ASYNC
 // app.addHook("onRequest", (req, res, done) => {

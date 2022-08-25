@@ -30,7 +30,7 @@ export const SearchPage: React.FC<SearchPageProps> = () => {
 
 	return (
 		<>
-			<ul className="search-page-navigation">
+			<ul className="page-navigation">
 				<li>
 					<NavLink
 						to={`/search/q=${query}/type=post`}

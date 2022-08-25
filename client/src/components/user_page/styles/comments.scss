@@ -1,0 +1,44 @@
+.user-page-comment {
+	&__post {
+		width: 100%;
+		background-color: var(--card-bg-color);
+		margin-bottom: 0.5rem;
+		border: 1px solid var(--border-color);
+		padding: 1rem;
+		cursor: pointer;
+
+		> header {
+			display: flex;
+			column-gap: 0.5rem;
+			align-items: center;
+
+			svg {
+				width: 3ex;
+			}
+
+			.sub-name {
+				margin-right: 0.5rem;
+			}
+		}
+	}
+
+	&__body {
+		display: flex;
+
+		&-comment {
+			margin-block: 0.4rem;
+
+			header {
+				display: flex;
+				align-items: center;
+				column-gap: 0.5rem;
+			}
+
+			main {
+				margin-left: 1rem;
+				margin-top: 0.3rem;
+				font-size: 0.9rem;
+			}
+		}
+	}
+}

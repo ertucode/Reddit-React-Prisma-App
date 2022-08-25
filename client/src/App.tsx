@@ -6,7 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import { Subreddit } from "components/subreddit/Subreddit";
 import { PostProvider } from "contexts/PostContext";
 import { Post } from "components/post/Post";
-import { UserPage } from "components/user_page/UserPage";
+import { UserPage } from "components/user_page/components/UserPage";
 import { SignUp } from "components/sign_up/SignUp";
 import { UserContextProvider } from "contexts/UserContext";
 import { Login } from "components/sign_up/Login";
@@ -36,6 +36,10 @@ function App() {
 							}
 						/>
 						<Route path="/u/:userName" element={<UserPage />} />
+						<Route
+							path="/u/:userName/:type"
+							element={<UserPage />}
+						/>
 						<Route path="/sign_up" element={<SignUp />} />
 						<Route path="/login" element={<Login />} />
 						<Route

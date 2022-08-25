@@ -28,6 +28,10 @@ export function getUserPostsFromName(name: string) {
 	return makeRequest(`/users/posts/${name}`);
 }
 
+export function getUserCommentsFromName(name: string, count: number) {
+	return makeRequest(`/users/comments/${name}`);
+}
+
 export function followUser(name: string) {
 	return makeRequest(`/user/follow/${name}`, {
 		method: "PUT",

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unfollowUser = exports.followUser = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
+exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -132,7 +132,7 @@ const getUserPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         },
     }));
     if (user == null) {
-        res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
+        return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
     }
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
             name: req.params.name,
@@ -141,6 +141,48 @@ const getUserPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }));
 });
 exports.getUserPosts = getUserPosts;
+const USER_COMMENT_SELECT = {
+    select: {
+        id: true,
+        name: true,
+        comments: {
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                id: true,
+                body: true,
+                post: {
+                    select: {
+                        id: true,
+                        title: true,
+                        subreddit: { select: { name: true } },
+                        user: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
+                _count: { select: { likes: true, dislikes: true } },
+                createdAt: true,
+                parentId: true,
+            },
+        },
+    },
+};
+const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // const userId = req.cookies.userId;
+    // Implement conditional returning of some properties
+    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
+            name: req.params.name,
+        } }, USER_COMMENT_SELECT)));
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
+    }
+    return user;
+});
+exports.getUserComments = getUserComments;
 const followUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.cookies.userId;
     if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {

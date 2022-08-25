@@ -35,5 +35,3 @@ export const Modal: React.FC<ModalProps> = ({
 		  )
 		: null;
 };
-
-// Put an element with portal to the page ?

@@ -32,16 +32,6 @@ const app = (0, fastify_1.default)();
 exports.app = app;
 const prisma = new client_1.PrismaClient();
 exports.prisma = prisma;
-let USER_ID = "";
-function getUserId() {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        USER_ID =
-            ((_a = (yield prisma.user.findFirst({ where: { name: "Kyle" } }))) === null || _a === void 0 ? void 0 : _a.id) ||
-                "no id";
-    });
-}
-getUserId();
 app.register(cookie_1.default, { secret: process.env.COOKIE_SECRET });
 // DON'T PUT ASYNC
 // app.addHook("onRequest", (req, res, done) => {

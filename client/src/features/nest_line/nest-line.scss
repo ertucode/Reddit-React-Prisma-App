@@ -1,0 +1,20 @@
+.nest-line {
+	border: none;
+	background: none;
+	padding: 0;
+	min-width: 15px;
+	margin-top: 0.5rem;
+	position: relative;
+	outline: none;
+	transform: translateX(-50%);
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 1px;
+		border-left: 3px dashed var(--hover-bg-color);
+	}
+}

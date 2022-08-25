@@ -153,7 +153,7 @@ export const getUserPosts: UserFastifyCallback = async (req, res) => {
 	);
 
 	if (user == null) {
-		res.send(app.httpErrors.badRequest("Username does not exist"));
+		return res.send(app.httpErrors.badRequest("Username does not exist"));
 	}
 
 	return await commitToDb(
@@ -166,6 +166,57 @@ export const getUserPosts: UserFastifyCallback = async (req, res) => {
 	).then(async (user) => {
 		return await formatPostContainer(user, req, res);
 	});
+};
+
+const USER_COMMENT_SELECT = {
+	select: {
+		id: true,
+		name: true,
+		comments: {
+			orderBy: {
+				createdAt: "desc" as const,
+			},
+			select: {
+				id: true,
+				body: true,
+				post: {
+					select: {
+						id: true,
+						title: true,
+						subreddit: { select: { name: true } },
+						user: {
+							select: {
+								name: true,
+							},
+						},
+					},
+				},
+				_count: { select: { likes: true, dislikes: true } },
+				createdAt: true,
+				parentId: true,
+			},
+		},
+	},
+};
+
+export const getUserComments: UserFastifyCallback = async (req, res) => {
+	// const userId = req.cookies.userId;
+	// Implement conditional returning of some properties
+
+	const user = await commitToDb(
+		prisma.user.findUnique({
+			where: {
+				name: req.params.name,
+			},
+			...USER_COMMENT_SELECT,
+		})
+	);
+
+	if (user == null) {
+		return res.send(app.httpErrors.badRequest("Username does not exist"));
+	}
+
+	return user;
 };
 
 export const followUser: UserFastifyCallback = async (req, res) => {

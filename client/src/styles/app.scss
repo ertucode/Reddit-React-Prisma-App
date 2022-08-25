@@ -101,6 +101,11 @@ article {
 }
 
 /* UTILITIES */
+
+.flex {
+	display: flex;
+}
+
 .sm-info {
 	opacity: 0.5;
 	font-size: 0.6rem;

@@ -10,10 +10,11 @@ import { UserPage } from "components/user_page/components/UserPage";
 import { SignUp } from "components/sign_up/SignUp";
 import { UserContextProvider } from "contexts/UserContext";
 import { Login } from "components/sign_up/Login";
-import { Navbar } from "components/navbar/Navbar";
-import { MainPage } from "components/main_page/MainPage";
+import { Navbar } from "components/navbar/components/Navbar";
+import { AllPage } from "components/main_page/components/AllPage";
 import { SearchPage } from "features/search_page/components/SearchPage";
 import { ModalContextProvider } from "features/modal/contexts/ModalContext";
+import { HomePage } from "components/main_page/components/HomePage";
 
 function App() {
 	return (
@@ -22,7 +23,8 @@ function App() {
 				<Navbar />
 				<div className="site-body">
 					<Routes>
-						<Route path="/" element={<MainPage />} />
+						<Route path="/" element={<HomePage />} />
+						<Route path="/all" element={<AllPage />} />
 						<Route
 							path="/r/:subredditName"
 							element={<Subreddit />}

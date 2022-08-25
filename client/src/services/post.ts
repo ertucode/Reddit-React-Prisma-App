@@ -9,6 +9,10 @@ export function getPost(id: string) {
 	return makeRequest(`/posts/${id}`);
 }
 
+export function getHomePagePosts() {
+	return makeRequest(`/posts/homepage`);
+}
+
 export function togglePostLikeDislike(postId: string, option: ToggleOptions) {
 	return makeRequest(`posts/${postId}/toggle${option}`, {
 		method: "POST",

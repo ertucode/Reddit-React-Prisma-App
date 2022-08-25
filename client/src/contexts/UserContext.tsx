@@ -1,4 +1,4 @@
-import { useAsyncFn } from "hooks/useAsync";
+import { useAsync } from "hooks/useAsync";
 import React, { useContext, useEffect, useReducer } from "react";
 import { getUserFromCookie } from "services/user";
 
@@ -34,11 +34,15 @@ function userReducer(user: IUser | undefined, action: UserReducerAction) {
 interface IUserContext {
 	currentUser: IUser | undefined;
 	changeCurrentUser: (action: any) => void;
+	loading: boolean;
+	error: any;
 }
 
 const initialContextValue = {
 	currentUser: undefined,
 	changeCurrentUser: () => {},
+	loading: true,
+	error: undefined,
 };
 
 const UserContext = React.createContext<IUserContext>(initialContextValue);
@@ -47,24 +51,23 @@ export const UserContextProvider: React.FC<UserContextProps> = ({
 	children,
 }) => {
 	const [currentUser, changeCurrentUser] = useReducer(userReducer, undefined);
+	const { loading, error, value: user } = useAsync<IUser>(getUserFromCookie);
 
 	useEffect(() => {
-		getUserFromCookie()
-			.then((user) => {
-				changeCurrentUser({
-					type: "login",
-					payload: {
-						user,
-					},
-				});
-			})
-			.catch((err) => {
-				console.log(err);
+		if (user) {
+			changeCurrentUser({
+				type: "login",
+				payload: {
+					user,
+				},
 			});
-	}, []);
+		}
+	}, [user]);
 
 	return (
-		<UserContext.Provider value={{ currentUser, changeCurrentUser }}>
+		<UserContext.Provider
+			value={{ currentUser, changeCurrentUser, loading, error }}
+		>
 			{children}
 		</UserContext.Provider>
 	);

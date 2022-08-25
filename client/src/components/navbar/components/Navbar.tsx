@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { SearchBar } from "features/search_bar/SearchBar";
-import "./styles.scss";
+import "../styles/navbar.scss";
 
-import { ReactComponent as RedditIcon } from "./svg/reddit-icon.svg";
-import { ReactComponent as RedditName } from "./svg/reddit-name.svg";
-import { ReactComponent as RedditUserIcon } from "./svg/reddit-profile.svg";
-import { ReactComponent as DownIcon } from "./svg/down-arrow.svg";
-import { ReactComponent as GenericProfileIcon } from "./svg/generic-profile.svg";
-import { ReactComponent as LogoutIcon } from "./svg/logout.svg";
+import { ReactComponent as RedditIcon } from "../svg/reddit-icon.svg";
+import { ReactComponent as RedditName } from "../svg/reddit-name.svg";
+import { ReactComponent as RedditUserIcon } from "../svg/reddit-profile.svg";
+import { ReactComponent as DownIcon } from "../svg/down-arrow.svg";
+import { ReactComponent as GenericProfileIcon } from "../svg/generic-profile.svg";
+import { ReactComponent as LogoutIcon } from "../svg/logout.svg";
 import { useUser } from "contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useAsyncFn } from "hooks/useAsync";
 import { logoutUser } from "services/user";
 import { userLink } from "components/general/UserLink";
+import { NavigationDropdown } from "./NavigationDropdown";
 
 export const Navbar: React.FC = () => {
 	const { currentUser, changeCurrentUser } = useUser();
@@ -37,6 +38,7 @@ export const Navbar: React.FC = () => {
 					<RedditName />
 				</a>
 			</div>
+			<NavigationDropdown />
 			<div className="navbar-item">
 				<SearchBar ariaLabel="Search site" />
 			</div>

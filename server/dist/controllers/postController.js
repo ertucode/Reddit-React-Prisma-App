@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePost = exports.deletePost = exports.createPost = exports.getPost = exports.getAllPosts = void 0;
+exports.updatePost = exports.deletePost = exports.createPost = exports.getPost = exports.getHomePagePosts = exports.getAllPosts = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const subredditController_1 = require("./subredditController");
 const formatPosts_1 = require("./utils/formatPosts");
+const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
 // GET - /posts
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post
@@ -28,6 +29,53 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     })));
 });
 exports.getAllPosts = getAllPosts;
+const getHomePagePosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(null);
+    }
+    const user = yield app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            followedUsers: {
+                select: {
+                    id: true,
+                },
+            },
+            subbedTo: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
+    const subIds = user === null || user === void 0 ? void 0 : user.subbedTo.map((sub) => sub.id);
+    const userIds = user === null || user === void 0 ? void 0 : user.followedUsers.map((u) => u.id);
+    const posts = yield app_1.prisma.post.findMany({
+        where: {
+            OR: [
+                {
+                    subredditId: {
+                        in: subIds,
+                    },
+                },
+                {
+                    userId: {
+                        in: userIds,
+                    },
+                },
+            ],
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+        select: Object.assign({}, subredditController_1.POST_FIELDS),
+    });
+    return yield (0, formatPosts_1.formatPostContainer)({ posts }, req, res);
+});
+exports.getHomePagePosts = getHomePagePosts;
 const POST_COMMENT_FIELDS = {
     id: true,
     body: true,

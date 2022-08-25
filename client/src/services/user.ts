@@ -49,3 +49,7 @@ export function unfollowUser(name: string) {
 		method: "PUT",
 	});
 }
+
+export function getFollowsAndSubscribes() {
+	return makeRequest(`/user/all_follow/`);
+}

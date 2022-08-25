@@ -4,6 +4,7 @@ import { app, prisma } from "../app";
 import { Comment } from "@prisma/client";
 import { POST_FIELDS } from "./subredditController";
 import { formatPostContainer } from "./utils/formatPosts";
+import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -38,6 +39,60 @@ export const getAllPosts: FastifyCallback = async (req, res) => {
 				return await formatPostContainer({ posts }, req, res);
 			})
 	);
+};
+
+export const getHomePagePosts: FastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (checkEarlyReturn(userId)) {
+		return res.send(null);
+	}
+
+	const user = await prisma.user.findFirst({
+		where: {
+			id: userId,
+		},
+		select: {
+			followedUsers: {
+				select: {
+					id: true,
+				},
+			},
+			subbedTo: {
+				select: {
+					id: true,
+				},
+			},
+		},
+	});
+
+	const subIds = user?.subbedTo.map((sub) => sub.id);
+	const userIds = user?.followedUsers.map((u) => u.id);
+
+	const posts = await prisma.post.findMany({
+		where: {
+			OR: [
+				{
+					subredditId: {
+						in: subIds,
+					},
+				},
+				{
+					userId: {
+						in: userIds,
+					},
+				},
+			],
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+		select: {
+			...POST_FIELDS,
+		},
+	});
+
+	return await formatPostContainer({ posts }, req, res);
 };
 
 const POST_COMMENT_FIELDS = {

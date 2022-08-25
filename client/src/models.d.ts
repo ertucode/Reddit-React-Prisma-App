@@ -23,6 +23,7 @@ declare interface IUser {
 	dislikedComments: IComment[];
 	dislikedPosts: IPost[];
 	followedByMe: boolean;
+	followedUsers: IUser[];
 	_count: {
 		likedComments: number;
 		dislikedComments: number;

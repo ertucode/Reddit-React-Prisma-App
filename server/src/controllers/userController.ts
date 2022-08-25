@@ -383,3 +383,40 @@ export const getUserPageInfo: UserFastifyCallback = async (req, res) => {
 
 	return user;
 };
+
+export const getFollowsAndSubscribes: UserFastifyCallback = async (
+	req,
+	res
+) => {
+	const userId = req.cookies.userId;
+
+	if (checkEarlyReturn(userId)) {
+		return res.send(null);
+	}
+
+	const user = await commitToDb(
+		prisma.user.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				followedUsers: {
+					select: {
+						name: true,
+					},
+				},
+				subbedTo: {
+					select: {
+						name: true,
+					},
+				},
+			},
+		})
+	);
+
+	if (user == null) {
+		res.send(app.httpErrors.badRequest("I cant code"));
+	}
+
+	return user;
+};

@@ -35,6 +35,7 @@ const userRoutes = (app, options, done) => {
     app.get("/user_page/:name", userController.getUserPageInfo);
     app.get("/users/posts/:name", userController.getUserPosts);
     app.get("/users/comments/:name", userController.getUserComments);
+    app.get("/user/all_follow/", userController.getFollowsAndSubscribes);
     app.put("/user/follow/:name", userController.followUser);
     app.put("/user/unfollow/:name", userController.unfollowUser);
     done();

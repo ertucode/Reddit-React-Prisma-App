@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserPageInfo = exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
+exports.getFollowsAndSubscribes = exports.getUserPageInfo = exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -306,3 +306,31 @@ const getUserPageInfo = (req, res) => __awaiter(void 0, void 0, void 0, function
     return user;
 });
 exports.getUserPageInfo = getUserPageInfo;
+const getFollowsAndSubscribes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return res.send(null);
+    }
+    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+        select: {
+            followedUsers: {
+                select: {
+                    name: true,
+                },
+            },
+            subbedTo: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+    }));
+    if (user == null) {
+        res.send(app_1.app.httpErrors.badRequest("I cant code"));
+    }
+    return user;
+});
+exports.getFollowsAndSubscribes = getFollowsAndSubscribes;

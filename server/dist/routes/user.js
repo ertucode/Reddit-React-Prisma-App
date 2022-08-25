@@ -32,6 +32,7 @@ const userRoutes = (app, options, done) => {
     app.delete("/users/:id", { preHandler: [verifyToken_1.verifyToken] }, userController.deleteUser);
     app.get("/users/cookie", userController.getUserFromCookie);
     app.get("/users/:id", userController.getUserById);
+    app.get("/user_page/:name", userController.getUserPageInfo);
     app.get("/users/posts/:name", userController.getUserPosts);
     app.get("/users/comments/:name", userController.getUserComments);
     app.put("/user/follow/:name", userController.followUser);

@@ -9,6 +9,15 @@
 	> div {
 		width: 70%;
 		max-width: 90ch;
+	}
+
+	&__top {
+		display: flex;
+		align-items: center;
+
+		&-right {
+			margin-left: auto;
+		}
 
 		h1 {
 			margin: 0;

@@ -14,6 +14,10 @@ const subredditRoutes: FastifyPluginCallback<subredditOptions> = (
 
 	app.get("/subreddits/:id", subredditController.getSubredditById);
 	app.get("/subreddit/:name", subredditController.getSubredditByName);
+	app.get(
+		"/subreddit/desc_sub/:name",
+		subredditController.getSubredditDescriptionAndSubbed
+	);
 	app.put("/subreddit/join/:name", subredditController.joinSubreddit);
 	app.put("/subreddit/leave/:name", subredditController.leaveSubreddit);
 

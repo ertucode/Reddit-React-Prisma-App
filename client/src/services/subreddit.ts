@@ -12,6 +12,10 @@ export function getSubredditByName(name: string) {
 	return makeRequest(`/subreddit/${name}`);
 }
 
+export function getSubredditDescriptionAndSubbed(name: string) {
+	return makeRequest(`/subreddit/desc_sub/${name}`);
+}
+
 export function joinSubreddit(name: string) {
 	return makeRequest(`/subreddit/join/${name}`, {
 		method: "PUT",

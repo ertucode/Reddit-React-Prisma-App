@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
+exports.getUserPageInfo = exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -270,3 +270,39 @@ const unfollowUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }));
 });
 exports.unfollowUser = unfollowUser;
+const getUserPageInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findFirst({
+        where: {
+            name: req.params.name,
+        },
+        select: {
+            id: true,
+        },
+    }));
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.internalServerError("User does not exist"));
+    }
+    const userId = req.cookies.userId;
+    if (!(0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        const queryingUser = yield app_1.prisma.user.findFirst({
+            where: {
+                id: userId,
+            },
+            select: {
+                followedUsers: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+        const ids = (_a = queryingUser === null || queryingUser === void 0 ? void 0 : queryingUser.followedUsers) === null || _a === void 0 ? void 0 : _a.map((u) => u.id);
+        user.followedByMe = ids && ids.includes(user.id);
+    }
+    else {
+        user.followedByMe = false;
+    }
+    return user;
+});
+exports.getUserPageInfo = getUserPageInfo;

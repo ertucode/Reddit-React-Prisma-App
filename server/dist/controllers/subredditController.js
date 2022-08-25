@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.leaveSubreddit = exports.joinSubreddit = exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditByName = exports.getSubredditById = exports.POST_FIELDS = exports.getAllSubreddits = void 0;
+exports.leaveSubreddit = exports.joinSubreddit = exports.updateSubreddit = exports.deleteSubreddit = exports.createSubreddit = exports.getSubredditDescriptionAndSubbed = exports.getSubredditByName = exports.getSubredditById = exports.POST_FIELDS = exports.getAllSubreddits = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const formatPosts_1 = require("./utils/formatPosts");
@@ -69,6 +69,34 @@ const getSubredditByName = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }));
 });
 exports.getSubredditByName = getSubredditByName;
+const getSubredditDescriptionAndSubbed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const subreddit = yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
+        where: { name: req.params.name },
+        select: {
+            id: true,
+            description: true,
+        },
+    }));
+    const userId = req.cookies.userId;
+    if (!(0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        const user = yield app_1.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                subbedTo: {
+                    select: { id: true },
+                },
+            },
+        });
+        const ids = (_a = user === null || user === void 0 ? void 0 : user.subbedTo) === null || _a === void 0 ? void 0 : _a.map((sub) => sub.id);
+        subreddit.subscribedByMe = ids && ids.includes(subreddit.id);
+    }
+    else {
+        subreddit.subscribedByMe = false;
+    }
+    return subreddit;
+});
+exports.getSubredditDescriptionAndSubbed = getSubredditDescriptionAndSubbed;
 // PUT - /subreddit
 const createSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
 exports.createSubreddit = createSubreddit;

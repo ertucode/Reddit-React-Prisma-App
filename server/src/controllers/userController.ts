@@ -339,3 +339,47 @@ export const unfollowUser: UserFastifyCallback = async (req, res) => {
 		})
 	);
 };
+
+export const getUserPageInfo: UserFastifyCallback = async (req, res) => {
+	const user = await commitToDb(
+		prisma.user.findFirst({
+			where: {
+				name: req.params.name,
+			},
+			select: {
+				id: true,
+			},
+		})
+	);
+
+	if (user == null) {
+		return res.send(
+			app.httpErrors.internalServerError("User does not exist")
+		);
+	}
+
+	const userId = req.cookies.userId;
+
+	if (!checkEarlyReturn(userId)) {
+		const queryingUser = await prisma.user.findFirst({
+			where: {
+				id: userId,
+			},
+			select: {
+				followedUsers: {
+					select: {
+						id: true,
+					},
+				},
+			},
+		});
+
+		const ids = queryingUser?.followedUsers?.map((u) => u.id);
+
+		user.followedByMe = ids && ids.includes(user.id);
+	} else {
+		user.followedByMe = false;
+	}
+
+	return user;
+};

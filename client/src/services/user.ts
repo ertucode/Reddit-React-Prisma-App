@@ -24,6 +24,12 @@ export function getUserFromCookie() {
 	});
 }
 
+export function getUserPageInfo(name: string) {
+	return makeRequest(`/user_page/${name}`, {
+		method: "GET",
+	});
+}
+
 export function getUserPostsFromName(name: string) {
 	return makeRequest(`/users/posts/${name}`);
 }

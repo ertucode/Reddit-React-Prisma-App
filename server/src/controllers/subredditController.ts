@@ -77,6 +77,40 @@ export const getSubredditByName: SubredditFastifyCallback = async (
 	});
 };
 
+export const getSubredditDescriptionAndSubbed: SubredditFastifyCallback =
+	async (req, res) => {
+		const subreddit = await commitToDb(
+			prisma.subreddit.findUnique({
+				where: { name: req.params.name },
+				select: {
+					id: true,
+					description: true,
+				},
+			})
+		);
+
+		const userId = req.cookies.userId;
+
+		if (!checkEarlyReturn(userId)) {
+			const user = await prisma.user.findUnique({
+				where: { id: userId },
+				select: {
+					subbedTo: {
+						select: { id: true },
+					},
+				},
+			});
+
+			const ids = user?.subbedTo?.map((sub) => sub.id);
+
+			subreddit.subscribedByMe = ids && ids.includes(subreddit.id);
+		} else {
+			subreddit.subscribedByMe = false;
+		}
+
+		return subreddit;
+	};
+
 // PUT - /subreddit
 export const createSubreddit: SubredditFastifyCallback = async (req, res) => {};
 

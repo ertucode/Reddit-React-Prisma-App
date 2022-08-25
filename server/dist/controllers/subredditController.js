@@ -98,7 +98,39 @@ const getSubredditDescriptionAndSubbed = (req, res) => __awaiter(void 0, void 0,
 });
 exports.getSubredditDescriptionAndSubbed = getSubredditDescriptionAndSubbed;
 // PUT - /subreddit
-const createSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const createSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.cookies.userId;
+    if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
+        return;
+    }
+    const name = req.params.name;
+    if (name == null || name == "") {
+        return res.send(app_1.app.httpErrors.badRequest("Include a name"));
+    }
+    const description = req.body.description;
+    if (description == null || description == "") {
+        return res.send(app_1.app.httpErrors.badRequest("Include a description"));
+    }
+    const sub = yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.create({
+        data: {
+            name,
+            description,
+        },
+    }));
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.update({
+        where: {
+            name: sub.name,
+        },
+        data: {
+            admins: {
+                set: [{ id: userId }],
+            },
+        },
+        select: {
+            name: true,
+        },
+    }));
+});
 exports.createSubreddit = createSubreddit;
 // DELETE - /user/{id}
 const deleteSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });

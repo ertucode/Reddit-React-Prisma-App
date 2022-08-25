@@ -21,6 +21,8 @@ const subredditRoutes: FastifyPluginCallback<subredditOptions> = (
 	app.put("/subreddit/join/:name", subredditController.joinSubreddit);
 	app.put("/subreddit/leave/:name", subredditController.leaveSubreddit);
 
+	app.post("/subreddit/create/:name", subredditController.createSubreddit);
+
 	done();
 };
 

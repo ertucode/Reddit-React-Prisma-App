@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDom from "react-dom";
 import "../styles/modal.scss";
 
@@ -15,6 +15,20 @@ export const Modal: React.FC<ModalProps> = ({
 	setOpen,
 	modalClassName,
 }) => {
+	useEffect(() => {
+		function escFunction(e: KeyboardEvent) {
+			if (e.key === "Escape") {
+				setOpen(false);
+			}
+		}
+
+		document.addEventListener("keydown", escFunction, false);
+
+		return () => {
+			document.removeEventListener("keydown", escFunction, false);
+		};
+	}, []);
+
 	return open
 		? ReactDom.createPortal(
 				<>

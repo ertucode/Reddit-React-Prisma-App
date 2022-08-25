@@ -9,6 +9,7 @@ import { getFollowsAndSubscribes } from "services/user";
 import { subredditLink } from "components/general/SubredditLink";
 import { userLink } from "components/general/UserLink";
 import { NavLink, useLocation } from "react-router-dom";
+import { useUser } from "contexts/UserContext";
 
 const HomeComponent = (
 	<div className="svg-group">
@@ -25,8 +26,11 @@ const AllComponent = (
 );
 
 export const NavigationDropdown: React.FC = () => {
-	const { value: userSubs } = useAsync<IUser>(() =>
-		getFollowsAndSubscribes()
+	const { currentUser } = useUser();
+
+	const { value: userSubs } = useAsync<IUser>(
+		() => getFollowsAndSubscribes(),
+		[currentUser]
 	);
 
 	const [open, setOpen] = useState(false);
@@ -47,13 +51,13 @@ export const NavigationDropdown: React.FC = () => {
 	const getComponentToRender = () => {
 		const path = location.pathname;
 		if (path.startsWith("/r/")) {
-			return <div>{`r/${getSubredditFromPath(path)}`}</div>;
+			return <span>{`r/${getSubredditFromPath(path)}`}</span>;
 		} else if (path.startsWith("/u/")) {
-			return <div>{`u/${getUserFromPath(path)}`}</div>;
+			return <span>{`u/${getUserFromPath(path)}`}</span>;
 		} else if (path.startsWith("/all")) {
 			return AllComponent;
 		} else if (path.startsWith("/search")) {
-			return <div>Search</div>;
+			return <span>Search</span>;
 		} else {
 			return HomeComponent;
 		}
@@ -68,7 +72,9 @@ export const NavigationDropdown: React.FC = () => {
 				onFocus={() => setOpen(true)}
 				onBlur={onBlurEvent}
 			>
-				{getComponentToRender()}
+				<span className="current-location">
+					{getComponentToRender()}
+				</span>
 				<CarrotSvg />
 
 				<div className={`navigation__dropdown ${open ? "" : "hide"}`}>
@@ -139,13 +145,15 @@ export const NavigationDropdown: React.FC = () => {
 	);
 };
 
-const USER_REGEX = /^(\/u\/)(?<username>[a-zA-Z0-9]+)(\/)*/;
-const SUBREDDIT_REGEX = /^(\/r\/)(?<subreddit>[a-zA-Z0-9]+)(\/)*/;
+const USER_REGEX = /^(\/u\/)(?<username>[a-zA-Z0-9(%20)_]+)(\/)*/;
+const SUBREDDIT_REGEX = /^(\/r\/)(?<subreddit>[a-zA-Z0-9(%20)_]+)(\/)*/;
 
 const getUserFromPath = (path: string) => {
-	return path.match(USER_REGEX)?.groups?.username;
+	return path.match(USER_REGEX)?.groups?.username.replaceAll("%20", " ");
 };
 
 const getSubredditFromPath = (path: string) => {
-	return path.match(SUBREDDIT_REGEX)?.groups?.subreddit;
+	return path
+		.match(SUBREDDIT_REGEX)
+		?.groups?.subreddit.replaceAll("%20", " ");
 };

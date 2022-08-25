@@ -107,7 +107,8 @@ export const searchPosts: SearchCallback = async (req, res) => {
 			})
 		)) || [];
 
-	if (count <= posts?.length) return posts;
+	if (count <= posts?.length)
+		return await formatPostContainer({ posts }, req, res);
 
 	const postIdArray = posts.map((post: Post) => post.id);
 

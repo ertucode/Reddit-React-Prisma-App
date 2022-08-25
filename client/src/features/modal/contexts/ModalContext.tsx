@@ -9,6 +9,7 @@ const ModalContext = React.createContext({
 	setModalOpen: (state: boolean) => {},
 	setModalChildren: (children: React.ReactNode) => {},
 	setModalClassName: (name: string) => {},
+	resetModal: () => {},
 });
 
 export const useModal = () => {
@@ -35,6 +36,11 @@ export const ModalContextProvider: React.FC<ModalContextProps> = ({
 				setModalOpen,
 				setModalChildren,
 				setModalClassName,
+				resetModal: () => {
+					setModalChildren(null);
+					setModalClassName("");
+					setModalOpen(false);
+				},
 			}}
 		>
 			<>

@@ -5,3 +5,14 @@
 	flex-direction: column;
 	align-items: center;
 }
+
+.not-logged-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 0.5rem;
+
+	.generic-btn-dark {
+		margin-right: 1rem;
+	}
+}

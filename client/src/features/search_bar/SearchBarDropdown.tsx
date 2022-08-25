@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ResultType } from "./SearchBar";
 import { ReactComponent as Magnifier } from "./svg/magnifier.svg";
@@ -7,12 +7,14 @@ interface SearchBarDropdownProps {
 	query: string;
 	searchResults: ResultType[] | undefined;
 	onOptionPicked: () => void;
+	inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 	query,
 	searchResults,
 	onOptionPicked,
+	inputRef,
 }) => {
 	const navigate = useNavigate();
 
@@ -35,6 +37,20 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 		}
 		onOptionPicked();
 	};
+
+	useEffect(() => {
+		function escFunction(e: KeyboardEvent) {
+			if (e.key === "Escape") {
+				inputRef.current?.blur();
+			}
+		}
+
+		document.addEventListener("keydown", escFunction, false);
+
+		return () => {
+			document.removeEventListener("keydown", escFunction, false);
+		};
+	}, [inputRef]);
 
 	return (
 		<div className="search-bar__dropdown">

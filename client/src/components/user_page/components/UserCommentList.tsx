@@ -53,9 +53,9 @@ export const UserCommentList: React.FC<UserCommentListProps> = ({
 	if (userName == null) return <div>User does not exist</div>;
 
 	return loading ? (
-		<div>Loading</div>
+		<UserCommentLoading />
 	) : error ? (
-		<div>error</div>
+		<div>I was too lazy to handle this</div>
 	) : (
 		<div className="post-list">
 			{Object.values(postMap)?.map(({ post, comments }) => (
@@ -111,6 +111,23 @@ export const UserCommentList: React.FC<UserCommentListProps> = ({
 					</main>
 				</div>
 			))}
+		</div>
+	);
+};
+
+const UserCommentLoading: React.FC = () => {
+	return (
+		<div className="post-list">
+			<div className="user-comment-loading card">
+				<div className="user-comment-loading__child loading"></div>
+				<div className="user-comment-loading__child loading"></div>
+				<div className="user-comment-loading__child loading"></div>
+			</div>
+			<div className="user-comment-loading card">
+				<div className="user-comment-loading__child loading"></div>
+				<div className="user-comment-loading__child loading"></div>
+				<div className="user-comment-loading__child loading"></div>
+			</div>
 		</div>
 	);
 };

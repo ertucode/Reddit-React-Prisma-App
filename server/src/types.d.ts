@@ -14,6 +14,7 @@ type SubredditFastifyCallback = (
 			parentId: string;
 			title: string;
 			subredditId: string;
+			description: string;
 		};
 	}>,
 	res: FastifyReply

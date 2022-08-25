@@ -82,7 +82,7 @@ const searchPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             title: { contains: query, mode: "insensitive" },
         } }, POST_SELECTION), { take: count })))) || [];
     if (count <= (posts === null || posts === void 0 ? void 0 : posts.length))
-        return posts;
+        return yield (0, formatPosts_1.formatPostContainer)({ posts }, req, res);
     const postIdArray = posts.map((post) => post.id);
     posts.push(...((yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findMany(Object.assign(Object.assign({ where: {
             body: { contains: query, mode: "insensitive" },

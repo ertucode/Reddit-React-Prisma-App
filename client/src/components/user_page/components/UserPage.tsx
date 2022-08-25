@@ -70,7 +70,7 @@ export const UserPage: React.FC = () => {
 	return (
 		<>
 			{userLoading ? (
-				<div>User Loading Page</div>
+				<UserLoadingPage />
 			) : userDoesNoTExist ? (
 				<div>User Error Page</div>
 			) : (
@@ -118,4 +118,10 @@ export const UserPage: React.FC = () => {
 			)}
 		</>
 	);
+};
+
+interface UserPageProps {}
+
+export const UserLoadingPage: React.FC<UserPageProps> = ({}) => {
+	return <div>UserPage</div>;
 };

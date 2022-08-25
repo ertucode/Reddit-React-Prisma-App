@@ -25,6 +25,13 @@ $home-size: 1.25rem;
 		cursor: pointer;
 		border: 1px solid transparent;
 
+		.current-location {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			max-width: 170px;
+		}
+
 		&:hover {
 			border: 1px solid var(--border-color);
 			border-radius: 4px;

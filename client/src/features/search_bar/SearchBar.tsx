@@ -1,5 +1,6 @@
 import { useAsyncFn } from "hooks/useAsync";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { searchEverything } from "services/search";
 import { SearchBarDropdown } from "./SearchBarDropdown";
 import "./styles.scss";
@@ -24,6 +25,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
 	const [searchResults, setSearchResults] = useState<ResultType[]>();
+	const navigate = useNavigate();
+
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const { execute: searchEverythingFn } =
 		useAsyncFn<ResultType[]>(searchEverything);
@@ -47,23 +51,32 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 		}
 	};
 
+	const submitHandle = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		navigate(`/search/q=${query}/type=post`);
+		setOpen(false);
+	};
+
 	return (
 		<form
 			className={`${className} search-bar `}
 			onFocus={() => setOpen(true)}
 			onBlur={onBlurEvent}
+			onSubmit={submitHandle}
 		>
 			<Magnifier />
 			<input
 				aria-label={ariaLabel}
 				value={query}
 				onChange={onQueryChange}
+				ref={inputRef}
 			/>
 			{open && (
 				<SearchBarDropdown
 					query={query}
 					searchResults={searchResults}
 					onOptionPicked={() => setOpen(false)}
+					inputRef={inputRef}
 				/>
 			)}
 		</form>

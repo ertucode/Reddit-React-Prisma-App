@@ -112,7 +112,50 @@ export const getSubredditDescriptionAndSubbed: SubredditFastifyCallback =
 	};
 
 // PUT - /subreddit
-export const createSubreddit: SubredditFastifyCallback = async (req, res) => {};
+export const createSubreddit: SubredditFastifyCallback = async (req, res) => {
+	const userId = req.cookies.userId;
+
+	if (checkEarlyReturn(userId)) {
+		return;
+	}
+
+	const name = req.params.name;
+
+	if (name == null || name == "") {
+		return res.send(app.httpErrors.badRequest("Include a name"));
+	}
+
+	const description = req.body.description;
+
+	if (description == null || description == "") {
+		return res.send(app.httpErrors.badRequest("Include a description"));
+	}
+
+	const sub = await commitToDb(
+		prisma.subreddit.create({
+			data: {
+				name,
+				description,
+			},
+		})
+	);
+
+	return await commitToDb(
+		prisma.subreddit.update({
+			where: {
+				name: sub.name,
+			},
+			data: {
+				admins: {
+					set: [{ id: userId }],
+				},
+			},
+			select: {
+				name: true,
+			},
+		})
+	);
+};
 
 // DELETE - /user/{id}
 export const deleteSubreddit: SubredditFastifyCallback = async (req, res) => {};

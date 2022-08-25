@@ -33,6 +33,7 @@ const subredditRoutes = (app, options, done) => {
     app.get("/subreddit/desc_sub/:name", subredditController.getSubredditDescriptionAndSubbed);
     app.put("/subreddit/join/:name", subredditController.joinSubreddit);
     app.put("/subreddit/leave/:name", subredditController.leaveSubreddit);
+    app.post("/subreddit/create/:name", subredditController.createSubreddit);
     done();
 };
 exports.subredditRoutes = subredditRoutes;

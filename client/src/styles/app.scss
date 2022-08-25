@@ -1,3 +1,5 @@
+@use "styles/animations";
+
 *,
 *::before,
 *::after {
@@ -6,7 +8,7 @@
 }
 
 body {
-	$body-bg-color: #030303;
+	--body-bg-color: #030303;
 	--card-bg-color: #1a1a1b;
 	--input-color: #c9ccce;
 	--btn-bg-color: #ddd;
@@ -15,7 +17,7 @@ body {
 	--border-color: #343536;
 	margin: 0;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	background-color: $body-bg-color;
+	background-color: var(--body-bg-color);
 	line-height: 1.4;
 
 	--input-bg-color: #272729;
@@ -136,4 +138,31 @@ article {
 
 .ul-clr {
 	color: var(--user-link-color);
+}
+
+.card {
+	background-color: var(--card-bg-color);
+}
+
+.loading {
+	@include animations.animate-loading;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+	width: 0.5em;
+
+	&-track {
+		margin-block: 0.5em;
+	}
+
+	&-thumb {
+		background-color: hsl(0, 2%, 54%);
+		border-radius: 100vw;
+
+		&:hover {
+			background-color: hsl(0, 2%, 42%);
+		}
+	}
 }

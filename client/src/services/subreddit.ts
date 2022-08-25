@@ -27,3 +27,10 @@ export function leaveSubreddit(name: string) {
 		method: "PUT",
 	});
 }
+
+export function createSubreddit(name: string, description: string) {
+	return makeRequest(`/subreddit/create/${name}`, {
+		method: "POST",
+		data: { description },
+	});
+}

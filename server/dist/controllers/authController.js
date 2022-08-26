@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutUser = exports.loginUser = exports.createUser = void 0;
+exports.saltPassword = exports.logoutUser = exports.loginUser = exports.createUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -38,8 +38,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     if (userWithSameEmail != null) {
         return res.send(app_1.app.httpErrors.badRequest("Email already exists"));
     }
-    const salt = bcrypt_1.default.genSaltSync(10);
-    const hash = bcrypt_1.default.hashSync(req.body.password, salt);
+    const hash = saltPassword(req.body.password);
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.create({
         data: {
             name: req.body.name,
@@ -79,3 +78,9 @@ const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.setCookie("userToken", "");
 });
 exports.logoutUser = logoutUser;
+function saltPassword(password) {
+    const salt = bcrypt_1.default.genSaltSync(10);
+    const hash = bcrypt_1.default.hashSync(password, salt);
+    return hash;
+}
+exports.saltPassword = saltPassword;

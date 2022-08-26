@@ -47,8 +47,7 @@ export const createUser: FastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Email already exists"));
 	}
 
-	const salt = bcrypt.genSaltSync(10);
-	const hash = bcrypt.hashSync(req.body.password, salt);
+	const hash = saltPassword(req.body.password);
 
 	return await commitToDb(
 		prisma.user.create({
@@ -101,3 +100,9 @@ export const loginUser: FastifyCallback = async (req, res) => {
 export const logoutUser: FastifyCallback = async (req, res) => {
 	res.setCookie("userToken", "");
 };
+
+export function saltPassword(password: string) {
+	const salt = bcrypt.genSaltSync(10);
+	const hash = bcrypt.hashSync(password, salt);
+	return hash;
+}

@@ -19,7 +19,7 @@ import { getUserIdFromToken } from "./verifyToken";
 
 declare var process: {
 	env: {
-		PORT: number;
+		SERVER_PORT: number;
 		CLIENT_URL: string;
 		COOKIE_SECRET: string;
 		JWT_SECRET: string;
@@ -32,15 +32,6 @@ const app = fastify();
 const prisma = new PrismaClient();
 
 app.register(cookie, { secret: process.env.COOKIE_SECRET });
-// DON'T PUT ASYNC
-// app.addHook("onRequest", (req, res, done) => {
-// 	if (req.cookies.userId !== USER_ID) {
-// 		req.cookies.userId = USER_ID;
-// 		res.clearCookie("userId");
-// 		res.setCookie("userId", USER_ID);
-// 	}
-// 	done();
-// });
 
 app.addHook("onRequest", async (req, res) => {
 	const userId = getUserIdFromToken(req);
@@ -69,4 +60,4 @@ app.register(infiniteRoutes);
 export { app };
 export { prisma };
 
-app.listen({ port: process.env.PORT });
+app.listen({ port: process.env.SERVER_PORT });

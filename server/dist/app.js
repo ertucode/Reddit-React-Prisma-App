@@ -34,15 +34,6 @@ exports.app = app;
 const prisma = new client_1.PrismaClient();
 exports.prisma = prisma;
 app.register(cookie_1.default, { secret: process.env.COOKIE_SECRET });
-// DON'T PUT ASYNC
-// app.addHook("onRequest", (req, res, done) => {
-// 	if (req.cookies.userId !== USER_ID) {
-// 		req.cookies.userId = USER_ID;
-// 		res.clearCookie("userId");
-// 		res.setCookie("userId", USER_ID);
-// 	}
-// 	done();
-// });
 app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = (0, verifyToken_1.getUserIdFromToken)(req);
     if (userId != null) {
@@ -65,4 +56,4 @@ app.register(comment_1.commentRoutes);
 app.register(like_1.likeRoutes);
 app.register(search_1.searchRoutes);
 app.register(infinite_scroll_1.infiniteRoutes);
-app.listen({ port: process.env.PORT });
+app.listen({ port: process.env.SERVER_PORT });

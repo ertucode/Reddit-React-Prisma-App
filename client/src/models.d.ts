@@ -32,7 +32,7 @@ declare interface IUser {
 		dislikedPosts: number;
 	};
 	karma: number;
-	scrollIndex: number | string;
+	scrollIndex: number;
 }
 
 declare interface IPost {
@@ -54,7 +54,7 @@ declare interface IPost {
 		comments: number;
 	};
 	likedByMe: -1 | 0 | 1;
-	scrollIndex: number | string;
+	scrollIndex: number;
 }
 
 declare interface IComment {
@@ -76,7 +76,7 @@ declare interface IComment {
 		dislikes: number;
 	};
 	likedByMe: -1 | 0 | 1;
-	scrollIndex: number | string;
+	scrollIndex: number;
 }
 
 declare interface IPostLike {

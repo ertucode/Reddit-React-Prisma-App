@@ -17,10 +17,10 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 	const followUserFn = useAsyncFn(followUser);
 	const unfollowUserFn = useAsyncFn(unfollowUser);
 
-	const { lastDivRef, loading, error, data } = useInfiniteScroll<IUser[]>(
-		(scrollIndex: string) =>
+	const { lastDivRef, loading, error, data, setPrevIndex } =
+		useInfiniteScroll<IUser[]>((scrollIndex: string) =>
 			getInfiniteSearchResult(scrollIndex, "user", query)
-	);
+		);
 	const [localUsers, setLocalUsers] = useState<IUser[]>([]);
 
 	useEffect(() => {
@@ -30,6 +30,7 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 					data.length !== 0 &&
 					data.at(-1)?.id !== prevUsers.at(-1)?.id
 				) {
+					setPrevIndex(data?.at(-1)?.scrollIndex);
 					return [...prevUsers, ...data];
 				}
 				return prevUsers;

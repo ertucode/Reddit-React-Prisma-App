@@ -8,6 +8,7 @@ export const SEARCH_PAGE_COMMENT_SELECT_FIELDS = {
 		body: true,
 		_count: { select: { likes: true, dislikes: true } },
 		createdAt: true,
+		scrollIndex: true,
 		post: {
 			select: {
 				id: true,

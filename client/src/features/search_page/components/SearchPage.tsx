@@ -4,7 +4,7 @@ import { NavLink, useParams } from "react-router-dom";
 import { PostSearchResult } from "./PostSearchResult";
 import { CommentSearchResult } from "./CommentSearchResult";
 import { SubredditSearchResult } from "./SubredditSearchResult";
-import { UserSearchResult } from "./infinite_types/UserSearchResult";
+import { UserSearchResult } from "./UserSearchResult";
 
 interface SearchPageProps {}
 

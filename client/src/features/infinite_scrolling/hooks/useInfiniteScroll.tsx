@@ -34,7 +34,6 @@ export const useInfiniteScroll = <T,>(getter: any) => {
 					return;
 				}
 				setData(data);
-				setPrevIndex(data.at(-1).scrollIndex);
 			})
 			.catch((e) => {
 				console.log(e);
@@ -42,5 +41,5 @@ export const useInfiniteScroll = <T,>(getter: any) => {
 		// eslint-disable-next-line
 	}, [scrollIndex]);
 
-	return { loading, error, setScrollIndex, lastDivRef, data };
+	return { loading, error, setPrevIndex, lastDivRef, data };
 };

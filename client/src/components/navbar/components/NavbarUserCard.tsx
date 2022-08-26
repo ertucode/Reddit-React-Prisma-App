@@ -47,7 +47,7 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 					<RedditUserIcon />
 				</div>
 				<div>{currentUser!.name}</div>
-				<div>0 karma</div>
+				<div>{currentUser!.karma} karma</div>
 				<DownIcon />
 			</button>
 			<div className={`dropdown ${open ? "" : "hide"}`}>

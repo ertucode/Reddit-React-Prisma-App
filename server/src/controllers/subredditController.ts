@@ -79,15 +79,26 @@ export const getSubredditByName: SubredditFastifyCallback = async (
 
 export const getSubredditDescriptionAndSubbed: SubredditFastifyCallback =
 	async (req, res) => {
-		const subreddit = await commitToDb(
-			prisma.subreddit.findUnique({
+		type DesiredSubreddit = {
+			id: string;
+			description: string;
+			subscribedByMe?: boolean;
+		} | null;
+
+		const desiredSubreddit: DesiredSubreddit =
+			await prisma.subreddit.findUnique({
 				where: { name: req.params.name },
 				select: {
 					id: true,
 					description: true,
 				},
-			})
-		);
+			});
+
+		if (desiredSubreddit == null) {
+			return res.send(
+				app.httpErrors.badRequest("Subreddit does not exist")
+			);
+		}
 
 		const userId = req.cookies.userId;
 
@@ -103,12 +114,13 @@ export const getSubredditDescriptionAndSubbed: SubredditFastifyCallback =
 
 			const ids = user?.subbedTo?.map((sub) => sub.id);
 
-			subreddit.subscribedByMe = ids && ids.includes(subreddit.id);
+			desiredSubreddit.subscribedByMe =
+				ids && ids.includes(desiredSubreddit.id);
 		} else {
-			subreddit.subscribedByMe = false;
+			desiredSubreddit.subscribedByMe = false;
 		}
 
-		return subreddit;
+		return desiredSubreddit;
 	};
 
 // PUT - /subreddit

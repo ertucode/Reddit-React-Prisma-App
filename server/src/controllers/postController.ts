@@ -1,10 +1,14 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
-import { Comment } from "@prisma/client";
+import { Comment, Prisma } from "@prisma/client";
 import { POST_FIELDS } from "./subredditController";
 import { formatPostContainer } from "./utils/formatPosts";
 import { checkEarlyReturn } from "./utils/checkEarlyReturn";
+import {
+	getFollowsOfUser,
+	USER_FOLLOW_WHERE_FIELDS,
+} from "./utils/userHelpers";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -23,22 +27,27 @@ type FastifyCallback = (
 	res: FastifyReply
 ) => void;
 
+export const getPosts = async (
+	moreOptions: Prisma.PostFindManyArgs,
+	req: ContainerRequest,
+	res: ContainerResponse
+) => {
+	return await commitToDb(
+		prisma.post.findMany({
+			orderBy: {
+				updatedAt: "desc",
+			},
+			select: {
+				...POST_FIELDS,
+			},
+			...moreOptions,
+		})
+	).then((posts) => formatPostContainer({ posts }, req, res));
+};
+
 // GET - /posts
 export const getAllPosts: FastifyCallback = async (req, res) => {
-	return await commitToDb(
-		prisma.post
-			.findMany({
-				orderBy: {
-					createdAt: "desc",
-				},
-				select: {
-					...POST_FIELDS,
-				},
-			})
-			.then(async (posts) => {
-				return await formatPostContainer({ posts }, req, res);
-			})
-	);
+	return getPosts({}, req, res);
 };
 
 export const getHomePagePosts: FastifyCallback = async (req, res) => {
@@ -48,51 +57,9 @@ export const getHomePagePosts: FastifyCallback = async (req, res) => {
 		return res.send(null);
 	}
 
-	const user = await prisma.user.findFirst({
-		where: {
-			id: userId,
-		},
-		select: {
-			followedUsers: {
-				select: {
-					id: true,
-				},
-			},
-			subbedTo: {
-				select: {
-					id: true,
-				},
-			},
-		},
-	});
+	const { subIds, userIds } = await getFollowsOfUser(userId!);
 
-	const subIds = user?.subbedTo.map((sub) => sub.id);
-	const userIds = user?.followedUsers.map((u) => u.id);
-
-	const posts = await prisma.post.findMany({
-		where: {
-			OR: [
-				{
-					subredditId: {
-						in: subIds,
-					},
-				},
-				{
-					userId: {
-						in: userIds,
-					},
-				},
-			],
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-		select: {
-			...POST_FIELDS,
-		},
-	});
-
-	return await formatPostContainer({ posts }, req, res);
+	return await getPosts(USER_FOLLOW_WHERE_FIELDS(subIds, userIds), req, res);
 };
 
 const POST_COMMENT_FIELDS = {

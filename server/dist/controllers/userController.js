@@ -16,9 +16,8 @@ exports.getFollowsAndSubscribes = exports.getUserPageInfo = exports.unfollowUser
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const subredditController_1 = require("./subredditController");
-const formatPosts_1 = require("./utils/formatPosts");
 const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
+const userHelpers_1 = require("./utils/userHelpers");
 // PUT -
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.id;
@@ -89,94 +88,64 @@ const getUserFromCookie = (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (userId == null) {
         return res.send(app_1.app.httpErrors.badRequest("You are not logged in"));
     }
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique({
+    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique({
         where: {
             id: userId,
         },
         select: {
             id: true,
             name: true,
+            posts: {
+                select: {
+                    _count: {
+                        select: { likes: true, dislikes: true },
+                    },
+                },
+            },
+            comments: {
+                select: {
+                    _count: {
+                        select: { likes: true, dislikes: true },
+                    },
+                },
+            },
         },
     }));
+    if (user == null)
+        return user;
+    return Object.assign(Object.assign({}, user), { karma: 2 * getLikeDiff(user.posts) + getLikeDiff(user.comments) });
 });
 exports.getUserFromCookie = getUserFromCookie;
-const USER_SELECT = {
-    select: {
-        id: true,
-        name: true,
-        posts: {
-            orderBy: {
-                createdAt: "desc",
-            },
-            select: Object.assign({}, subredditController_1.POST_FIELDS),
-        },
-    },
-};
+function getLikeDiff(list) {
+    return list.reduce((prev, curr) => prev + curr._count.likes - curr._count.dislikes, 0);
+}
 const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.cookies.userId;
     // Implement conditional returning of some properties
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
             id: req.params.id,
-        } }, USER_SELECT)));
+        } }, userHelpers_1.USER_POSTS_SELECT)));
 });
 exports.getUserById = getUserById;
 const getUserPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const userId = req.cookies.userId;
     // Implement conditional returning of some properties
-    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique({
-        where: {
-            name: req.params.name,
-        },
-        select: {
-            id: true,
-        },
-    }));
+    const name = req.params.name;
+    const user = yield (0, userHelpers_1.getUserPostsFromName)(name, {}, req, res);
     if (user == null) {
         return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
     }
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
-            name: req.params.name,
-        } }, USER_SELECT))).then((user) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield (0, formatPosts_1.formatPostContainer)(user, req, res);
-    }));
+    return user;
 });
 exports.getUserPosts = getUserPosts;
-const USER_COMMENT_SELECT = {
-    select: {
-        id: true,
-        name: true,
-        comments: {
-            orderBy: {
-                createdAt: "desc",
-            },
-            select: {
-                id: true,
-                body: true,
-                post: {
-                    select: {
-                        id: true,
-                        title: true,
-                        subreddit: { select: { name: true } },
-                        user: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                    },
-                },
-                _count: { select: { likes: true, dislikes: true } },
-                createdAt: true,
-                parentId: true,
-            },
-        },
-    },
-};
 const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const userId = req.cookies.userId;
     // Implement conditional returning of some properties
-    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: {
-            name: req.params.name,
-        } }, USER_COMMENT_SELECT)));
+    const name = req.params.name;
+    if (name == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Provide user name"));
+    }
+    const user = yield (0, userHelpers_1.getUserCommentsFromId)(req.params.name, {});
     if (user == null) {
         return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
     }
@@ -272,15 +241,15 @@ const unfollowUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.unfollowUser = unfollowUser;
 const getUserPageInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const user = yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findFirst({
+    const desiredUser = yield app_1.prisma.user.findFirst({
         where: {
             name: req.params.name,
         },
         select: {
             id: true,
         },
-    }));
-    if (user == null) {
+    });
+    if (desiredUser == null) {
         return res.send(app_1.app.httpErrors.internalServerError("User does not exist"));
     }
     const userId = req.cookies.userId;
@@ -298,12 +267,12 @@ const getUserPageInfo = (req, res) => __awaiter(void 0, void 0, void 0, function
             },
         });
         const ids = (_a = queryingUser === null || queryingUser === void 0 ? void 0 : queryingUser.followedUsers) === null || _a === void 0 ? void 0 : _a.map((u) => u.id);
-        user.followedByMe = ids && ids.includes(user.id);
+        desiredUser.followedByMe = ids && ids.includes(desiredUser.id);
     }
     else {
-        user.followedByMe = false;
+        desiredUser.followedByMe = false;
     }
-    return user;
+    return desiredUser;
 });
 exports.getUserPageInfo = getUserPageInfo;
 const getFollowsAndSubscribes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

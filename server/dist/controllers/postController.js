@@ -9,24 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePost = exports.deletePost = exports.createPost = exports.getPost = exports.getHomePagePosts = exports.getAllPosts = void 0;
+exports.updatePost = exports.deletePost = exports.createPost = exports.getPost = exports.getHomePagePosts = exports.getAllPosts = exports.getPosts = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const subredditController_1 = require("./subredditController");
 const formatPosts_1 = require("./utils/formatPosts");
 const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
+const userHelpers_1 = require("./utils/userHelpers");
+const getPosts = (moreOptions, req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findMany(Object.assign({ orderBy: {
+            updatedAt: "desc",
+        }, select: Object.assign({}, subredditController_1.POST_FIELDS) }, moreOptions))).then((posts) => (0, formatPosts_1.formatPostContainer)({ posts }, req, res));
+});
+exports.getPosts = getPosts;
 // GET - /posts
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post
-        .findMany({
-        orderBy: {
-            createdAt: "desc",
-        },
-        select: Object.assign({}, subredditController_1.POST_FIELDS),
-    })
-        .then((posts) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield (0, formatPosts_1.formatPostContainer)({ posts }, req, res);
-    })));
+    return (0, exports.getPosts)({}, req, res);
 });
 exports.getAllPosts = getAllPosts;
 const getHomePagePosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,46 +32,8 @@ const getHomePagePosts = (req, res) => __awaiter(void 0, void 0, void 0, functio
     if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
         return res.send(null);
     }
-    const user = yield app_1.prisma.user.findFirst({
-        where: {
-            id: userId,
-        },
-        select: {
-            followedUsers: {
-                select: {
-                    id: true,
-                },
-            },
-            subbedTo: {
-                select: {
-                    id: true,
-                },
-            },
-        },
-    });
-    const subIds = user === null || user === void 0 ? void 0 : user.subbedTo.map((sub) => sub.id);
-    const userIds = user === null || user === void 0 ? void 0 : user.followedUsers.map((u) => u.id);
-    const posts = yield app_1.prisma.post.findMany({
-        where: {
-            OR: [
-                {
-                    subredditId: {
-                        in: subIds,
-                    },
-                },
-                {
-                    userId: {
-                        in: userIds,
-                    },
-                },
-            ],
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-        select: Object.assign({}, subredditController_1.POST_FIELDS),
-    });
-    return yield (0, formatPosts_1.formatPostContainer)({ posts }, req, res);
+    const { subIds, userIds } = yield (0, userHelpers_1.getFollowsOfUser)(userId);
+    return yield (0, exports.getPosts)((0, userHelpers_1.USER_FOLLOW_WHERE_FIELDS)(subIds, userIds), req, res);
 });
 exports.getHomePagePosts = getHomePagePosts;
 const POST_COMMENT_FIELDS = {

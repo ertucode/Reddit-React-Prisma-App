@@ -13,6 +13,7 @@ export const UserLink: React.FC<UserLinkProps> = ({ user }) => {
 			to={userLink(user)}
 			onClick={(e) => {
 				e.stopPropagation();
+				window.scrollTo(0, 0);
 			}}
 		>
 			u/{user.name}{" "}

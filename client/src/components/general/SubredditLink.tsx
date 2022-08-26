@@ -13,6 +13,7 @@ export const SubredditLink: React.FC<UserLinkProps> = ({ subreddit }) => {
 			to={`/r/${subreddit.name}`}
 			onClick={(e) => {
 				e.stopPropagation();
+				window.scrollTo(0, 0);
 			}}
 		>
 			r/{subreddit.name}

@@ -7,6 +7,7 @@ declare interface ISubreddit {
 	description: string;
 	_count: { subscribedUsers: number };
 	subscribedByMe: boolean;
+	scrollIndex: number | string;
 }
 
 declare interface IUser {
@@ -30,6 +31,8 @@ declare interface IUser {
 		likedPosts: number;
 		dislikedPosts: number;
 	};
+	karma: number;
+	scrollIndex: number | string;
 }
 
 declare interface IPost {
@@ -51,6 +54,7 @@ declare interface IPost {
 		comments: number;
 	};
 	likedByMe: -1 | 0 | 1;
+	scrollIndex: number | string;
 }
 
 declare interface IComment {
@@ -72,6 +76,7 @@ declare interface IComment {
 		dislikes: number;
 	};
 	likedByMe: -1 | 0 | 1;
+	scrollIndex: number | string;
 }
 
 declare interface IPostLike {

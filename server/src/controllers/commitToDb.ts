@@ -1,9 +1,8 @@
-import {app} from "../app"
+import { app } from "../app";
 
-export async function commitToDb(promise: Promise<any>) {
-    const [error, data]: [any, any] = await app.to(promise)
+export async function commitToDb<T>(promise: Promise<T>) {
+	const [error, data]: [any, T] = await app.to(promise);
 
-    if (error) return app.httpErrors.internalServerError(error.message) // Status code 500
-    return data
+	if (error) return app.httpErrors.internalServerError(error.message); // Status code 500
+	return data;
 }
-

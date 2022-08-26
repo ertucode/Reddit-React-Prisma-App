@@ -2,7 +2,6 @@ import fastify from "fastify";
 import sensible from "@fastify/sensible";
 import cookie from "@fastify/cookie";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 
 import { postRoutes } from "./routes/post";
 import { subredditRoutes } from "./routes/subreddit";
@@ -11,6 +10,7 @@ import { likeRoutes } from "./routes/like";
 import { authRoutes } from "./routes/auth";
 import { userRoutes } from "./routes/user";
 import { searchRoutes } from "./routes/search";
+import { infiniteRoutes } from "./routes/infinite_scroll";
 
 import cors from "@fastify/cors";
 
@@ -64,6 +64,7 @@ app.register(subredditRoutes);
 app.register(commentRoutes);
 app.register(likeRoutes);
 app.register(searchRoutes);
+app.register(infiniteRoutes);
 
 export { app };
 export { prisma };

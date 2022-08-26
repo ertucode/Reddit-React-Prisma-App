@@ -71,13 +71,16 @@ const getSubredditByName = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.getSubredditByName = getSubredditByName;
 const getSubredditDescriptionAndSubbed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const subreddit = yield (0, commitToDb_1.commitToDb)(app_1.prisma.subreddit.findUnique({
+    const desiredSubreddit = yield app_1.prisma.subreddit.findUnique({
         where: { name: req.params.name },
         select: {
             id: true,
             description: true,
         },
-    }));
+    });
+    if (desiredSubreddit == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Subreddit does not exist"));
+    }
     const userId = req.cookies.userId;
     if (!(0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
         const user = yield app_1.prisma.user.findUnique({
@@ -89,12 +92,13 @@ const getSubredditDescriptionAndSubbed = (req, res) => __awaiter(void 0, void 0,
             },
         });
         const ids = (_a = user === null || user === void 0 ? void 0 : user.subbedTo) === null || _a === void 0 ? void 0 : _a.map((sub) => sub.id);
-        subreddit.subscribedByMe = ids && ids.includes(subreddit.id);
+        desiredSubreddit.subscribedByMe =
+            ids && ids.includes(desiredSubreddit.id);
     }
     else {
-        subreddit.subscribedByMe = false;
+        desiredSubreddit.subscribedByMe = false;
     }
-    return subreddit;
+    return desiredSubreddit;
 });
 exports.getSubredditDescriptionAndSubbed = getSubredditDescriptionAndSubbed;
 // PUT - /subreddit

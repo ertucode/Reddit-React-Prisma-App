@@ -54,3 +54,17 @@ type SearchCallback = (
 	}>,
 	res: FastifyReply
 ) => void;
+
+type SearchRequest = Parameters<SearchCallback>[0];
+
+type InfiniteScrollFastifyCallback = (
+	req: FastifyRequest<{
+		Params: {
+			query: string;
+			scrollIndex: string;
+		};
+	}>,
+	res: FastifyReply
+) => void;
+
+type InfiniteScrollRequest = Parameters<InfiniteScrollFastifyCallback>[0];

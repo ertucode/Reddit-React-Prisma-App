@@ -2,9 +2,13 @@ import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
 
 import bcrypt from "bcrypt";
-import { POST_FIELDS } from "./subredditController";
-import { formatPostContainer } from "./utils/formatPosts";
 import { checkEarlyReturn } from "./utils/checkEarlyReturn";
+import {
+	getUserPostsFromName,
+	USER_POSTS_SELECT,
+	USER_COMMENTS_SELECT,
+	getUserCommentsFromId,
+} from "./utils/userHelpers";
 
 // PUT -
 export const updateUser: UserFastifyCallback = async (req, res) => {
@@ -94,7 +98,7 @@ export const getUserFromCookie: UserFastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("You are not logged in"));
 	}
 
-	return await commitToDb(
+	const user = await commitToDb(
 		prisma.user.findUnique({
 			where: {
 				id: userId,
@@ -102,25 +106,45 @@ export const getUserFromCookie: UserFastifyCallback = async (req, res) => {
 			select: {
 				id: true,
 				name: true,
+				posts: {
+					select: {
+						_count: {
+							select: { likes: true, dislikes: true },
+						},
+					},
+				},
+				comments: {
+					select: {
+						_count: {
+							select: { likes: true, dislikes: true },
+						},
+					},
+				},
 			},
 		})
 	);
+
+	if (user == null) return user;
+
+	return {
+		...user,
+		karma: 2 * getLikeDiff(user.posts) + getLikeDiff(user.comments),
+	};
 };
 
-const USER_SELECT = {
-	select: {
-		id: true,
-		name: true,
-		posts: {
-			orderBy: {
-				createdAt: "desc" as const,
-			},
-			select: {
-				...POST_FIELDS,
-			},
-		},
-	},
-};
+function getLikeDiff(
+	list: {
+		_count: {
+			likes: number;
+			dislikes: number;
+		};
+	}[]
+) {
+	return list.reduce(
+		(prev, curr) => prev + curr._count.likes - curr._count.dislikes,
+		0
+	);
+}
 
 export const getUserById: UserFastifyCallback = async (req, res) => {
 	const userId = req.cookies.userId;
@@ -132,7 +156,7 @@ export const getUserById: UserFastifyCallback = async (req, res) => {
 			where: {
 				id: req.params.id,
 			},
-			...USER_SELECT,
+			...USER_POSTS_SELECT,
 		})
 	);
 };
@@ -141,76 +165,28 @@ export const getUserPosts: UserFastifyCallback = async (req, res) => {
 	// const userId = req.cookies.userId;
 	// Implement conditional returning of some properties
 
-	const user = await commitToDb(
-		prisma.user.findUnique({
-			where: {
-				name: req.params.name,
-			},
-			select: {
-				id: true,
-			},
-		})
-	);
+	const name = req.params.name;
+
+	const user = await getUserPostsFromName(name, {}, req, res);
 
 	if (user == null) {
 		return res.send(app.httpErrors.badRequest("Username does not exist"));
 	}
 
-	return await commitToDb(
-		prisma.user.findUnique({
-			where: {
-				name: req.params.name,
-			},
-			...USER_SELECT,
-		})
-	).then(async (user) => {
-		return await formatPostContainer(user, req, res);
-	});
-};
-
-const USER_COMMENT_SELECT = {
-	select: {
-		id: true,
-		name: true,
-		comments: {
-			orderBy: {
-				createdAt: "desc" as const,
-			},
-			select: {
-				id: true,
-				body: true,
-				post: {
-					select: {
-						id: true,
-						title: true,
-						subreddit: { select: { name: true } },
-						user: {
-							select: {
-								name: true,
-							},
-						},
-					},
-				},
-				_count: { select: { likes: true, dislikes: true } },
-				createdAt: true,
-				parentId: true,
-			},
-		},
-	},
+	return user;
 };
 
 export const getUserComments: UserFastifyCallback = async (req, res) => {
 	// const userId = req.cookies.userId;
 	// Implement conditional returning of some properties
 
-	const user = await commitToDb(
-		prisma.user.findUnique({
-			where: {
-				name: req.params.name,
-			},
-			...USER_COMMENT_SELECT,
-		})
-	);
+	const name = req.params.name;
+
+	if (name == null) {
+		return res.send(app.httpErrors.badRequest("Provide user name"));
+	}
+
+	const user = await getUserCommentsFromId(req.params.name, {});
 
 	if (user == null) {
 		return res.send(app.httpErrors.badRequest("Username does not exist"));
@@ -341,18 +317,18 @@ export const unfollowUser: UserFastifyCallback = async (req, res) => {
 };
 
 export const getUserPageInfo: UserFastifyCallback = async (req, res) => {
-	const user = await commitToDb(
-		prisma.user.findFirst({
-			where: {
-				name: req.params.name,
-			},
-			select: {
-				id: true,
-			},
-		})
-	);
+	type DesiredUser = { id: string; followedByMe?: boolean } | null;
 
-	if (user == null) {
+	const desiredUser: DesiredUser = await prisma.user.findFirst({
+		where: {
+			name: req.params.name,
+		},
+		select: {
+			id: true,
+		},
+	});
+
+	if (desiredUser == null) {
 		return res.send(
 			app.httpErrors.internalServerError("User does not exist")
 		);
@@ -376,12 +352,12 @@ export const getUserPageInfo: UserFastifyCallback = async (req, res) => {
 
 		const ids = queryingUser?.followedUsers?.map((u) => u.id);
 
-		user.followedByMe = ids && ids.includes(user.id);
+		desiredUser.followedByMe = ids && ids.includes(desiredUser.id);
 	} else {
-		user.followedByMe = false;
+		desiredUser.followedByMe = false;
 	}
 
-	return user;
+	return desiredUser;
 };
 
 export const getFollowsAndSubscribes: UserFastifyCallback = async (

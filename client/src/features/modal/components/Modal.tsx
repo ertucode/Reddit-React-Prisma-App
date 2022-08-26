@@ -27,7 +27,7 @@ export const Modal: React.FC<ModalProps> = ({
 		return () => {
 			document.removeEventListener("keydown", escFunction, false);
 		};
-	}, []);
+	}, [setOpen]);
 
 	return open
 		? ReactDom.createPortal(

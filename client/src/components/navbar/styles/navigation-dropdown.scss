@@ -1,3 +1,5 @@
+@use "styles/media";
+
 $home-size: 1.25rem;
 
 .svg-group {
@@ -15,6 +17,10 @@ $home-size: 1.25rem;
 	max-width: 250px;
 	position: relative;
 
+	@include media.media-600 {
+		flex: 0;
+	}
+
 	&__card {
 		padding: 0.5rem;
 
@@ -30,6 +36,14 @@ $home-size: 1.25rem;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			max-width: 170px;
+		}
+
+		@include media.media-600 {
+			.current-location {
+				display: none;
+			}
+
+			padding: 0;
 		}
 
 		&:hover {

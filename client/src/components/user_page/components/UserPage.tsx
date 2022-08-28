@@ -1,5 +1,7 @@
 import { useUser } from "contexts/UserContext";
 import { BodyHeader } from "features/body_header/BodyHeader";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
+import { PlaceholderPostList } from "features/post_list/components/PostList";
 import { useAsync, useAsyncFn } from "hooks/useAsync";
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
@@ -41,6 +43,8 @@ export const UserPage: React.FC = () => {
 		setLocalUser(user);
 	}, [user]);
 
+	const showNotification = useNotification();
+
 	const onFollowClicked = async () => {
 		followUserFn
 			.execute(userName)
@@ -50,21 +54,42 @@ export const UserPage: React.FC = () => {
 						// Typescript is annoying
 						return { ...prevUser, followedByMe: true };
 				});
+				showNotification({
+					type: "success",
+					message: `Followed r/${userName}`,
+				});
 			})
-			.catch((e) => console.log(e));
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to follow r/${userName}`,
+				});
+				console.log(e);
+			});
 	};
 
 	const onUnfollowClicked = async () => {
 		unfollowUserFn
 			.execute(userName)
-			.then(() =>
+			.then(() => {
 				setLocalUser((prevUser) => {
 					if (prevUser)
 						// Typescript is annoying
 						return { ...prevUser, followedByMe: false };
-				})
-			)
-			.catch((e) => console.log(e));
+				});
+
+				showNotification({
+					type: "success",
+					message: `Unfollowed r/${userName}`,
+				});
+			})
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to unfollow r/${userName}`,
+				});
+				console.log(e);
+			});
 	};
 
 	return (
@@ -72,7 +97,7 @@ export const UserPage: React.FC = () => {
 			{userLoading ? (
 				<UserLoadingPage />
 			) : userDoesNoTExist ? (
-				<div>User Error Page</div>
+				<NoUserPage />
 			) : (
 				<>
 					<BodyHeader
@@ -120,8 +145,27 @@ export const UserPage: React.FC = () => {
 	);
 };
 
-interface UserPageProps {}
+export const UserLoadingPage: React.FC = () => {
+	const mockName = "loading";
 
-export const UserLoadingPage: React.FC<UserPageProps> = ({}) => {
-	return <div>UserPage</div>;
+	return (
+		<>
+			<BodyHeader header="_" />
+
+			<ul className="page-navigation">
+				<li>
+					<NavLink to={`/u/${mockName}/posts`}>Posts</NavLink>
+				</li>
+				<li>
+					<NavLink to={`/u/${mockName}/comments`}>Comments</NavLink>
+				</li>
+			</ul>
+
+			<PlaceholderPostList />
+		</>
+	);
+};
+
+const NoUserPage = () => {
+	return <div style={{ marginTop: "1rem" }}>User does not exist</div>;
 };

@@ -1,13 +1,12 @@
 import "./styles.scss";
 import { signUp } from "services/user";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useAsyncFn } from "hooks/useAsync";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "contexts/UserContext";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 
 export const SignUp: React.FC = () => {
-	const [error, setError] = useState("");
-
 	const nameRef = useRef<HTMLInputElement>(null);
 	const passRef = useRef<HTMLInputElement>(null);
 	const passConfRef = useRef<HTMLInputElement>(null);
@@ -19,6 +18,8 @@ export const SignUp: React.FC = () => {
 
 	const { loading, execute: signUpFn } = useAsyncFn(signUp);
 
+	const showNotification = useNotification();
+
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -28,16 +29,28 @@ export const SignUp: React.FC = () => {
 		const email = emailRef.current!.value;
 
 		if (pass !== passConf) {
-			setError("Passwords do not match");
+			showNotification({
+				type: "error",
+				message: "Passwords do not match",
+				time: 4000,
+			});
 			return;
 		}
-		setError("");
 		signUpFn(name, email, pass)
 			.then((u) => {
 				navigate("/login");
+				showNotification({
+					type: "success",
+					message: "Signed up",
+				});
 			})
 			.catch((err) => {
-				setError(JSON.stringify(err));
+				showNotification({
+					type: "error",
+					message: `Failed to login (${err})`,
+					time: 5000,
+				});
+				console.log(err);
 			});
 	};
 
@@ -69,11 +82,9 @@ export const SignUp: React.FC = () => {
 				<label htmlFor="Email">Email</label>
 				<input type="email" id="Email" ref={emailRef} required></input>
 				<button disabled={loading} type="submit">
-					Create Account
+					{loading ? "Loading" : "Create Account"}
 				</button>
 			</form>
-			{loading && <div>Loading</div>}
-			{error && <div>{error}</div>}
 		</div>
 	);
 };

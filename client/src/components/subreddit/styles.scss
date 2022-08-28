@@ -9,7 +9,7 @@
 
 .post-form-modal {
 	padding: 1rem;
-	width: min(90ch, 100% - 1rem);
+	min-width: 50ch;
 	background-color: var(--card-bg-color);
 	border-radius: 0.3rem;
 

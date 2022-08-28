@@ -1,18 +1,21 @@
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 import { useAsyncFn } from "hooks/useAsync";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createSubreddit } from "services/subreddit";
 
-interface SubredditFormProps {}
+interface SubredditFormProps {
+	setOpen: (open: boolean) => void;
+}
 
-export const SubredditForm: React.FC<SubredditFormProps> = () => {
+export const SubredditForm: React.FC<SubredditFormProps> = ({ setOpen }) => {
 	const [subDesc, setSubDesc] = useState("");
 	const [subName, setSubName] = useState("");
 
-	const {
-		loading,
-		error,
-		execute: createSubredditFn,
-	} = useAsyncFn(createSubreddit);
+	const { loading, execute: createSubredditFn } = useAsyncFn(createSubreddit);
+
+	const showNotification = useNotification();
+	const navigate = useNavigate();
 
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -21,11 +24,19 @@ export const SubredditForm: React.FC<SubredditFormProps> = () => {
 
 		createSubredditFn(subName, subDesc)
 			.then(() => {
-				// Created notification
+				showNotification({
+					type: "success",
+					message: `Created r/${subName}`,
+				});
+				navigate(`/r/${subName}`);
 			})
 			.catch((e: any) => {
-				console.log(e);
+				showNotification({
+					type: "error",
+					message: `${e}`,
+				});
 			});
+		setOpen(false);
 	}
 
 	return (
@@ -45,7 +56,6 @@ export const SubredditForm: React.FC<SubredditFormProps> = () => {
 			<button className="generic-btn" disabled={loading} type="submit">
 				{loading ? "Loading" : "Create subreddit"}
 			</button>
-			{error && <div>{error}</div>}
 		</form>
 	);
 };

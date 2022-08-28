@@ -5,14 +5,16 @@
 	transform: translate(-50%, -50%);
 	z-index: 10000;
 
-	.modal-button {
-		display: none;
-	}
+	display: grid;
+	align-items: center;
+
+	border: 2px solid rgb(156, 143, 143);
+	border-radius: 4px;
 }
 
 .modal-overlay {
 	position: fixed;
 	inset: 0;
-	background-color: rgba(0, 0, 0, 0.7);
+	background-color: rgba(0, 0, 0, 0.8);
 	z-index: 10000;
 }

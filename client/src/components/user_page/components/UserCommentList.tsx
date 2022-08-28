@@ -115,7 +115,7 @@ export const UserCommentList: React.FC<UserCommentListProps> = ({
 	);
 };
 
-const UserCommentLoading: React.FC = () => {
+export const UserCommentLoading: React.FC = () => {
 	return (
 		<div className="post-list">
 			<div className="user-comment-loading card">

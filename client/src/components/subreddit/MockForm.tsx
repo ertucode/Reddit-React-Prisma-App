@@ -19,14 +19,16 @@ export const MockForm: React.FC = () => {
 				}}
 			></input>
 			{open && (
-				<Modal setOpen={setOpen} modalClassName="post-form-modal">
-					<PostForm
-						subredditName={subredditName || ""}
-						changeLocalPosts={(action: any) => {
-							setOpen(false);
-							changeLocalPosts(action);
-						}}
-					/>
+				<Modal setOpen={setOpen}>
+					<div className="post-form-modal">
+						<PostForm
+							subredditName={subredditName || ""}
+							changeLocalPosts={(action: any) => {
+								setOpen(false);
+								changeLocalPosts(action);
+							}}
+						/>
+					</div>
 				</Modal>
 			)}
 		</div>

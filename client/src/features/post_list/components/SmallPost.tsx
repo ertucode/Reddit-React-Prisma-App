@@ -1,12 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { DownvoteButton, UpvoteButton } from "components/icons/icons";
 import { useAsyncFn } from "hooks/useAsync";
 import { togglePostLikeDislike } from "services/post";
 import { ToggleOptions } from "services/comment";
 
 import { ReactComponent as CommentSvg } from "../svg/comment.svg";
 import { PostHeader } from "components/post/PostHeader";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
+import {
+	loginToVote,
+	UpvoteDownvote,
+} from "features/upvote_downvote/UpvoteDownvote";
 
 interface SmallPostProps {
 	post: IPost;
@@ -21,6 +25,8 @@ export const SmallPost: React.FC<SmallPostProps> = ({
 }) => {
 	const togglePostLikeDislikeFn = useAsyncFn(togglePostLikeDislike);
 
+	const showNotification = useNotification();
+
 	async function onTogglePostLikeDislike(option: ToggleOptions) {
 		return togglePostLikeDislikeFn
 			.execute(post?.id, option)
@@ -32,20 +38,19 @@ export const SmallPost: React.FC<SmallPostProps> = ({
 						change,
 					},
 				});
+			})
+			.catch((e) => {
+				loginToVote(e, showNotification);
 			});
 	}
 
 	return (
 		<div className="small-post">
 			<section className="small-post__like-section">
-				<UpvoteButton
-					isActive={post.likedByMe === 1}
-					onClick={() => onTogglePostLikeDislike("Like")}
-				/>
-				<div>{post._count.likes - post._count.dislikes}</div>
-				<DownvoteButton
-					isActive={post.likedByMe === -1}
-					onClick={() => onTogglePostLikeDislike("Dislike")}
+				<UpvoteDownvote
+					post={post}
+					upvoteCb={() => onTogglePostLikeDislike("Like")}
+					downvoteCb={() => onTogglePostLikeDislike("Dislike")}
 				/>
 			</section>
 			<section className={`${mini ? "mini-post-right" : ""}`}>

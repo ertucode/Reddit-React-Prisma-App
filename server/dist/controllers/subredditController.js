@@ -111,6 +111,14 @@ const createSubreddit = (req, res) => __awaiter(void 0, void 0, void 0, function
     if (name == null || name == "") {
         return res.send(app_1.app.httpErrors.badRequest("Include a name"));
     }
+    const subExists = yield app_1.prisma.subreddit.findUnique({
+        where: {
+            name,
+        },
+    });
+    if (subExists) {
+        return res.send(app_1.app.httpErrors.badRequest("A subreddit with the same name exists"));
+    }
     const description = req.body.description;
     if (description == null || description == "") {
         return res.send(app_1.app.httpErrors.badRequest("Include a description"));

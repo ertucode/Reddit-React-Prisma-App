@@ -135,6 +135,18 @@ export const getUserCommentsFromId = async (
 	);
 };
 
+export const getUserCommentsFromName = async (
+	name: string,
+	extraOptions: Prisma.CommentFindManyArgs
+) => {
+	return await commitToDb(
+		prisma.user.findUnique({
+			where: { name },
+			...USER_COMMENTS_SELECT(extraOptions),
+		})
+	);
+};
+
 export const sendUserCommentsFromId = async (
 	id: string,
 	extraOptions: Prisma.CommentFindManyArgs,

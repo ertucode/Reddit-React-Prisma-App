@@ -42,7 +42,6 @@ export const NavigationDropdown: React.FC = () => {
 	};
 
 	const onOptionPicked = () => {
-		setOpen(false);
 		window.scrollTo(0, 0);
 	};
 
@@ -66,10 +65,10 @@ export const NavigationDropdown: React.FC = () => {
 	return (
 		<div className="navigation">
 			<div
-				className="navigation__card"
+				className="navigation__card prevent-select"
 				tabIndex={0}
 				aria-label="Open navigation dropdown"
-				onFocus={() => setOpen(true)}
+				onClick={() => setOpen((o) => !o)}
 				onBlur={onBlurEvent}
 			>
 				<span className="current-location">

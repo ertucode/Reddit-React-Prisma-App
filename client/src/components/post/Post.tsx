@@ -1,6 +1,5 @@
 import { usePost } from "contexts/PostContext";
 import React from "react";
-import { DownvoteButton, UpvoteButton } from "components/icons/icons";
 
 import "./styles.scss";
 import { CommentList } from "./CommentList";
@@ -9,22 +8,25 @@ import { useAsyncFn } from "hooks/useAsync";
 import { createComment, ToggleOptions } from "services/comment";
 import { togglePostLikeDislike } from "services/post";
 import { PostHeader } from "./PostHeader";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
+import {
+	loginToVote,
+	UpvoteDownvote,
+} from "features/upvote_downvote/UpvoteDownvote";
 
 interface PostProps {}
 
 export const Post: React.FC<PostProps> = () => {
 	const { post, rootComments, changeLocalComments, toggleLocalPostLike } =
 		usePost();
-	const {
-		loading,
-		error,
-		execute: createCommentFn,
-	} = useAsyncFn(createComment);
+	const { loading, execute: createCommentFn } = useAsyncFn(createComment);
 	const togglePostLikeDislikeFn = useAsyncFn(togglePostLikeDislike);
 
+	const showNotification = useNotification();
+
 	async function onCommentCreate(body: string) {
-		return createCommentFn({ postId: post?.id, body }).then(
-			(comment: IComment) => {
+		return createCommentFn({ postId: post?.id, body })
+			.then((comment: IComment) => {
 				// CHECK THIS
 				changeLocalComments({
 					type: "create",
@@ -32,14 +34,21 @@ export const Post: React.FC<PostProps> = () => {
 						comment: { ...comment },
 					},
 				});
-			}
-		);
+			})
+			.catch((e) => {
+				loginToCreateComment(e, showNotification);
+			});
 	}
 
 	async function onTogglePostLikeDislike(option: ToggleOptions) {
-		return togglePostLikeDislikeFn.execute(post?.id, option).then((e) => {
-			toggleLocalPostLike(post?.id || "", e);
-		});
+		return togglePostLikeDislikeFn
+			.execute(post?.id, option)
+			.then((e) => {
+				toggleLocalPostLike(post?.id || "", e);
+			})
+			.catch((e) => {
+				loginToVote(e, showNotification);
+			});
 	}
 
 	return post ? (
@@ -47,14 +56,12 @@ export const Post: React.FC<PostProps> = () => {
 			<div className="post-card">
 				<section className="post-card__top-section">
 					<section className="post-card__like-section">
-						<UpvoteButton
-							isActive={post.likedByMe === 1}
-							onClick={() => onTogglePostLikeDislike("Like")}
-						/>
-						<div>{post._count.likes - post._count.dislikes}</div>
-						<DownvoteButton
-							isActive={post.likedByMe === -1}
-							onClick={() => onTogglePostLikeDislike("Dislike")}
+						<UpvoteDownvote
+							post={post}
+							upvoteCb={() => onTogglePostLikeDislike("Like")}
+							downvoteCb={() =>
+								onTogglePostLikeDislike("Dislike")
+							}
 						/>
 					</section>
 					<section className="post-card__right-section">
@@ -65,11 +72,7 @@ export const Post: React.FC<PostProps> = () => {
 						</main>
 					</section>
 				</section>
-				<CommentForm
-					loading={loading}
-					error={error}
-					onSubmit={onCommentCreate}
-				/>
+				<CommentForm loading={loading} onSubmit={onCommentCreate} />
 				<section className="post-card__comments">
 					<CommentList comments={rootComments} />
 				</section>
@@ -79,3 +82,17 @@ export const Post: React.FC<PostProps> = () => {
 		<div>Loading</div>
 	);
 };
+
+export function loginToCreateComment(
+	e: any,
+	showNotification: (props: NotificationInput) => void
+) {
+	if (e === "You are not logged in") {
+		showNotification({
+			type: "error",
+			message: "Login to create a comment",
+		});
+	} else {
+		console.log(e);
+	}
+}

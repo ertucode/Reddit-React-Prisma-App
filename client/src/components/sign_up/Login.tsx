@@ -1,13 +1,12 @@
 import "./styles.scss";
 import { login } from "services/user";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAsyncFn } from "hooks/useAsync";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "contexts/UserContext";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 
 export const Login: React.FC = () => {
-	const [error, setError] = useState("");
-
 	const nameRef = useRef<HTMLInputElement>(null);
 	const passRef = useRef<HTMLInputElement>(null);
 
@@ -17,13 +16,14 @@ export const Login: React.FC = () => {
 
 	const { loading, execute: loginFn } = useAsyncFn(login);
 
+	const showNotification = useNotification();
+
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		const name = nameRef.current!.value;
 		const pass = passRef.current!.value;
 
-		setError("");
 		loginFn(name, pass)
 			.then((u) => {
 				changeCurrentUser({
@@ -34,7 +34,11 @@ export const Login: React.FC = () => {
 				});
 			})
 			.catch((err) => {
-				setError(JSON.stringify(err));
+				showNotification({
+					type: "error",
+					message: `Failed to login (${err})`,
+				});
+				console.log(err);
 			});
 	};
 
@@ -57,11 +61,9 @@ export const Login: React.FC = () => {
 					required
 				></input>
 				<button disabled={loading} type="submit">
-					Login
+					{loading ? "Loading" : "Login"}
 				</button>
 			</form>
-			{loading && <div>Loading</div>}
-			{error && <div>{error}</div>}
 		</div>
 	);
 };

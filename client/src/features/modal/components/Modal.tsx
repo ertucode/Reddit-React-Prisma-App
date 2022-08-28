@@ -5,14 +5,9 @@ import "../styles/modal.scss";
 interface ModalProps {
 	children: React.ReactNode;
 	setOpen: (open: boolean) => void;
-	modalClassName: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({
-	children,
-	setOpen,
-	modalClassName,
-}) => {
+export const Modal: React.FC<ModalProps> = ({ children, setOpen }) => {
 	useEffect(() => {
 		function escFunction(e: KeyboardEvent) {
 			if (e.key === "Escape") {
@@ -30,7 +25,9 @@ export const Modal: React.FC<ModalProps> = ({
 	return ReactDom.createPortal(
 		<>
 			<div className="modal-overlay" onClick={() => setOpen(false)}></div>
-			<div className={`modal-body ${modalClassName}`}>{children}</div>
+			<div className="modal-body" onClick={(e) => e.stopPropagation()}>
+				{children}
+			</div>
 		</>,
 		document.getElementById("root") as Element
 	);

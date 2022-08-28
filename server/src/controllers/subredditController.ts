@@ -137,6 +137,18 @@ export const createSubreddit: SubredditFastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Include a name"));
 	}
 
+	const subExists = await prisma.subreddit.findUnique({
+		where: {
+			name,
+		},
+	});
+
+	if (subExists) {
+		return res.send(
+			app.httpErrors.badRequest("A subreddit with the same name exists")
+		);
+	}
+
 	const description = req.body.description;
 
 	if (description == null || description == "") {

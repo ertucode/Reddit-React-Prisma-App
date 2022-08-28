@@ -1,4 +1,4 @@
-import React, { ReactComponentElement } from "react";
+import React from "react";
 import { ReactComponent as UpvoteFilled } from "./svg/upvote-filled.svg";
 import { ReactComponent as UpvoteEmpty } from "./svg/upvote.svg";
 import { ReactComponent as DownvoteFilled } from "./svg/downvote-filled.svg";

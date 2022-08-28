@@ -1,4 +1,5 @@
 @use "styles/animations";
+@use "styles/media";
 
 *,
 *::before,
@@ -59,6 +60,10 @@ textarea {
 	border-radius: 4px;
 	line-height: 21px;
 	border: 1px solid var(--border-color);
+
+	@include media.media-600 {
+		padding: 0.5rem 0.5rem;
+	}
 }
 
 button {
@@ -148,10 +153,17 @@ article {
 	@include animations.animate-loading;
 }
 
+.prevent-select {
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
 /* SCROLLBAR */
 
 ::-webkit-scrollbar {
 	width: 0.5em;
+	height: 0.5em;
 
 	&-track {
 		margin-block: 0.5em;

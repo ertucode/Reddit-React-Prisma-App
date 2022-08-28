@@ -11,6 +11,7 @@ import { useAsyncFn } from "hooks/useAsync";
 import { logoutUser } from "services/user";
 import { SubredditForm } from "./SubredditForm";
 import { Modal } from "features/modal/components/Modal";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 
 interface NavbarUserCardProps {}
 
@@ -30,16 +31,36 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 
+	const showNotification = useNotification();
+
 	function onLogout() {
-		logout().then(() => {
-			changeCurrentUser({ type: "logout" });
-		});
+		logout()
+			.then(() => {
+				changeCurrentUser({ type: "logout" });
+				showNotification({
+					type: "success",
+					message: "Logged out",
+				});
+			})
+			.catch((e) => {
+				console.log(e);
+				showNotification({
+					type: "error",
+					message: "Failed to log out",
+				});
+			});
 	}
 
 	return (
 		<div
-			className={`navbar-item user-card ${open ? "expanded" : ""}`}
-			onClick={() => setOpen((e) => !e)}
+			className={`navbar-item user-card ${
+				open ? "expanded" : ""
+			} prevent-select`}
+			onClick={(e) => {
+				if (!(e.target as HTMLDivElement).matches(".modal-overlay")) {
+					setOpen((o) => !o);
+				}
+			}}
 			onBlur={onBlurEvent}
 		>
 			<button className="user-card__button">
@@ -74,11 +95,10 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 					<div>Create subreddit</div>
 				</button>
 				{modalIsOpen && (
-					<Modal
-						setOpen={setModalIsOpen}
-						modalClassName="post-form-modal"
-					>
-						<SubredditForm />
+					<Modal setOpen={setModalIsOpen}>
+						<div className="post-form-modal">
+							<SubredditForm setOpen={setModalIsOpen} />
+						</div>
 					</Modal>
 				)}
 				<button

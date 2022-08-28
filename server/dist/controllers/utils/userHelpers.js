@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromId = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
+exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromId = exports.getUserCommentsFromName = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
 const subredditController_1 = require("../subredditController");
 const app_1 = require("../../app");
 const commitToDb_1 = require("../commitToDb");
@@ -110,6 +110,10 @@ const getUserCommentsFromId = (id, extraOptions) => __awaiter(void 0, void 0, vo
     return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: { id } }, (0, exports.USER_COMMENTS_SELECT)(extraOptions))));
 });
 exports.getUserCommentsFromId = getUserCommentsFromId;
+const getUserCommentsFromName = (name, extraOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.user.findUnique(Object.assign({ where: { name } }, (0, exports.USER_COMMENTS_SELECT)(extraOptions))));
+});
+exports.getUserCommentsFromName = getUserCommentsFromName;
 const sendUserCommentsFromId = (id, extraOptions, req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield (0, exports.getUserCommentsFromId)(id, extraOptions);
     if (user == null) {

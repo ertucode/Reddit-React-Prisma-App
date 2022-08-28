@@ -1,10 +1,13 @@
 import { subredditLink } from "components/general/SubredditLink";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 import { useAsync, useAsyncFn } from "hooks/useAsync";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { searchSubreddits } from "services/search";
 import { joinSubreddit, leaveSubreddit } from "services/subreddit";
 import "../styles/subreddit-search.scss";
+import "../styles/flat-list-loading.scss";
+import { NoMatch } from "./SearchPage";
 
 interface SubredditSearchResultProps {
 	query: string;
@@ -22,6 +25,8 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 	const leaveSubredditFn = useAsyncFn(leaveSubreddit);
 
 	const [localSubs, setLocalSubs] = useState<ISubreddit[]>();
+
+	const showNotification = useNotification();
 
 	useEffect(() => {
 		setLocalSubs(subreddits);
@@ -44,8 +49,18 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 						return prevSub;
 					})
 				);
+				showNotification({
+					type: "success",
+					message: `Joined r/${name}`,
+				});
 			})
-			.catch((e) => console.log(e));
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to join r/${name}`,
+				});
+				console.log(e);
+			});
 	};
 	const onLeaveClicked = async (name: string) => {
 		leaveSubredditFn
@@ -68,52 +83,79 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 						return prevSub;
 					})
 				);
+				showNotification({
+					type: "success",
+					message: `Left r/${name}`,
+				});
 			})
-			.catch((e) => console.log(e));
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to leave r/${name}`,
+				});
+				console.log(e);
+			});
 	};
 
 	return loading ? (
-		<div>"loading"</div>
+		<FlatListLoading />
 	) : error ? (
 		<div>"error"</div>
 	) : (
 		<div className="post-list searched-subreddit__list">
-			{localSubs?.map((subreddit) => (
-				<div key={subreddit.id} className="searched-subreddit">
-					<div className="searched-subreddit__left-side">
-						<header>
-							<Link
-								to={subredditLink(subreddit)}
-							>{`r/${subreddit.name}`}</Link>
-							<span className="sm-info has-left-dot">
-								{subreddit._count.subscribedUsers} Members
-							</span>
-						</header>
-						<div className="searched-subreddit__description">
-							{subreddit.description}
+			{localSubs && localSubs.length > 0 ? (
+				localSubs.map((subreddit) => (
+					<div key={subreddit.id} className="searched-subreddit">
+						<div className="searched-subreddit__left-side">
+							<header>
+								<Link
+									to={subredditLink(subreddit)}
+								>{`r/${subreddit.name}`}</Link>
+								<span className="sm-info has-left-dot">
+									{subreddit._count.subscribedUsers} Members
+								</span>
+							</header>
+							<div className="searched-subreddit__description">
+								{subreddit.description}
+							</div>
+						</div>
+						<div className="searched-subreddit__right-side">
+							{subreddit.subscribedByMe ? (
+								<button
+									className="generic-btn-dark"
+									onClick={() =>
+										onLeaveClicked(subreddit.name)
+									}
+								>
+									Leave
+								</button>
+							) : (
+								<button
+									className="generic-btn"
+									onClick={() => {
+										onJoinClicked(subreddit.name);
+									}}
+								>
+									Join
+								</button>
+							)}
 						</div>
 					</div>
-					<div className="searched-subreddit__right-side">
-						{subreddit.subscribedByMe ? (
-							<button
-								className="generic-btn-dark"
-								onClick={() => onLeaveClicked(subreddit.name)}
-							>
-								Leave
-							</button>
-						) : (
-							<button
-								className="generic-btn"
-								onClick={() => {
-									onJoinClicked(subreddit.name);
-								}}
-							>
-								Join
-							</button>
-						)}
-					</div>
-				</div>
-			))}
+				))
+			) : (
+				<NoMatch type="subreddit" />
+			)}
+		</div>
+	);
+};
+
+export const FlatListLoading: React.FC = () => {
+	return (
+		<div className="post-list flat-list-loading">
+			<div className="loading"></div>
+			<div className="loading"></div>
+			<div className="loading"></div>
+			<div className="loading"></div>
 		</div>
 	);
 };

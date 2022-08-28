@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { commitToDb } from "./commitToDb";
 import { app, prisma } from "../app";
+import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -27,7 +28,7 @@ export const postComment: FastifyCallback = async (req, res) => {
 
 	const userId = req.cookies.userId;
 
-	if (userId == null) {
+	if (checkEarlyReturn(userId)) {
 		return res.send(app.httpErrors.badRequest("You are not logged in"));
 	}
 
@@ -35,7 +36,7 @@ export const postComment: FastifyCallback = async (req, res) => {
 		prisma.comment.create({
 			data: {
 				body: req.body.body,
-				userId,
+				userId: userId!,
 				parentId: req.body.parentId,
 				postId: req.params.id,
 			},

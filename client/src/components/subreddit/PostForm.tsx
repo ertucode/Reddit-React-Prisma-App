@@ -1,4 +1,5 @@
 import { useUser } from "contexts/UserContext";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 import { useAsyncFn } from "hooks/useAsync";
 import { useState } from "react";
 import { createPost } from "services/post";
@@ -15,13 +16,15 @@ export const PostForm: React.FC<PostFormProps> = ({
 	const [postBody, setPostBody] = useState("");
 	const [postTitle, setPostTitle] = useState("");
 
+	const showNotification = useNotification();
+
 	const { loading, error, execute: createPostFn } = useAsyncFn(createPost);
 
 	const { currentUser } = useUser();
 
 	async function onPostCreate(title: string, body: string) {
-		return createPostFn(subredditName, currentUser?.id, title, body).then(
-			(post: IPost) => {
+		return createPostFn(subredditName, currentUser?.id, title, body)
+			.then((post: IPost) => {
 				// CHECK THIS
 				changeLocalPosts({
 					type: "create",
@@ -29,8 +32,18 @@ export const PostForm: React.FC<PostFormProps> = ({
 						post,
 					},
 				});
-			}
-		);
+				showNotification({
+					type: "success",
+					message: "Created a post",
+				});
+			})
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: "Failed to create a post",
+				});
+				console.log(e);
+			});
 	}
 
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

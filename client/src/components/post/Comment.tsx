@@ -18,6 +18,9 @@ import {
 import { useUser } from "contexts/UserContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { CommentHeader } from "./CommentHeader";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
+import { loginToCreateComment } from "./Post";
+import { loginToVote } from "features/upvote_downvote/UpvoteDownvote";
 
 interface CommentProps {
 	comment: IComment;
@@ -43,6 +46,8 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 
 	const childComments = getChildrenComments(comment.id);
 
+	const showNotification = useNotification();
+
 	async function onCreateReply(body: string) {
 		return createReplyFn
 			.execute({ postId: post?.id, body, parentId: comment.id })
@@ -55,6 +60,9 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 				});
 
 				setIsReplying(false);
+			})
+			.catch((e) => {
+				loginToCreateComment(e, showNotification);
 			});
 	}
 
@@ -97,7 +105,8 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 						change,
 					},
 				});
-			});
+			})
+			.catch((e) => loginToVote(e, showNotification));
 	}
 
 	return (
@@ -120,7 +129,6 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 						{isUpdating ? (
 							<CommentForm
 								loading={updateCommentFn.loading}
-								error={updateCommentFn.error}
 								onSubmit={onUpdateComment}
 								autoFocus={true}
 								initialValue={comment.body}
@@ -166,7 +174,6 @@ export const Comment: React.FC<CommentProps> = ({ comment, hide }) => {
 					{isReplying && (
 						<div>
 							<CommentForm
-								error={createReplyFn.error}
 								loading={createReplyFn.loading}
 								onSubmit={onCreateReply}
 								autoFocus={true}

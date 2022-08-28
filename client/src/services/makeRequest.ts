@@ -2,10 +2,10 @@ import axios from "axios";
 
 const api = axios.create({
 	baseURL: process.env.REACT_APP_SERVER_URL,
-	withCredentials: true // For cookies
-})
+	withCredentials: true, // For cookies
+});
 
-export function makeRequest(url: string, options?: any) {
+export async function makeRequest(url: string, options?: any) {
 	return api(url, options)
 		.then((res) => res.data)
 		.catch((error) =>

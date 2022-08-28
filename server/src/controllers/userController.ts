@@ -6,8 +6,7 @@ import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 import {
 	getUserPostsFromName,
 	USER_POSTS_SELECT,
-	USER_COMMENTS_SELECT,
-	getUserCommentsFromId,
+	getUserCommentsFromName,
 } from "./utils/userHelpers";
 
 // PUT -
@@ -186,7 +185,7 @@ export const getUserComments: UserFastifyCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Provide user name"));
 	}
 
-	const user = await getUserCommentsFromId(req.params.name, {});
+	const user = await getUserCommentsFromName(req.params.name, {});
 
 	if (user == null) {
 		return res.send(app.httpErrors.badRequest("Username does not exist"));

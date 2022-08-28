@@ -23,14 +23,18 @@ export const PostList: React.FC<PostListProps> = ({
 		<>
 			{!loading ? (
 				<div className="post-list">
-					{posts?.map((post) => (
-						<SmallPost
-							key={post.id}
-							post={post}
-							mini={mini}
-							changeLocalPosts={changeLocalPosts}
-						/>
-					))}
+					{posts && posts.length > 0 ? (
+						posts.map((post) => (
+							<SmallPost
+								key={post.id}
+								post={post}
+								mini={mini}
+								changeLocalPosts={changeLocalPosts}
+							/>
+						))
+					) : (
+						<div>Looks like there are no posts here..</div>
+					)}
 				</div>
 			) : (
 				<PlaceholderPostList />
@@ -39,7 +43,7 @@ export const PostList: React.FC<PostListProps> = ({
 	);
 };
 
-const PlaceholderPostList: React.FC = () => {
+export const PlaceholderPostList: React.FC = () => {
 	const posts = [];
 	for (let i = 0; i < 2; i++) {
 		posts.push(<PlaceholderPost key={i} />);

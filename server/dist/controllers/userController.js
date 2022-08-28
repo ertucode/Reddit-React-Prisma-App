@@ -145,7 +145,7 @@ const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function
     if (name == null) {
         return res.send(app_1.app.httpErrors.badRequest("Provide user name"));
     }
-    const user = yield (0, userHelpers_1.getUserCommentsFromId)(req.params.name, {});
+    const user = yield (0, userHelpers_1.getUserCommentsFromName)(req.params.name, {});
     if (user == null) {
         return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
     }

@@ -1,0 +1,10 @@
+.flat-list-loading {
+	border-radius: 4px;
+	overflow: hidden;
+
+	div {
+		min-height: 3rem;
+		width: 100%;
+		border: 1px solid var(--border-color);
+	}
+}

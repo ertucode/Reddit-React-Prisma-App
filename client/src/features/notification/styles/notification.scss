@@ -1,0 +1,77 @@
+.notification-wrapper {
+	position: fixed;
+	--width: 15rem;
+	width: var(--width);
+	z-index: 1000;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+
+	.notification-item {
+		--type-width: 12px;
+
+		&:hover {
+			--type-width: 20px;
+			&::after {
+				content: "\00d7";
+				font-size: 1.2rem;
+			}
+		}
+
+		&::after {
+			content: "";
+			position: fixed;
+			inset: 0;
+			width: var(--type-width);
+			color: black;
+			display: grid;
+			place-items: center;
+			transition: width 0.2s, font-size 0.2s;
+			font-size: 0;
+		}
+
+		&.success::after {
+			background-color: #21e924;
+		}
+		&.error::after {
+			background-color: #eb4301;
+		}
+
+		&.show {
+			transform: scale(1);
+		}
+
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+		overflow: hidden;
+		margin-bottom: 20px;
+		transition: transform 0.4s;
+		width: var(--width);
+		cursor: pointer;
+		border: 1px solid rgb(178, 162, 162);
+		border-radius: 4px;
+		background-color: var(--card-bg-color);
+		transform-origin: bottom;
+		transform: scale(0);
+
+		p {
+			margin: 0;
+			margin-left: var(--type-width);
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			overflow-wrap: anywhere;
+			color: white;
+			font-size: 0.9rem;
+		}
+
+		.bar {
+			height: 5px;
+			background-color: white;
+		}
+
+		svg {
+			width: 1.75rem;
+			margin-right: 1rem;
+		}
+	}
+}

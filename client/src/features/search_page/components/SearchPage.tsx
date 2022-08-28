@@ -30,32 +30,40 @@ export const SearchPage: React.FC<SearchPageProps> = () => {
 
 	return (
 		<>
-			<ul className="page-navigation">
-				<li>
-					<NavLink
-						to={`/search/q=${query}/type=post`}
-						className={`${
-							VALID_TYPES.includes(type) ? "" : "active"
-						}`}
-					>
-						Posts
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to={`/search/q=${query}/type=comment`}>
-						Comments
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to={`/search/q=${query}/type=subreddit`}>
-						Subreddits
-					</NavLink>
-				</li>
-				<li>
-					<NavLink to={`/search/q=${query}/type=user`}>Users</NavLink>
-				</li>
-			</ul>
+			<div className="page-navigation-container">
+				<ul className="page-navigation">
+					<li>
+						<NavLink
+							to={`/search/q=${query}/type=post`}
+							className={`${
+								VALID_TYPES.includes(type) ? "" : "active"
+							}`}
+						>
+							Posts
+						</NavLink>
+					</li>
+					<li>
+						<NavLink to={`/search/q=${query}/type=comment`}>
+							Comments
+						</NavLink>
+					</li>
+					<li>
+						<NavLink to={`/search/q=${query}/type=subreddit`}>
+							Subreddits
+						</NavLink>
+					</li>
+					<li>
+						<NavLink to={`/search/q=${query}/type=user`}>
+							Users
+						</NavLink>
+					</li>
+				</ul>
+			</div>
 			<ElementToDisplay query={query} />
 		</>
 	);
+};
+
+export const NoMatch: React.FC<{ type: string }> = ({ type }) => {
+	return <div>Looks like there are no {type}s that match your query</div>;
 };

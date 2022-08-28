@@ -12,6 +12,7 @@ import {
 import { useParams } from "react-router-dom";
 import { MockForm } from "./MockForm";
 import { useAsync, useAsyncFn } from "hooks/useAsync";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 
 interface SubredditProps {}
 
@@ -26,6 +27,8 @@ export const Subreddit: React.FC<SubredditProps> = () => {
 
 	const [localSub, setLocalSub] = useState<ISubreddit>();
 
+	const showNotification = useNotification();
+
 	useEffect(() => {
 		setLocalSub(sub);
 	}, [sub]);
@@ -33,27 +36,47 @@ export const Subreddit: React.FC<SubredditProps> = () => {
 	const onJoinClicked = async () => {
 		joinSubredditFn
 			.execute(subredditName)
-			.then(() =>
+			.then(() => {
 				setLocalSub((prevSub) => {
 					if (prevSub)
 						// Typescript is annoying
 						return { ...prevSub, subscribedByMe: true };
-				})
-			)
-			.catch((e) => console.log(e));
+				});
+				showNotification({
+					type: "success",
+					message: `Joined r/${subredditName}`,
+				});
+			})
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to join r/${subredditName}`,
+				});
+				console.log(e);
+			});
 	};
 
 	const onLeaveClicked = async () => {
 		leaveSubredditFn
 			.execute(subredditName)
-			.then(() =>
+			.then(() => {
 				setLocalSub((prevSub) => {
 					if (prevSub)
 						// Typescript is annoying
 						return { ...prevSub, subscribedByMe: false };
-				})
-			)
-			.catch((e) => console.log(e));
+				});
+				showNotification({
+					type: "success",
+					message: `Left r/${subredditName}`,
+				});
+			})
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to leave r/${subredditName}`,
+				});
+				console.log(e);
+			});
 	};
 
 	return (

@@ -2,7 +2,6 @@ import { useState } from "react";
 
 interface CommentFormProps {
 	loading: boolean;
-	error: any;
 	onSubmit: (comment: string) => Promise<void>;
 	autoFocus?: boolean;
 	initialValue?: string;
@@ -10,7 +9,6 @@ interface CommentFormProps {
 
 export const CommentForm: React.FC<CommentFormProps> = ({
 	loading,
-	error,
 	onSubmit,
 	autoFocus = false,
 	initialValue = "",
@@ -38,7 +36,6 @@ export const CommentForm: React.FC<CommentFormProps> = ({
 			<button className="generic-btn" disabled={loading} type="submit">
 				{loading ? "Loading" : "Comment"}
 			</button>
-			{error && <div>{error}</div>}
 		</form>
 	);
 };

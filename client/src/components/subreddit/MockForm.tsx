@@ -1,11 +1,11 @@
-import { useModal } from "features/modal/contexts/ModalContext";
+import { Modal } from "features/modal/components/Modal";
 import { useMultiplePosts } from "features/post_list/components/PostListWrapper";
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { PostForm } from "./PostForm";
 
 export const MockForm: React.FC = () => {
-	const { setModalOpen, setModalChildren, setModalClassName } = useModal();
+	const [open, setOpen] = useState(false);
 	const { subredditName } = useParams();
 	const { changeLocalPosts } = useMultiplePosts();
 
@@ -15,20 +15,20 @@ export const MockForm: React.FC = () => {
 				placeholder="Create Post"
 				aria-label="Click to create a post"
 				onClick={(e) => {
-					setModalOpen(true);
-					setModalChildren(
-						<PostForm
-							subredditName={subredditName || ""}
-							changeLocalPosts={(action: any) => {
-								setModalOpen(false);
-								changeLocalPosts(action);
-							}}
-						/>
-					);
-					setModalClassName("post-form-modal");
-					e.currentTarget.blur();
+					setOpen(true);
 				}}
 			></input>
+			{open && (
+				<Modal setOpen={setOpen} modalClassName="post-form-modal">
+					<PostForm
+						subredditName={subredditName || ""}
+						changeLocalPosts={(action: any) => {
+							setOpen(false);
+							changeLocalPosts(action);
+						}}
+					/>
+				</Modal>
+			)}
 		</div>
 	);
 };

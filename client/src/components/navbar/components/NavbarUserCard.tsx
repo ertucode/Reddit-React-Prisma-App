@@ -6,11 +6,11 @@ import { ReactComponent as LogoutIcon } from "../svg/logout.svg";
 import { ReactComponent as RedditUserIcon } from "../svg/reddit-profile.svg";
 import { useNavigate } from "react-router-dom";
 import { userLink } from "components/general/UserLink";
-import { useModal } from "features/modal/contexts/ModalContext";
 import { useUser } from "contexts/UserContext";
 import { useAsyncFn } from "hooks/useAsync";
 import { logoutUser } from "services/user";
 import { SubredditForm } from "./SubredditForm";
+import { Modal } from "features/modal/components/Modal";
 
 interface NavbarUserCardProps {}
 
@@ -28,7 +28,7 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 		}
 	};
 
-	const { setModalOpen, setModalChildren, setModalClassName } = useModal();
+	const [modalIsOpen, setModalIsOpen] = useState(false);
 
 	function onLogout() {
 		logout().then(() => {
@@ -65,9 +65,7 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 				<button
 					className="dropdown__button"
 					onClick={() => {
-						setModalChildren(<SubredditForm />);
-						setModalClassName("post-form-modal");
-						setModalOpen(true);
+						setModalIsOpen(true);
 					}}
 					tabIndex={0}
 					aria-label="Create subreddit"
@@ -75,6 +73,14 @@ export const NavbarUserCard: React.FC<NavbarUserCardProps> = () => {
 					<PlusIcon />
 					<div>Create subreddit</div>
 				</button>
+				{modalIsOpen && (
+					<Modal
+						setOpen={setModalIsOpen}
+						modalClassName="post-form-modal"
+					>
+						<SubredditForm />
+					</Modal>
+				)}
 				<button
 					className="dropdown__button"
 					onClick={onLogout}

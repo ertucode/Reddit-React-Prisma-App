@@ -1,4 +1,3 @@
-import { useModal } from "features/modal/contexts/ModalContext";
 import { useAsyncFn } from "hooks/useAsync";
 import React, { useState } from "react";
 import { createSubreddit } from "services/subreddit";
@@ -15,8 +14,6 @@ export const SubredditForm: React.FC<SubredditFormProps> = () => {
 		execute: createSubredditFn,
 	} = useAsyncFn(createSubreddit);
 
-	const { resetModal } = useModal();
-
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		if (subDesc === "") return;
@@ -25,7 +22,6 @@ export const SubredditForm: React.FC<SubredditFormProps> = () => {
 		createSubredditFn(subName, subDesc)
 			.then(() => {
 				// Created notification
-				resetModal();
 			})
 			.catch((e: any) => {
 				console.log(e);

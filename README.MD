@@ -3,12 +3,22 @@
 
     -   Input your db info into the .env file in the server side
 
--   cd client
--   npm install
--   npm run start
+-   Server side
 
--   cd ../server
--   npm install
--   npx prisma migrate dev
--   npx prisma seed
--   npm run watch
+```
+cd client
+npm install
+npm run start
+
+```
+
+-   Client side
+
+```
+cd ../server
+npm install
+npx prisma migrate dev
+npx prisma seed
+npm run watch
+
+```

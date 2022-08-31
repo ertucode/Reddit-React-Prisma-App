@@ -3,7 +3,7 @@
 
     -   Input your db info into the .env file in the server side
 
--   Server side
+-   Client side
 
 ```
 cd client
@@ -12,7 +12,7 @@ npm run start
 
 ```
 
--   Client side
+-   Server side
 
 ```
 cd ../server

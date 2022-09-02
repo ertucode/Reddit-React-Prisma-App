@@ -17,9 +17,11 @@ const formatPosts_1 = require("./utils/formatPosts");
 const checkEarlyReturn_1 = require("./utils/checkEarlyReturn");
 const userHelpers_1 = require("./utils/userHelpers");
 const getPosts = (moreOptions, req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findMany(Object.assign({ orderBy: {
-            updatedAt: "desc",
-        }, select: Object.assign({}, subredditController_1.POST_FIELDS) }, moreOptions))).then((posts) => (0, formatPosts_1.formatPostContainer)({ posts }, req, res));
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.post.findMany(Object.assign({ 
+        // orderBy: {
+        // 	updatedAt: "desc",
+        // },
+        select: Object.assign({}, subredditController_1.POST_FIELDS) }, moreOptions))).then((posts) => (0, formatPosts_1.formatPostContainer)({ posts }, req, res));
 });
 exports.getPosts = getPosts;
 // GET - /posts

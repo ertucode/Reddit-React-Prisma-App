@@ -1,21 +1,21 @@
-import { PostListWrapper } from "features/post_list/components/PostListWrapper";
-import React from "react";
-import { getUserPostsFromName } from "services/user";
+import { PostListWrapperWithInfiniteScroll } from "features/post_list/components/PostListWrapperWithInfiniteScroll";
+import React, { useCallback } from "react";
+import { getInfiniteUserPosts } from "services/infiniteScroll";
 
 interface UserPostListProps {
-	userName: string | undefined;
+	userName: string;
 }
 
 export const UserPostList: React.FC<UserPostListProps> = ({ userName }) => {
-	if (userName == null) return <div>User does not exist</div>;
+	const getter = useCallback(
+		(createdAt: string | undefined) =>
+			getInfiniteUserPosts(createdAt, userName),
+		[userName]
+	);
 
-	return (
-		<PostListWrapper
-			getter={{
-				callback: getUserPostsFromName,
-				params: [userName],
-			}}
-			mini={true}
-		/>
+	return userName === "" ? (
+		<div>User does not exist</div>
+	) : (
+		<PostListWrapperWithInfiniteScroll getter={getter} mini={true} />
 	);
 };

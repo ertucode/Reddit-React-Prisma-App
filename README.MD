@@ -18,7 +18,8 @@ npm run start
 cd ../server
 npm install
 npx prisma migrate dev
-npx prisma seed
+npm i -g ts-node // If you don't have ts-node(node typescript runner)
+npx prisma db seed
 npm run watch
 
 ```

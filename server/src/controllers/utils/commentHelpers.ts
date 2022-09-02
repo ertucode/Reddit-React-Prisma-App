@@ -44,15 +44,17 @@ export const SEARCH_PAGE_COMMENT_SELECT_FIELDS = {
 
 export const getCommentsFromQuery = async (
 	query: string,
-	extraOptions: Prisma.CommentFindManyArgs = {}
+	extraWhereOptions: Prisma.CommentWhereInput = {},
+	extraFindManyArgs: Prisma.CommentFindManyArgs = {}
 ) => {
 	return await commitToDb(
 		prisma.comment.findMany({
 			where: {
 				body: { contains: query, mode: "insensitive" },
+				...extraWhereOptions,
 			},
 			...SEARCH_PAGE_COMMENT_SELECT_FIELDS,
-			...extraOptions,
+			...extraFindManyArgs,
 		})
 	);
 };

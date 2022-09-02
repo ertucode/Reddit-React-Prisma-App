@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromId = exports.getUserCommentsFromName = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
+exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromName = exports.sendUserCommentsFromId = exports.getUserCommentsFromName = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
 const subredditController_1 = require("../subredditController");
 const app_1 = require("../../app");
 const commitToDb_1 = require("../commitToDb");
@@ -117,14 +117,23 @@ exports.getUserCommentsFromName = getUserCommentsFromName;
 const sendUserCommentsFromId = (id, extraOptions, req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield (0, exports.getUserCommentsFromId)(id, extraOptions);
     if (user == null) {
-        return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
+        return res.send(app_1.app.httpErrors.badRequest("User id does not exist"));
     }
     return user;
 });
 exports.sendUserCommentsFromId = sendUserCommentsFromId;
+const sendUserCommentsFromName = (name, extraOptions, req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, exports.getUserCommentsFromName)(name, extraOptions);
+    if (user == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Username does not exist"));
+    }
+    return user;
+});
+exports.sendUserCommentsFromName = sendUserCommentsFromName;
 const USER_SELECT = {
     id: true,
     name: true,
+    createdAt: true,
     _count: {
         select: {
             likedPosts: true,
@@ -133,14 +142,9 @@ const USER_SELECT = {
             dislikedComments: true,
         },
     },
-    scrollIndex: true,
 };
-const getUsersFromQuery = (query, additionalFindManyArgs) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield app_1.prisma.user.findMany(Object.assign(Object.assign({ where: {
-            name: { contains: query, mode: "insensitive" },
-        }, select: Object.assign({}, USER_SELECT) }, additionalFindManyArgs), { orderBy: {
-            scrollIndex: "asc",
-        } }));
+const getUsersFromQuery = (query, additionalFindManyArgs = {}, additionalWhereArgs = {}) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield app_1.prisma.user.findMany(Object.assign({ where: Object.assign({ name: { contains: query, mode: "insensitive" } }, additionalWhereArgs), select: Object.assign({}, USER_SELECT) }, additionalFindManyArgs));
 });
 exports.getUsersFromQuery = getUsersFromQuery;
 const sendUsersWithFollowInfo = (userId, users) => __awaiter(void 0, void 0, void 0, function* () {

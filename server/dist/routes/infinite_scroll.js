@@ -27,14 +27,14 @@ exports.infiniteRoutes = void 0;
 const infiniteScrollController = __importStar(require("../controllers/infiniteScrollController"));
 const infiniteRoutes = (app, options, done) => {
     // Can add validator in the middle
-    app.get("/infinite/post/all_posts/:scrollIndex", infiniteScrollController.getInfiniteAllPosts);
-    app.get("/infinite/post/homepage/:scrollIndex", infiniteScrollController.getInfiniteHomePagePosts);
-    app.get("/infinite/post/user/:scrollIndex", infiniteScrollController.getInfiniteUserPagePosts);
-    app.get("/infinite/search/post/:query/:scrollIndex", infiniteScrollController.getInfinitePostSearchResult);
-    app.get("/infinite/search/comment/:query/:scrollIndex", infiniteScrollController.getInfiniteCommentSearchResult);
-    app.get("/infinite/search/subreddit/:query/:scrollIndex", infiniteScrollController.getInfiniteSubredditSearchResult);
-    app.get("/infinite/search/user/:query/:scrollIndex", infiniteScrollController.getInfiniteUserSearchResult);
-    app.get("/infinite/comments/:scrollIndex", infiniteScrollController.getInfiniteUserPageComments);
+    app.get("/infinite/posts/all_posts/:createdAt", infiniteScrollController.getInfiniteAllPosts);
+    app.get("/infinite/posts/homepage/:createdAt", infiniteScrollController.getInfiniteHomePagePosts);
+    app.get("/infinite/posts/user/:createdAt/:userName", infiniteScrollController.getInfiniteUserPagePosts);
+    app.get("/infinite/search/post/:query/:createdAt", infiniteScrollController.getInfinitePostSearchResult);
+    app.get("/infinite/search/comment/:query/:createdAt", infiniteScrollController.getInfiniteCommentSearchResult);
+    app.get("/infinite/search/subreddit/:query/:createdAt", infiniteScrollController.getInfiniteSubredditSearchResult);
+    app.get("/infinite/search/user/:query/:createdAt", infiniteScrollController.getInfiniteUserSearchResult);
+    app.get("/infinite/comments/user/:createdAt/:userName", infiniteScrollController.getInfiniteUserPageComments);
     done();
 };
 exports.infiniteRoutes = infiniteRoutes;

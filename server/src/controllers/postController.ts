@@ -34,9 +34,9 @@ export const getPosts = async (
 ) => {
 	return await commitToDb(
 		prisma.post.findMany({
-			orderBy: {
-				updatedAt: "desc",
-			},
+			// orderBy: {
+			// 	updatedAt: "desc",
+			// },
 			select: {
 				...POST_FIELDS,
 			},

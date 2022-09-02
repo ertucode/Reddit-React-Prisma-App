@@ -156,6 +156,21 @@ export const sendUserCommentsFromId = async (
 	const user = await getUserCommentsFromId(id, extraOptions);
 
 	if (user == null) {
+		return res.send(app.httpErrors.badRequest("User id does not exist"));
+	}
+
+	return user;
+};
+
+export const sendUserCommentsFromName = async (
+	name: string,
+	extraOptions: Prisma.CommentFindManyArgs,
+	req: ContainerRequest,
+	res: ContainerResponse
+) => {
+	const user = await getUserCommentsFromName(name, extraOptions);
+
+	if (user == null) {
 		return res.send(app.httpErrors.badRequest("Username does not exist"));
 	}
 
@@ -165,6 +180,7 @@ export const sendUserCommentsFromId = async (
 const USER_SELECT = {
 	id: true,
 	name: true,
+	createdAt: true,
 	_count: {
 		select: {
 			likedPosts: true,
@@ -173,24 +189,22 @@ const USER_SELECT = {
 			dislikedComments: true,
 		},
 	},
-	scrollIndex: true,
 };
 
 export const getUsersFromQuery = async (
 	query: string,
-	additionalFindManyArgs: Prisma.UserFindManyArgs
+	additionalFindManyArgs: Prisma.UserFindManyArgs = {},
+	additionalWhereArgs: Prisma.UserWhereInput = {}
 ) => {
 	return await prisma.user.findMany({
 		where: {
 			name: { contains: query, mode: "insensitive" },
+			...additionalWhereArgs,
 		},
 		select: {
 			...USER_SELECT,
 		},
 		...additionalFindManyArgs,
-		orderBy: {
-			scrollIndex: "asc",
-		},
 	});
 };
 

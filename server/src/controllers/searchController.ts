@@ -142,7 +142,7 @@ export const searchComments: SearchCallback = async (req, res) => {
 		return res.send(app.httpErrors.badRequest("Invalid count"));
 	}
 
-	return await getCommentsFromQuery(query, { take: count });
+	return await getCommentsFromQuery(query, {}, { take: count });
 };
 
 const USER_SELECT = {

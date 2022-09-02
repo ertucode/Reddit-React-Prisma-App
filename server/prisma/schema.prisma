@@ -35,6 +35,8 @@ model User {
   password      String        
   email         String        @unique
   scrollIndex  Int      @unique @default(autoincrement())
+
+  createdAt DateTime         @default(now())
   
   comments      Comment[]
   likedComments CommentLike[]
@@ -108,6 +110,9 @@ model Subreddit {
   id     String @id @default(uuid())
   name   String @unique
   description String @default("")
+
+  createdAt DateTime         @default(now()) 
+
   admins User[] @relation("Admin")
   posts  Post[]
 

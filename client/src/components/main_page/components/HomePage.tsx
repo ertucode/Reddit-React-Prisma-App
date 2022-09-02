@@ -1,22 +1,24 @@
 import { NoUserRightSide } from "components/navbar/components/NoUserRightSide";
 import { useUser } from "contexts/UserContext";
-import { PostListWrapper } from "features/post_list/components/PostListWrapper";
-import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getHomePagePosts } from "services/post";
+import { useCallback } from "react";
+import { PostListWrapperWithInfiniteScroll } from "features/post_list/components/PostListWrapperWithInfiniteScroll";
+import { getInfinitePosts } from "services/infiniteScroll";
 
 export const HomePage: React.FC = () => {
 	const { currentUser, loading: loadingUser } = useUser();
 
-	const ref = useRef<HTMLDivElement>(null);
+	const getter = useCallback(
+		(createdAt: string | undefined) =>
+			getInfinitePosts(createdAt, "homepage"),
+		[]
+	);
 
 	return (
-		<div className="main-page-container" ref={ref}>
+		<div className="main-page-container">
 			{!loadingUser &&
 				(currentUser ? (
-					<PostListWrapper
-						getter={{ callback: getHomePagePosts, params: [] }}
-					/>
+					<PostListWrapperWithInfiniteScroll getter={getter} />
 				) : (
 					<NotLoggedHomePage />
 				))}

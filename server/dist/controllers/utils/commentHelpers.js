@@ -51,9 +51,7 @@ exports.SEARCH_PAGE_COMMENT_SELECT_FIELDS = {
         },
     },
 };
-const getCommentsFromQuery = (query, extraOptions = {}) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.comment.findMany(Object.assign(Object.assign({ where: {
-            body: { contains: query, mode: "insensitive" },
-        } }, exports.SEARCH_PAGE_COMMENT_SELECT_FIELDS), extraOptions)));
+const getCommentsFromQuery = (query, extraWhereOptions = {}, extraFindManyArgs = {}) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, commitToDb_1.commitToDb)(app_1.prisma.comment.findMany(Object.assign(Object.assign({ where: Object.assign({ body: { contains: query, mode: "insensitive" } }, extraWhereOptions) }, exports.SEARCH_PAGE_COMMENT_SELECT_FIELDS), extraFindManyArgs)));
 });
 exports.getCommentsFromQuery = getCommentsFromQuery;

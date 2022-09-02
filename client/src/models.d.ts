@@ -8,6 +8,7 @@ declare interface ISubreddit {
 	_count: { subscribedUsers: number };
 	subscribedByMe: boolean;
 	scrollIndex: number | string;
+	createdAt: string;
 }
 
 declare interface IUser {
@@ -33,6 +34,7 @@ declare interface IUser {
 	};
 	karma: number;
 	scrollIndex: number;
+	createdAt: string;
 }
 
 declare interface IPost {

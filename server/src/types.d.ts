@@ -61,7 +61,7 @@ type InfiniteScrollFastifyCallback = (
 	req: FastifyRequest<{
 		Params: {
 			query: string;
-			scrollIndex: string;
+			createdAt: string;
 		};
 	}>,
 	res: FastifyReply

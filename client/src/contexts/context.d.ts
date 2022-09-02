@@ -35,7 +35,7 @@ type SetLocalComments = {
 	};
 };
 
-type SetLocalPosts = {
+type SetLocalPostsAction = {
 	type: "set";
 	payload: {
 		posts: IPost[];
@@ -71,7 +71,7 @@ type DeleteLocalPostAction = {
 	};
 };
 
-type ToggleLocalPostLike = {
+type ToggleLocalPostLikeAction = {
 	type: "toggle";
 	payload: {
 		postId: string;
@@ -79,8 +79,15 @@ type ToggleLocalPostLike = {
 	};
 };
 
-type SetLocalPosts = {
+type SetLocalPostsAction = {
 	type: "set";
+	payload: {
+		posts: IPost[];
+	};
+};
+
+type PushLocalPostsAction = {
+	type: "push";
 	payload: {
 		posts: IPost[];
 	};
@@ -90,5 +97,6 @@ declare type PostReducerAction =
 	| CreateLocalPostAction
 	| UpdateLocalPostAction
 	| DeleteLocalPostAction
-	| ToggleLocalPostLike
-	| setLocalPosts;
+	| ToggleLocalPostLikeAction
+	| SetLocalPostsAction
+	| PushLocalPostsAction;

@@ -21,24 +21,23 @@ export const PostList: React.FC<PostListProps> = ({
 	error && console.log(error);
 	return (
 		<>
-			{!loading ? (
-				<div className="post-list">
-					{posts && posts.length > 0 ? (
-						posts.map((post) => (
-							<SmallPost
-								key={post.id}
-								post={post}
-								mini={mini}
-								changeLocalPosts={changeLocalPosts}
-							/>
-						))
-					) : (
-						<div>Looks like there are no posts here..</div>
-					)}
-				</div>
-			) : (
-				<PlaceholderPostList />
+			<div className="post-list">
+				{posts &&
+					posts.length > 0 &&
+					posts.map((post) => (
+						<SmallPost
+							key={post.id}
+							post={post}
+							mini={mini}
+							changeLocalPosts={changeLocalPosts}
+						/>
+					))}
+			</div>
+			{!loading && posts?.length === 0 && (
+				<div>Looks like there are no posts here..</div>
 			)}
+
+			{loading && <PlaceholderPostList />}
 		</>
 	);
 };

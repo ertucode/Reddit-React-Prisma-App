@@ -12,35 +12,35 @@ const infiniteRoutes: FastifyPluginCallback<postOptions> = (
 	// Can add validator in the middle
 
 	app.get(
-		"/infinite/post/all_posts/:scrollIndex",
+		"/infinite/posts/all_posts/:createdAt",
 		infiniteScrollController.getInfiniteAllPosts
 	);
 	app.get(
-		"/infinite/post/homepage/:scrollIndex",
+		"/infinite/posts/homepage/:createdAt",
 		infiniteScrollController.getInfiniteHomePagePosts
 	);
 	app.get(
-		"/infinite/post/user/:scrollIndex",
+		"/infinite/posts/user/:createdAt/:userName",
 		infiniteScrollController.getInfiniteUserPagePosts
 	);
 	app.get(
-		"/infinite/search/post/:query/:scrollIndex",
+		"/infinite/search/post/:query/:createdAt",
 		infiniteScrollController.getInfinitePostSearchResult
 	);
 	app.get(
-		"/infinite/search/comment/:query/:scrollIndex",
+		"/infinite/search/comment/:query/:createdAt",
 		infiniteScrollController.getInfiniteCommentSearchResult
 	);
 	app.get(
-		"/infinite/search/subreddit/:query/:scrollIndex",
+		"/infinite/search/subreddit/:query/:createdAt",
 		infiniteScrollController.getInfiniteSubredditSearchResult
 	);
 	app.get(
-		"/infinite/search/user/:query/:scrollIndex",
+		"/infinite/search/user/:query/:createdAt",
 		infiniteScrollController.getInfiniteUserSearchResult
 	);
 	app.get(
-		"/infinite/comments/:scrollIndex",
+		"/infinite/comments/user/:createdAt/:userName",
 		infiniteScrollController.getInfiniteUserPageComments
 	);
 

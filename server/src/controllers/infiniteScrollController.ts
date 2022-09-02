@@ -1,41 +1,46 @@
-import { commitToDb } from "./commitToDb";
-import { app, prisma } from "../app";
-import { formatPostContainer } from "./utils/formatPosts";
+import { app } from "../app";
 import { checkEarlyReturn } from "./utils/checkEarlyReturn";
 import { getPosts } from "./postController";
 
 import {
 	getFollowsOfUser,
-	getUserCommentsFromId,
+	getUserCommentsFromName,
 	getUserPostsFromName,
 	getUsersFromQuery,
 	sendUserCommentsFromId,
+	sendUserCommentsFromName,
 	sendUsersWithFollowInfo,
 	USER_FOLLOW_WHERE_FIELDS,
 } from "./utils/userHelpers";
 import { getCommentsFromQuery } from "./utils/commentHelpers";
 import { sendSubredditSearchResult } from "./utils/subredditHelper";
 
-const TAKE_COUNT = 20;
-
-const nextDataLogic = (scrollIndex: number) => {
-	return {
-		take: TAKE_COUNT,
-		skip: 1,
-		cursor: { scrollIndex },
-	};
+// ALWAYS RETURN CREATED AT
+const take = 20;
+const orderBy = { createdAt: "desc" } as const;
+const getWhereForCreatedAt = (createdAt: Date) => {
+	return { createdAt: { lt: createdAt } };
 };
 
 export const getInfiniteAllPosts: InfiniteScrollFastifyCallback = async (
 	req,
 	res
 ) => {
-	const scrollIndex = parseInt(req.params.scrollIndex);
-	if (isNaN(scrollIndex)) {
-		return await getPosts({ take: TAKE_COUNT }, req, res);
-	}
+	const createdAt = parseCreatedAt(req);
 
-	return await getPosts(nextDataLogic(scrollIndex), req, res);
+	if (createdAt) {
+		return await getPosts(
+			{
+				where: getWhereForCreatedAt(createdAt),
+				take,
+				orderBy,
+			},
+			req,
+			res
+		);
+	} else {
+		return await getPosts({ take, orderBy }, req, res);
+	}
 };
 
 export const getInfiniteHomePagePosts: InfiniteScrollFastifyCallback = async (
@@ -43,7 +48,6 @@ export const getInfiniteHomePagePosts: InfiniteScrollFastifyCallback = async (
 	res
 ) => {
 	const userId = req.cookies.userId;
-	const scrollIndex = parseInt(req.params.scrollIndex);
 
 	if (checkEarlyReturn(userId)) {
 		return res.send(null);
@@ -51,147 +55,204 @@ export const getInfiniteHomePagePosts: InfiniteScrollFastifyCallback = async (
 
 	const { subIds, userIds } = await getFollowsOfUser(userId);
 
-	if (isNaN(scrollIndex)) {
+	const createdAt = parseCreatedAt(req);
+
+	if (createdAt) {
+		return await getPosts(
+			{
+				where: {
+					...USER_FOLLOW_WHERE_FIELDS(subIds, userIds).where,
+					...getWhereForCreatedAt(createdAt),
+				},
+				take,
+				orderBy,
+			},
+			req,
+			res
+		);
+	} else {
 		return await getPosts(
 			{
 				...USER_FOLLOW_WHERE_FIELDS(subIds, userIds),
-				take: TAKE_COUNT,
+				take,
+				orderBy,
 			},
 			req,
 			res
 		);
 	}
-
-	return await getPosts(
-		{
-			...USER_FOLLOW_WHERE_FIELDS(subIds, userIds),
-			...nextDataLogic(scrollIndex),
-		},
-		req,
-		res
-	);
 };
 
 export const getInfiniteUserPagePosts: InfiniteScrollFastifyCallback = async (
 	req,
 	res
 ) => {
-	const name = req.params.name;
-	const scrollIndex = parseInt(req.params.scrollIndex);
+	const name = req.params.userName;
 
-	if (req.params.name == null) {
+	if (name == null) {
 		return res.send(app.httpErrors.badRequest("Provide a username"));
 	}
 
-	if (isNaN(scrollIndex)) {
-		return await getUserPostsFromName(name, { take: TAKE_COUNT }, req, res);
-	}
+	const createdAt = parseCreatedAt(req);
 
-	// Most likely wont work
-	return await getUserPostsFromName(
-		name,
-		nextDataLogic(scrollIndex),
-		req,
-		res
-	);
+	if (createdAt) {
+		return await getUserPostsFromName(
+			name,
+			{
+				where: getWhereForCreatedAt(createdAt),
+				take,
+				orderBy,
+			},
+			req,
+			res
+		);
+	} else {
+		return await getUserPostsFromName(name, { take, orderBy }, req, res);
+	}
 };
 
 export const getInfinitePostSearchResult: InfiniteScrollFastifyCallback =
 	async (req, res) => {
 		const query = req.params.query;
-		const scrollIndex = parseInt(req.params.scrollIndex);
 
-		if (isNaN(scrollIndex)) {
+		const createdAt = parseCreatedAt(req);
+
+		if (createdAt) {
+			return await getPosts(
+				{
+					where: {
+						title: { contains: query, mode: "insensitive" },
+						...getWhereForCreatedAt(createdAt),
+					},
+					take,
+					orderBy,
+				},
+				req,
+				res
+			);
+		} else {
 			return await getPosts(
 				{
 					where: { title: { contains: query, mode: "insensitive" } },
-					take: TAKE_COUNT,
+					take,
+					orderBy,
 				},
 				req,
 				res
 			);
 		}
-
-		return await getPosts(
-			{
-				where: { title: { contains: query, mode: "insensitive" } },
-				...nextDataLogic(scrollIndex),
-			},
-			req,
-			res
-		);
 	};
 
 export const getInfiniteUserPageComments: InfiniteScrollFastifyCallback =
 	async (req, res) => {
-		const userId = req.cookies.userId;
-		const scrollIndex = parseInt(req.params.scrollIndex);
+		const name = req.params.userName;
 
-		if (isNaN(scrollIndex)) {
-			return await sendUserCommentsFromId(
-				userId,
-				{ take: TAKE_COUNT },
+		if (name == null) {
+			return res.send(app.httpErrors.badRequest("Provide a username"));
+		}
+
+		const createdAt = parseCreatedAt(req);
+
+		if (createdAt) {
+			return await sendUserCommentsFromName(
+				name,
+				{
+					where: getWhereForCreatedAt(createdAt),
+					take,
+					orderBy,
+				},
+				req,
+				res
+			);
+		} else {
+			return await sendUserCommentsFromName(
+				name,
+				{ take, orderBy },
 				req,
 				res
 			);
 		}
-		return await sendUserCommentsFromId(
-			userId,
-			nextDataLogic(scrollIndex),
-			req,
-			res
-		);
 	};
 
 export const getInfiniteCommentSearchResult: InfiniteScrollFastifyCallback =
 	async (req, res) => {
 		const query = req.params.query;
-		const scrollIndex = parseInt(req.params.scrollIndex);
 
-		if (isNaN(scrollIndex)) {
-			return await getCommentsFromQuery(query, { take: TAKE_COUNT });
+		const createdAt = parseCreatedAt(req);
+
+		if (createdAt) {
+			return await getCommentsFromQuery(
+				query,
+				getWhereForCreatedAt(createdAt),
+				{
+					take,
+					orderBy,
+				}
+			);
+		} else {
+			return await getCommentsFromQuery(
+				query,
+				{},
+				{
+					take,
+					orderBy,
+				}
+			);
 		}
-
-		return await getCommentsFromQuery(query, nextDataLogic(scrollIndex));
 	};
 
 export const getInfiniteSubredditSearchResult: InfiniteScrollFastifyCallback =
 	async (req, res) => {
 		const query = req.params.query;
-		let count = parseInt(req.params.count);
-		const scrollIndex = parseInt(req.params.scrollIndex);
 
-		if (isNaN(count)) {
-			return res.send(app.httpErrors.badRequest("Invalid count"));
+		const createdAt = parseCreatedAt(req);
+
+		if (createdAt) {
+			return await sendSubredditSearchResult(
+				query,
+				req,
+				take,
+				{ orderBy },
+				getWhereForCreatedAt(createdAt)
+			);
+		} else {
+			return await sendSubredditSearchResult(query, req, take, {
+				orderBy,
+			});
 		}
-
-		if (isNaN(scrollIndex)) {
-			return await sendSubredditSearchResult(query, req, TAKE_COUNT);
-		}
-
-		return await sendSubredditSearchResult(
-			query,
-			req,
-			TAKE_COUNT,
-			nextDataLogic(scrollIndex)
-		);
 	};
 
 export const getInfiniteUserSearchResult: InfiniteScrollFastifyCallback =
 	async (req, res) => {
 		const query = req.params.query;
-		const scrollIndex = parseInt(req.params.scrollIndex);
 
-		if (isNaN(scrollIndex)) {
-			const users = await getUsersFromQuery(query, { take: TAKE_COUNT });
-			const userId = req.cookies.userId;
-			return await sendUsersWithFollowInfo(userId, users);
+		const createdAt = parseCreatedAt(req);
+
+		let users;
+
+		if (createdAt) {
+			users = await getUsersFromQuery(
+				query,
+				{ take, orderBy },
+				getWhereForCreatedAt(createdAt)
+			);
+		} else {
+			users = await getUsersFromQuery(query, {
+				take,
+				orderBy,
+			});
 		}
 
-		const users = await getUsersFromQuery(
-			query,
-			nextDataLogic(scrollIndex)
-		);
 		const userId = req.cookies.userId;
 		return await sendUsersWithFollowInfo(userId, users);
 	};
+
+const parseCreatedAt = (req: InfiniteScrollRequest) => {
+	const createdAt = new Date(req.params.createdAt);
+
+	if (isNaN(createdAt.getTime())) {
+		return;
+	}
+
+	return createdAt;
+};

@@ -101,7 +101,7 @@ const searchComments = (req, res) => __awaiter(void 0, void 0, void 0, function*
     if (isNaN(count)) {
         return res.send(app_1.app.httpErrors.badRequest("Invalid count"));
     }
-    return yield (0, commentHelpers_1.getCommentsFromQuery)(query, { take: count });
+    return yield (0, commentHelpers_1.getCommentsFromQuery)(query, {}, { take: count });
 });
 exports.searchComments = searchComments;
 const USER_SELECT = {

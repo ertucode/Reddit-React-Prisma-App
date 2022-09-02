@@ -2,24 +2,39 @@ import { makeRequest } from "./makeRequest";
 
 type PostType = "all_posts" | "homepage" | "user";
 
-export function getInfinitePosts(scrollIndex: string, type: PostType) {
-	return makeRequest(
-		`/infinite/post/${type}/${scrollIndex ? scrollIndex : ""}`
-	);
+export function getInfinitePosts(
+	createdAt: string | undefined,
+	type: PostType
+) {
+	return makeRequest(`/infinite/posts/${type}/${createdAt ? createdAt : ""}`);
 }
 
 type SearchType = "post" | "comment" | "user" | "subreddit";
 
 export function getInfiniteSearchResult(
-	scrollIndex: string,
+	createdAt: string | undefined,
 	type: SearchType,
 	query: string
 ) {
 	return makeRequest(
-		`/infinite/search/${type}/${query}/${scrollIndex ? scrollIndex : ""}`
+		`/infinite/search/${type}/${query}/${createdAt ? createdAt : ""}`
 	);
 }
 
-export function getInfiniteUserComments(scrollIndex: string) {
-	return makeRequest(`infinite/comments/${scrollIndex ? scrollIndex : ""}`);
+export function getInfiniteUserComments(
+	createdAt: string | undefined,
+	userName: string
+) {
+	return makeRequest(
+		`infinite/comments/user/${createdAt ? createdAt : ""}/${userName}`
+	);
+}
+
+export function getInfiniteUserPosts(
+	createdAt: string | undefined,
+	userName: string
+) {
+	return makeRequest(
+		`infinite/posts/user/${createdAt ? createdAt : ""}/${userName}`
+	);
 }

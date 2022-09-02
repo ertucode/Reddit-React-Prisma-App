@@ -27,7 +27,7 @@
 		border: 1px solid rgba(93, 76, 76, 0.5);
 
 		display: grid;
-		grid-template-columns: 2rem auto;
+		grid-template-columns: 2rem calc(100% - 2rem);
 
 		&__like-section {
 			background-color: #141415;

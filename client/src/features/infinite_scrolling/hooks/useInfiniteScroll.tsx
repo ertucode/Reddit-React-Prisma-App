@@ -1,45 +1,51 @@
-import { useAsyncFn } from "hooks/useAsync";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
-export const useInfiniteScroll = <T,>(getter: any) => {
-	const [scrollIndex, setScrollIndex] = useState<number>();
-	const [prevIndex, setPrevIndex] = useState<number>();
+export const useInfiniteScroll = <T,>(
+	getter: any,
+	setter: (data: any) => boolean
+) => {
 	const [isDone, setIsDone] = useState(false);
-	const [data, setData] = useState<T>();
 
-	const { loading, error, execute } = useAsyncFn(getter);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<any>();
 
 	const observer = useRef<IntersectionObserver>();
+
+	const execute = useCallback(() => {
+		if (loading) return;
+		setLoading(true);
+		getter()
+			.then((data: T) => {
+				if (setter(data)) {
+					setIsDone(true);
+				}
+			})
+			.catch((e: any) => {
+				console.log("Wont load more due to error", e);
+				setError(e);
+				setIsDone(true);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
+	}, [getter, setter, loading]);
+
 	const lastDivRef = useCallback(
 		(node: HTMLDivElement) => {
-			if (loading) return;
 			if (observer.current) observer.current.disconnect();
 			observer.current = new IntersectionObserver((entries) => {
 				if (entries[0].isIntersecting && !isDone) {
-					setScrollIndex(prevIndex);
+					execute();
 				}
 			});
 			if (node) observer.current.observe(node);
 		},
-		[loading, isDone, prevIndex]
+		[isDone, execute]
 	);
 
-	useEffect(() => {
-		if (isDone) return;
-		execute(scrollIndex)
-			.then((data) => {
-				if (data == null || data?.length === 0) {
-					setIsDone(true);
-					observer.current?.disconnect();
-					return;
-				}
-				setData(data);
-			})
-			.catch((e) => {
-				console.log(e);
-			});
-		// eslint-disable-next-line
-	}, [scrollIndex]);
+	const LastDiv = (
+		<div ref={lastDivRef} style={{ width: "1px", height: "1px" }}></div>
+	);
 
-	return { loading, error, setPrevIndex, lastDivRef, data };
+	return { loading, error, LastDiv };
 };

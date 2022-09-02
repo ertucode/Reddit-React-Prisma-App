@@ -1,6 +1,6 @@
-import { PostListWrapper } from "features/post_list/components/PostListWrapper";
-import React from "react";
-import { searchPosts } from "services/search";
+import { PostListWrapperWithInfiniteScroll } from "features/post_list/components/PostListWrapperWithInfiniteScroll";
+import React, { useCallback } from "react";
+import { getInfiniteSearchResult } from "services/infiniteScroll";
 
 interface PostSearchResultProps {
 	query: string;
@@ -9,9 +9,11 @@ interface PostSearchResultProps {
 export const PostSearchResult: React.FC<PostSearchResultProps> = ({
 	query,
 }) => {
-	return (
-		<PostListWrapper
-			getter={{ callback: searchPosts, params: [query, 20] }}
-		/>
+	const getter = useCallback(
+		(createdAt: string | undefined) =>
+			getInfiniteSearchResult(createdAt, "post", query),
+		[query]
 	);
+
+	return <PostListWrapperWithInfiniteScroll getter={getter} />;
 };

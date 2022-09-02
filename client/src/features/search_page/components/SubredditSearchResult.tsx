@@ -1,13 +1,15 @@
 import { subredditLink } from "components/general/SubredditLink";
 import { useNotification } from "features/notification/contexts/NotificationProvider";
-import { useAsync, useAsyncFn } from "hooks/useAsync";
-import React, { useEffect, useState } from "react";
+import { useAsyncFn } from "hooks/useAsync";
+import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { searchSubreddits } from "services/search";
 import { joinSubreddit, leaveSubreddit } from "services/subreddit";
 import "../styles/subreddit-search.scss";
 import "../styles/flat-list-loading.scss";
 import { NoMatch } from "./SearchPage";
+import { useInfiniteScroll } from "features/infinite_scrolling/hooks/useInfiniteScroll";
+import { getInfiniteSearchResult } from "services/infiniteScroll";
+import useSetListFromData from "features/search_page/hooks/useSetListFromData";
 
 interface SubredditSearchResultProps {
 	query: string;
@@ -16,21 +18,26 @@ interface SubredditSearchResultProps {
 export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 	query,
 }) => {
-	const {
-		value: subreddits,
-		loading,
-		error,
-	} = useAsync<ISubreddit[]>(() => searchSubreddits(query, 20));
+	const [localSubs, setLocalSubs] = useState<ISubreddit[]>([]);
+
+	const getter = useCallback(
+		() =>
+			getInfiniteSearchResult(
+				localSubs?.at(-1)?.createdAt?.toString(),
+				"subreddit",
+				query
+			),
+		[query, localSubs]
+	);
+
+	const setter = useSetListFromData(localSubs, setLocalSubs);
+
+	const { loading, error, LastDiv } = useInfiniteScroll(getter, setter);
+
 	const joinSubredditFn = useAsyncFn(joinSubreddit);
 	const leaveSubredditFn = useAsyncFn(leaveSubreddit);
 
-	const [localSubs, setLocalSubs] = useState<ISubreddit[]>();
-
 	const showNotification = useNotification();
-
-	useEffect(() => {
-		setLocalSubs(subreddits);
-	}, [subreddits]);
 
 	const onJoinClicked = async (name: string) => {
 		joinSubredditFn
@@ -97,13 +104,12 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 			});
 	};
 
-	return loading ? (
-		<FlatListLoading />
-	) : error ? (
+	return error ? (
 		<div>"error"</div>
 	) : (
 		<div className="post-list searched-subreddit__list">
-			{localSubs && localSubs.length > 0 ? (
+			{localSubs &&
+				localSubs.length > 0 &&
 				localSubs.map((subreddit) => (
 					<div key={subreddit.id} className="searched-subreddit">
 						<div className="searched-subreddit__left-side">
@@ -141,9 +147,12 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 							)}
 						</div>
 					</div>
-				))
+				))}
+			{LastDiv}
+			{loading ? (
+				<div>"loading"</div>
 			) : (
-				<NoMatch type="subreddit" />
+				localSubs.length === 0 && <NoMatch type="subreddit" />
 			)}
 		</div>
 	);

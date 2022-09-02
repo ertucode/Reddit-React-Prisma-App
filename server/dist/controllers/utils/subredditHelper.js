@@ -17,6 +17,7 @@ const SUBREDDIT_SELECT = {
     name: true,
     description: true,
     _count: { select: { subscribedUsers: true } },
+    createdAt: true,
 };
 const getSubredditSearchResult = (query, field, extraFindManyArgs, extraWhereOptions = {}) => __awaiter(void 0, void 0, void 0, function* () {
     return yield app_1.prisma.subreddit.findMany(Object.assign({ where: Object.assign({ [field]: { contains: query, mode: "insensitive" } }, extraWhereOptions), select: Object.assign({}, SUBREDDIT_SELECT) }, extraFindManyArgs));
@@ -58,8 +59,8 @@ const sendSubredditsWithSubscriptionInfo = (userId, subreddits) => __awaiter(voi
     return subreddits;
 });
 exports.sendSubredditsWithSubscriptionInfo = sendSubredditsWithSubscriptionInfo;
-const sendSubredditSearchResult = (query, req, take, additionalFindManyArgs = {}) => __awaiter(void 0, void 0, void 0, function* () {
-    const subreddits = yield (0, exports.getSubredditSearchResult)(query, "name", Object.assign({ take }, additionalFindManyArgs));
+const sendSubredditSearchResult = (query, req, take, additionalFindManyArgs = {}, extraWhereOptions = {}) => __awaiter(void 0, void 0, void 0, function* () {
+    const subreddits = yield (0, exports.getSubredditSearchResult)(query, "name", Object.assign({ take }, additionalFindManyArgs), extraWhereOptions);
     if (!(take <= subreddits.length)) {
         yield (0, exports.addResultsFromDescription)(query, Object.assign(Object.assign({}, additionalFindManyArgs), { take: take - subreddits.length }), subreddits);
     }

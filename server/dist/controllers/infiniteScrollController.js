@@ -16,101 +16,152 @@ const postController_1 = require("./postController");
 const userHelpers_1 = require("./utils/userHelpers");
 const commentHelpers_1 = require("./utils/commentHelpers");
 const subredditHelper_1 = require("./utils/subredditHelper");
-const TAKE_COUNT = 20;
-const nextDataLogic = (scrollIndex) => {
-    return {
-        take: TAKE_COUNT,
-        skip: 1,
-        cursor: { scrollIndex },
-    };
+// ALWAYS RETURN CREATED AT
+const take = 20;
+const orderBy = { createdAt: "desc" };
+const getWhereForCreatedAt = (createdAt) => {
+    return { createdAt: { lt: createdAt } };
 };
 const getInfiniteAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(scrollIndex)) {
-        return yield (0, postController_1.getPosts)({ take: TAKE_COUNT }, req, res);
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, postController_1.getPosts)({
+            where: getWhereForCreatedAt(createdAt),
+            take,
+            orderBy,
+        }, req, res);
     }
-    return yield (0, postController_1.getPosts)(nextDataLogic(scrollIndex), req, res);
+    else {
+        return yield (0, postController_1.getPosts)({ take, orderBy }, req, res);
+    }
 });
 exports.getInfiniteAllPosts = getInfiniteAllPosts;
 const getInfiniteHomePagePosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.cookies.userId;
-    const scrollIndex = parseInt(req.params.scrollIndex);
     if ((0, checkEarlyReturn_1.checkEarlyReturn)(userId)) {
         return res.send(null);
     }
     const { subIds, userIds } = yield (0, userHelpers_1.getFollowsOfUser)(userId);
-    if (isNaN(scrollIndex)) {
-        return yield (0, postController_1.getPosts)(Object.assign(Object.assign({}, (0, userHelpers_1.USER_FOLLOW_WHERE_FIELDS)(subIds, userIds)), { take: TAKE_COUNT }), req, res);
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, postController_1.getPosts)({
+            where: Object.assign(Object.assign({}, (0, userHelpers_1.USER_FOLLOW_WHERE_FIELDS)(subIds, userIds).where), getWhereForCreatedAt(createdAt)),
+            take,
+            orderBy,
+        }, req, res);
     }
-    return yield (0, postController_1.getPosts)(Object.assign(Object.assign({}, (0, userHelpers_1.USER_FOLLOW_WHERE_FIELDS)(subIds, userIds)), nextDataLogic(scrollIndex)), req, res);
+    else {
+        return yield (0, postController_1.getPosts)(Object.assign(Object.assign({}, (0, userHelpers_1.USER_FOLLOW_WHERE_FIELDS)(subIds, userIds)), { take,
+            orderBy }), req, res);
+    }
 });
 exports.getInfiniteHomePagePosts = getInfiniteHomePagePosts;
 const getInfiniteUserPagePosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const name = req.params.name;
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (req.params.name == null) {
+    const name = req.params.userName;
+    if (name == null) {
         return res.send(app_1.app.httpErrors.badRequest("Provide a username"));
     }
-    if (isNaN(scrollIndex)) {
-        return yield (0, userHelpers_1.getUserPostsFromName)(name, { take: TAKE_COUNT }, req, res);
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, userHelpers_1.getUserPostsFromName)(name, {
+            where: getWhereForCreatedAt(createdAt),
+            take,
+            orderBy,
+        }, req, res);
     }
-    // Most likely wont work
-    return yield (0, userHelpers_1.getUserPostsFromName)(name, nextDataLogic(scrollIndex), req, res);
+    else {
+        return yield (0, userHelpers_1.getUserPostsFromName)(name, { take, orderBy }, req, res);
+    }
 });
 exports.getInfiniteUserPagePosts = getInfiniteUserPagePosts;
 const getInfinitePostSearchResult = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.params.query;
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(scrollIndex)) {
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
         return yield (0, postController_1.getPosts)({
-            where: { title: { contains: query, mode: "insensitive" } },
-            take: TAKE_COUNT,
+            where: Object.assign({ title: { contains: query, mode: "insensitive" } }, getWhereForCreatedAt(createdAt)),
+            take,
+            orderBy,
         }, req, res);
     }
-    return yield (0, postController_1.getPosts)(Object.assign({ where: { title: { contains: query, mode: "insensitive" } } }, nextDataLogic(scrollIndex)), req, res);
+    else {
+        return yield (0, postController_1.getPosts)({
+            where: { title: { contains: query, mode: "insensitive" } },
+            take,
+            orderBy,
+        }, req, res);
+    }
 });
 exports.getInfinitePostSearchResult = getInfinitePostSearchResult;
 const getInfiniteUserPageComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.cookies.userId;
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(scrollIndex)) {
-        return yield (0, userHelpers_1.sendUserCommentsFromId)(userId, { take: TAKE_COUNT }, req, res);
+    const name = req.params.userName;
+    if (name == null) {
+        return res.send(app_1.app.httpErrors.badRequest("Provide a username"));
     }
-    return yield (0, userHelpers_1.sendUserCommentsFromId)(userId, nextDataLogic(scrollIndex), req, res);
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, userHelpers_1.sendUserCommentsFromName)(name, {
+            where: getWhereForCreatedAt(createdAt),
+            take,
+            orderBy,
+        }, req, res);
+    }
+    else {
+        return yield (0, userHelpers_1.sendUserCommentsFromName)(name, { take, orderBy }, req, res);
+    }
 });
 exports.getInfiniteUserPageComments = getInfiniteUserPageComments;
 const getInfiniteCommentSearchResult = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.params.query;
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(scrollIndex)) {
-        return yield (0, commentHelpers_1.getCommentsFromQuery)(query, { take: TAKE_COUNT });
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, commentHelpers_1.getCommentsFromQuery)(query, getWhereForCreatedAt(createdAt), {
+            take,
+            orderBy,
+        });
     }
-    return yield (0, commentHelpers_1.getCommentsFromQuery)(query, nextDataLogic(scrollIndex));
+    else {
+        return yield (0, commentHelpers_1.getCommentsFromQuery)(query, {}, {
+            take,
+            orderBy,
+        });
+    }
 });
 exports.getInfiniteCommentSearchResult = getInfiniteCommentSearchResult;
 const getInfiniteSubredditSearchResult = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.params.query;
-    let count = parseInt(req.params.count);
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(count)) {
-        return res.send(app_1.app.httpErrors.badRequest("Invalid count"));
+    const createdAt = parseCreatedAt(req);
+    if (createdAt) {
+        return yield (0, subredditHelper_1.sendSubredditSearchResult)(query, req, take, { orderBy }, getWhereForCreatedAt(createdAt));
     }
-    if (isNaN(scrollIndex)) {
-        return yield (0, subredditHelper_1.sendSubredditSearchResult)(query, req, TAKE_COUNT);
+    else {
+        return yield (0, subredditHelper_1.sendSubredditSearchResult)(query, req, take, {
+            orderBy,
+        });
     }
-    return yield (0, subredditHelper_1.sendSubredditSearchResult)(query, req, TAKE_COUNT, nextDataLogic(scrollIndex));
 });
 exports.getInfiniteSubredditSearchResult = getInfiniteSubredditSearchResult;
 const getInfiniteUserSearchResult = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const query = req.params.query;
-    const scrollIndex = parseInt(req.params.scrollIndex);
-    if (isNaN(scrollIndex)) {
-        const users = yield (0, userHelpers_1.getUsersFromQuery)(query, { take: TAKE_COUNT });
-        const userId = req.cookies.userId;
-        return yield (0, userHelpers_1.sendUsersWithFollowInfo)(userId, users);
+    const createdAt = parseCreatedAt(req);
+    let users;
+    if (createdAt) {
+        users = yield (0, userHelpers_1.getUsersFromQuery)(query, { take, orderBy }, getWhereForCreatedAt(createdAt));
     }
-    const users = yield (0, userHelpers_1.getUsersFromQuery)(query, nextDataLogic(scrollIndex));
+    else {
+        users = yield (0, userHelpers_1.getUsersFromQuery)(query, {
+            take,
+            orderBy,
+        });
+    }
     const userId = req.cookies.userId;
     return yield (0, userHelpers_1.sendUsersWithFollowInfo)(userId, users);
 });
 exports.getInfiniteUserSearchResult = getInfiniteUserSearchResult;
+const parseCreatedAt = (req) => {
+    const createdAt = new Date(req.params.createdAt);
+    if (isNaN(createdAt.getTime())) {
+        return;
+    }
+    return createdAt;
+};

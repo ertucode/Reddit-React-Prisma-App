@@ -7,6 +7,7 @@ const SUBREDDIT_SELECT = {
 	name: true,
 	description: true,
 	_count: { select: { subscribedUsers: true } },
+	createdAt: true,
 };
 
 export const getSubredditSearchResult = async (
@@ -39,6 +40,7 @@ export const addResultsFromDescription = async (
 		extraFindManyArgs,
 		{ NOT: { id: { in: subredditIds } } }
 	);
+
 	subreddits.push(...extraSubreddits);
 };
 
@@ -79,12 +81,18 @@ export const sendSubredditSearchResult = async (
 	query: string,
 	req: SearchRequest,
 	take: number,
-	additionalFindManyArgs: Prisma.SubredditFindManyArgs = {}
+	additionalFindManyArgs: Prisma.SubredditFindManyArgs = {},
+	extraWhereOptions: Prisma.SubredditWhereInput = {}
 ) => {
-	const subreddits = await getSubredditSearchResult(query, "name", {
-		take,
-		...additionalFindManyArgs,
-	});
+	const subreddits = await getSubredditSearchResult(
+		query,
+		"name",
+		{
+			take,
+			...additionalFindManyArgs,
+		},
+		extraWhereOptions
+	);
 
 	if (!(take <= subreddits.length)) {
 		await addResultsFromDescription(

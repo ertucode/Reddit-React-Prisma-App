@@ -19,9 +19,7 @@ export function logoutUser() {
 }
 
 export function getUserFromCookie() {
-	return makeRequest(`/users/cookie`, {
-		method: "GET",
-	});
+	return makeRequest(`/user_cookie`);
 }
 
 export function getUserPageInfo(name: string) {
@@ -39,17 +37,17 @@ export function getUserCommentsFromName(name: string, count: number) {
 }
 
 export function followUser(name: string) {
-	return makeRequest(`/user/follow/${name}`, {
+	return makeRequest(`/user_follow/${name}`, {
 		method: "PUT",
 	});
 }
 
 export function unfollowUser(name: string) {
-	return makeRequest(`/user/unfollow/${name}`, {
+	return makeRequest(`/user_unfollow/${name}`, {
 		method: "PUT",
 	});
 }
 
 export function getFollowsAndSubscribes() {
-	return makeRequest(`/user/all_follow/`);
+	return makeRequest(`/user_all_follow`);
 }

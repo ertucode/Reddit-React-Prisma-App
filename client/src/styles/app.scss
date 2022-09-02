@@ -8,6 +8,10 @@
 	color: #c8cbcd;
 }
 
+:root {
+	scroll-behavior: smooth;
+}
+
 body {
 	--body-bg-color: #030303;
 	--card-bg-color: #1a1a1b;
@@ -177,4 +181,8 @@ article {
 			background-color: hsl(0, 2%, 42%);
 		}
 	}
+}
+
+* {
+	scrollbar-width: thin;
 }

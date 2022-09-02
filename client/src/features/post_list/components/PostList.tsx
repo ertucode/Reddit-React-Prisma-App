@@ -9,6 +9,7 @@ interface PostListProps {
 	mini?: boolean;
 	loading: boolean;
 	error: any;
+	isDone?: boolean | undefined;
 }
 
 export const PostList: React.FC<PostListProps> = ({
@@ -17,6 +18,7 @@ export const PostList: React.FC<PostListProps> = ({
 	changeLocalPosts,
 	loading,
 	error,
+	isDone,
 }) => {
 	error && console.log(error);
 	return (
@@ -33,7 +35,7 @@ export const PostList: React.FC<PostListProps> = ({
 						/>
 					))}
 			</div>
-			{!loading && posts?.length === 0 && (
+			{isDone && posts?.length === 0 && (
 				<div>Looks like there are no posts here..</div>
 			)}
 

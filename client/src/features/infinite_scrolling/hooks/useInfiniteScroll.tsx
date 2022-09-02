@@ -47,5 +47,5 @@ export const useInfiniteScroll = <T,>(
 		<div ref={lastDivRef} style={{ width: "1px", height: "1px" }}></div>
 	);
 
-	return { loading, error, LastDiv };
+	return { loading, error, LastDiv, isDone };
 };

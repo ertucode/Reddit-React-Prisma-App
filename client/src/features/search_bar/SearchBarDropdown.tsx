@@ -1,3 +1,4 @@
+import { KDiv } from "features/keyboard_interactable_div_link/KDiv";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ResultType } from "./SearchBar";
@@ -56,7 +57,7 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 		<div className="search-bar__dropdown">
 			{searchResults?.map((opt) => {
 				return (
-					<div
+					<KDiv
 						key={opt.id}
 						className="search-bar__dropdown__option"
 						onClick={(e) => onDropdownClick(opt, e)}
@@ -65,10 +66,10 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 					>
 						<div>{opt.name}</div>
 						<div className="sm-info">{opt.type}</div>
-					</div>
+					</KDiv>
 				);
 			})}
-			<div
+			<KDiv
 				className="search-bar__dropdown__fallback search-bar__dropdown__option"
 				tabIndex={0}
 				aria-label={"Search for your query"}
@@ -79,7 +80,7 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 			>
 				<Magnifier />
 				<div>Search for {query}</div>
-			</div>
+			</KDiv>
 		</div>
 	);
 };

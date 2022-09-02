@@ -98,7 +98,10 @@ export const PostListWrapperWithInfiniteScroll: React.FC<
 		[posts, changeLocalPosts]
 	);
 
-	const { loading, error, LastDiv } = useInfiniteScroll(getter_, setter);
+	const { loading, error, LastDiv, isDone } = useInfiniteScroll(
+		getter_,
+		setter
+	);
 
 	return (
 		<MultiplePostsContext.Provider
@@ -114,6 +117,7 @@ export const PostListWrapperWithInfiniteScroll: React.FC<
 				changeLocalPosts={changeLocalPosts}
 				loading={loading}
 				error={error}
+				isDone={isDone}
 			/>
 			{LastDiv}
 		</MultiplePostsContext.Provider>

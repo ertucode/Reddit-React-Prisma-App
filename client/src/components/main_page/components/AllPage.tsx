@@ -10,5 +10,9 @@ export const AllPage: React.FC = () => {
 		[]
 	);
 
-	return <PostListWrapperWithInfiniteScroll getter={getter} />;
+	return (
+		<div className="main-page-container">
+			<PostListWrapperWithInfiniteScroll getter={getter} />
+		</div>
+	);
 };

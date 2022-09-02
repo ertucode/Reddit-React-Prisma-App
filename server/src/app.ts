@@ -35,10 +35,11 @@ app.register(cookie, { secret: process.env.COOKIE_SECRET });
 
 app.addHook("onRequest", async (req, res) => {
 	const userId = getUserIdFromToken(req);
+
 	if (userId != null) {
 		req.cookies.userId = userId;
 	} else {
-		res.setCookie("userId", "");
+		res.setCookie("userToken", "");
 	}
 });
 

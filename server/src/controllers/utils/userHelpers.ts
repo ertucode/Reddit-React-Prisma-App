@@ -240,3 +240,22 @@ export const sendUsersWithFollowInfo = async (
 	}
 	return users;
 };
+
+export const MAIN_USER_SELECT = Prisma.validator<Prisma.UserSelect>()({
+	id: true,
+	name: true,
+	posts: {
+		select: {
+			_count: {
+				select: { likes: true, dislikes: true },
+			},
+		},
+	},
+	comments: {
+		select: {
+			_count: {
+				select: { likes: true, dislikes: true },
+			},
+		},
+	},
+});

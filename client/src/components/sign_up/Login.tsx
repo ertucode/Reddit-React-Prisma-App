@@ -32,6 +32,10 @@ export const Login: React.FC = () => {
 						user: u,
 					},
 				});
+				showNotification({
+					type: "success",
+					message: "Logged in",
+				});
 			})
 			.catch((err) => {
 				showNotification({

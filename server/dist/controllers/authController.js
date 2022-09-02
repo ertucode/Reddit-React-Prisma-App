@@ -17,6 +17,8 @@ const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const userController_1 = require("./userController");
+const userHelpers_1 = require("./utils/userHelpers");
 // POST - /signup
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.body.name === "" || req.body.name == null) {
@@ -60,6 +62,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         where: {
             name: req.body.name,
         },
+        select: Object.assign(Object.assign({}, userHelpers_1.MAIN_USER_SELECT), { password: true }),
     });
     if (user == null) {
         return res.send(app_1.app.httpErrors.badRequest("Invalid username"));
@@ -70,8 +73,12 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
     res.setCookie("userToken", token);
-    const { name, email } = user;
-    res.send({ id: user.id, name, email });
+    const { name } = user;
+    res.send({
+        id: user.id,
+        name,
+        karma: 2 * (0, userController_1.getLikeDiff)(user.posts) + (0, userController_1.getLikeDiff)(user.comments),
+    });
 });
 exports.loginUser = loginUser;
 const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

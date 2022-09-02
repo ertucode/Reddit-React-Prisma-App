@@ -57,6 +57,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 		setOpen(false);
 	};
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		console.log(e);
+	};
+
 	return (
 		<form
 			className={`${className} search-bar `}
@@ -70,6 +74,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 				value={query}
 				onChange={onQueryChange}
 				ref={inputRef}
+				onKeyDown={(e) => handleKeyDown(e)}
 			/>
 			{open && (
 				<SearchBarDropdown

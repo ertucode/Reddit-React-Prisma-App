@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromName = exports.sendUserCommentsFromId = exports.getUserCommentsFromName = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
+exports.MAIN_USER_SELECT = exports.sendUsersWithFollowInfo = exports.getUsersFromQuery = exports.sendUserCommentsFromName = exports.sendUserCommentsFromId = exports.getUserCommentsFromName = exports.getUserCommentsFromId = exports.getUserPostsFromName = exports.USER_COMMENTS_SELECT = exports.USER_POSTS_SELECT = exports.USER_FOLLOW_WHERE_FIELDS = exports.getFollowsOfUser = void 0;
 const subredditController_1 = require("../subredditController");
 const app_1 = require("../../app");
 const commitToDb_1 = require("../commitToDb");
 const formatPosts_1 = require("./formatPosts");
+const client_1 = require("@prisma/client");
 const checkEarlyReturn_1 = require("./checkEarlyReturn");
 const getFollowsOfUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield app_1.prisma.user.findFirst({
@@ -177,3 +178,21 @@ const sendUsersWithFollowInfo = (userId, users) => __awaiter(void 0, void 0, voi
     return users;
 });
 exports.sendUsersWithFollowInfo = sendUsersWithFollowInfo;
+exports.MAIN_USER_SELECT = client_1.Prisma.validator()({
+    id: true,
+    name: true,
+    posts: {
+        select: {
+            _count: {
+                select: { likes: true, dislikes: true },
+            },
+        },
+    },
+    comments: {
+        select: {
+            _count: {
+                select: { likes: true, dislikes: true },
+            },
+        },
+    },
+});

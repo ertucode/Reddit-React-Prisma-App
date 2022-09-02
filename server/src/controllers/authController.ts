@@ -4,6 +4,8 @@ import { app, prisma } from "../app";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { getLikeDiff } from "./userController";
+import { MAIN_USER_SELECT } from "./utils/userHelpers";
 
 type FastifyCallback = (
 	req: FastifyRequest<{
@@ -73,6 +75,10 @@ export const loginUser: FastifyCallback = async (req, res) => {
 		where: {
 			name: req.body.name,
 		},
+		select: {
+			...MAIN_USER_SELECT,
+			password: true,
+		},
 	});
 
 	if (user == null) {
@@ -92,9 +98,13 @@ export const loginUser: FastifyCallback = async (req, res) => {
 
 	res.setCookie("userToken", token);
 
-	const { name, email } = user;
+	const { name } = user;
 
-	res.send({ id: user.id, name, email });
+	res.send({
+		id: user.id,
+		name,
+		karma: 2 * getLikeDiff(user.posts) + getLikeDiff(user.comments),
+	});
 };
 
 export const logoutUser: FastifyCallback = async (req, res) => {

@@ -40,7 +40,7 @@ app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, functio
         req.cookies.userId = userId;
     }
     else {
-        res.setCookie("userId", "");
+        res.setCookie("userToken", "");
     }
 }));
 app.register(sensible_1.default);

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFollowsAndSubscribes = exports.getUserPageInfo = exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
+exports.getFollowsAndSubscribes = exports.getUserPageInfo = exports.unfollowUser = exports.followUser = exports.getUserComments = exports.getUserPosts = exports.getUserById = exports.getLikeDiff = exports.getUserFromCookie = exports.deleteUser = exports.updateUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -92,24 +92,7 @@ const getUserFromCookie = (req, res) => __awaiter(void 0, void 0, void 0, functi
         where: {
             id: userId,
         },
-        select: {
-            id: true,
-            name: true,
-            posts: {
-                select: {
-                    _count: {
-                        select: { likes: true, dislikes: true },
-                    },
-                },
-            },
-            comments: {
-                select: {
-                    _count: {
-                        select: { likes: true, dislikes: true },
-                    },
-                },
-            },
-        },
+        select: Object.assign({}, userHelpers_1.MAIN_USER_SELECT),
     }));
     if (user == null)
         return user;
@@ -119,6 +102,7 @@ exports.getUserFromCookie = getUserFromCookie;
 function getLikeDiff(list) {
     return list.reduce((prev, curr) => prev + curr._count.likes - curr._count.dislikes, 0);
 }
+exports.getLikeDiff = getLikeDiff;
 const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.cookies.userId;
     // Implement conditional returning of some properties

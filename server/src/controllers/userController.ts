@@ -7,6 +7,7 @@ import {
 	getUserPostsFromName,
 	USER_POSTS_SELECT,
 	getUserCommentsFromName,
+	MAIN_USER_SELECT,
 } from "./utils/userHelpers";
 
 // PUT -
@@ -103,22 +104,7 @@ export const getUserFromCookie: UserFastifyCallback = async (req, res) => {
 				id: userId,
 			},
 			select: {
-				id: true,
-				name: true,
-				posts: {
-					select: {
-						_count: {
-							select: { likes: true, dislikes: true },
-						},
-					},
-				},
-				comments: {
-					select: {
-						_count: {
-							select: { likes: true, dislikes: true },
-						},
-					},
-				},
+				...MAIN_USER_SELECT,
 			},
 		})
 	);
@@ -131,7 +117,7 @@ export const getUserFromCookie: UserFastifyCallback = async (req, res) => {
 	};
 };
 
-function getLikeDiff(
+export function getLikeDiff(
 	list: {
 		_count: {
 			likes: number;

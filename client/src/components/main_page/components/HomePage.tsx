@@ -35,7 +35,7 @@ const NotLoggedHomePage: React.FC = () => {
 			<NoUserRightSide />
 			<div>or</div>
 			<button
-				className="generic-btn"
+				className="primary-btn"
 				onClick={() => navigate("/all")}
 				tabIndex={0}
 				aria-label="Go to all posts page"

@@ -85,14 +85,14 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 					<div className="searched-user__right-side">
 						{user.followedByMe ? (
 							<button
-								className="generic-btn-dark"
+								className="secondary-btn"
 								onClick={() => onUnfollowClicked(user.name)}
 							>
 								Unfollow
 							</button>
 						) : (
 							<button
-								className="generic-btn"
+								className="primary-btn"
 								onClick={() => onFollowClicked(user.name)}
 							>
 								Follow

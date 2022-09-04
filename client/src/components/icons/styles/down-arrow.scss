@@ -1,0 +1,7 @@
+svg.down-arrow {
+	transition: transform 200ms;
+}
+
+svg.expanded {
+	transform: rotate(180deg);
+}

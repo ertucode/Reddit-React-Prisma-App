@@ -53,7 +53,7 @@ export const SubredditForm: React.FC<SubredditFormProps> = ({ setOpen }) => {
 				value={subDesc}
 				onChange={(e) => setSubDesc(e.target.value)}
 			></textarea>
-			<button className="generic-btn" disabled={loading} type="submit">
+			<button className="primary-btn" disabled={loading} type="submit">
 				{loading ? "Loading" : "Create subreddit"}
 			</button>
 		</form>

@@ -35,7 +35,7 @@ export const ScrollToTopButton: React.FC<ScrollToTopButtonProps> = () => {
 	return ReactDom.createPortal(
 		<>
 			<button
-				className="generic-btn scroll-button"
+				className="primary-btn scroll-button"
 				onClick={() => {
 					window.scrollTo(0, 0);
 				}}

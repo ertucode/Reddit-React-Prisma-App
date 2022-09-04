@@ -1,11 +1,12 @@
 @use "styles/animations";
 @use "styles/media";
+@use "styles/buttons";
 
 *,
 *::before,
 *::after {
 	box-sizing: border-box;
-	color: #c8cbcd;
+	color: var(--text-color);
 }
 
 :root {
@@ -13,6 +14,22 @@
 }
 
 body {
+	margin: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background-color: var(--body-bg-color);
+	line-height: 1.4;
+
+	color: var(--text-color);
+
+	--positive-color: #ff4500;
+	--negative-color: #7193ff;
+
+	--navbar-height: 48px;
+
+	--svg-width: 24px;
+}
+
+body.dark {
 	--body-bg-color: #030303;
 	--card-bg-color: #1a1a1b;
 	--input-color: #c9ccce;
@@ -20,24 +37,36 @@ body {
 	--btn-hover-color: rgb(231, 200, 200);
 	--btn-color: #1a1a1b;
 	--border-color: #343536;
-	margin: 0;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	background-color: var(--body-bg-color);
-	line-height: 1.4;
+	--secondary-border-color: #aaa;
 
 	--input-bg-color: #272729;
 	--text-color: #d7dadc;
 
-	color: var(--text-color);
-
 	--hover-bg-color: rgba(100, 100, 100, 0.4);
-
-	--positive-color: #ff4500;
-	--negative-color: #7193ff;
-
-	--navbar-height: 48px;
+	--active-bg-color: rgb(18, 34, 66);
+	--searched-comment-bg-color: #17232d;
 
 	--user-link-color: rgba(138, 247, 140, 0.997);
+}
+
+body.light {
+	--body-bg-color: #dae0e6;
+	--card-bg-color: white;
+
+	--input-color: #1c1c1c;
+	--btn-bg-color: #0079d3;
+	--btn-hover-color: #0078d3d5;
+	--btn-color: white;
+	--border-color: #ccc;
+	--secondary-border-color: #aaa;
+	--input-bg-color: #f6f7f8;
+	--text-color: #222;
+
+	--hover-bg-color: #f6f7f8;
+	--active-bg-color: #d9dcdf;
+	--searched-comment-bg-color: #f6f7f8;
+
+	--user-link-color: rgb(4, 35, 139);
 }
 
 .site-body {
@@ -81,34 +110,12 @@ article {
 	white-space: pre-line;
 }
 
-.generic-btn {
-	background-color: var(--btn-bg-color);
-	padding: 0.4rem 1.1rem;
-	color: var(--btn-color);
-	border: 1px solid var(--btn-bg-color);
-	font-weight: 700;
-	font-size: 0.8em;
-	border-radius: 100vmax;
-	cursor: pointer;
-
-	&:hover {
-		background-color: var(--btn-hover-color);
-	}
+.primary-btn {
+	@include buttons.primary-btn();
 }
 
-.generic-btn-dark {
-	background-color: transparent;
-	padding: 0.4rem 1.1rem;
-	color: var(--btn-bg-color);
-	border: 1px solid var(--btn-bg-color);
-	font-weight: 700;
-	font-size: 0.8em;
-	border-radius: 100vmax;
-	cursor: pointer;
-
-	&:hover {
-		background-color: var(--hover-bg-color);
-	}
+.secondary-btn {
+	@include buttons.secondary-btn();
 }
 
 /* UTILITIES */
@@ -145,7 +152,7 @@ article {
 	margin-right: 0.5rem;
 }
 
-.ul-clr {
+.user-link {
 	color: var(--user-link-color);
 }
 

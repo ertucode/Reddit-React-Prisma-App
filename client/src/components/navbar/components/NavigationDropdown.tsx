@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "../styles/navigation-dropdown.scss";
 
 import { ReactComponent as HomeSvg } from "../svg/home.svg";
-import { ReactComponent as CarrotSvg } from "../svg/down-arrow.svg";
 import { ReactComponent as AllSvg } from "../svg/all.svg";
 import { useAsync } from "hooks/useAsync";
 import { getFollowsAndSubscribes } from "services/user";
@@ -10,6 +9,7 @@ import { subredditLink } from "components/general/SubredditLink";
 import { userLink } from "components/general/UserLink";
 import { NavLink, useLocation } from "react-router-dom";
 import { useUser } from "contexts/UserContext";
+import { DownArrow } from "components/icons/DownArrow";
 
 const HomeComponent = (
 	<div className="svg-group">
@@ -74,7 +74,7 @@ export const NavigationDropdown: React.FC = () => {
 				<span className="current-location">
 					{getComponentToRender()}
 				</span>
-				<CarrotSvg />
+				<DownArrow expanded={open} />
 
 				<div className={`navigation__dropdown ${open ? "" : "hide"}`}>
 					<div className="navigation__dropdown-group ">

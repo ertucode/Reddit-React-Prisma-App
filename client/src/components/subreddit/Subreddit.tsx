@@ -85,14 +85,11 @@ export const Subreddit: React.FC<SubredditProps> = () => {
 				header={`r/${subredditName}`}
 				rightChildren={
 					subLoading || !localSub ? null : localSub.subscribedByMe ? (
-						<div
-							className="generic-btn-dark"
-							onClick={onLeaveClicked}
-						>
+						<div className="secondary-btn" onClick={onLeaveClicked}>
 							Leave
 						</div>
 					) : (
-						<div className="generic-btn" onClick={onJoinClicked}>
+						<div className="primary-btn" onClick={onJoinClicked}>
 							Join
 						</div>
 					)

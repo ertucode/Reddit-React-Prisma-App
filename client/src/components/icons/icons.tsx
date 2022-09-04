@@ -6,7 +6,7 @@ import { ReactComponent as DownvoteEmpty } from "./svg/downvote.svg";
 import { ReactComponent as Reply } from "./svg/reply.svg";
 import { ReactComponent as Expand } from "./svg/expand.svg";
 
-import "./styles.scss";
+import "./styles/icons.scss";
 
 const ACTIVE_RED = "#FF4500";
 const ACTIVE_BLUE = "#7193FF";
@@ -18,7 +18,7 @@ interface IconButtonProps {
 			title?: string | undefined;
 		}
 	>;
-	color: string;
+	color?: string;
 	children?: JSX.Element;
 	onClick?: () => void;
 	className?: string;
@@ -42,6 +42,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
 			className={`icon-btn ${className}`}
 			tabIndex={0}
 			onClick={onClick}
+			style={{ fontWeight: "inherit" }}
 		>
 			<Icon fill={color} />
 			{children}
@@ -87,12 +88,7 @@ export const DownvoteButton: React.FC<MyButton> = ({ isActive, onClick }) => {
 
 export const ReplyButton: React.FC<MyButton> = ({ onClick }) => {
 	return (
-		<IconButton
-			Icon={Reply}
-			color={INACTIVE}
-			aria-label="reply"
-			onClick={onClick}
-		>
+		<IconButton Icon={Reply} aria-label="reply" onClick={onClick}>
 			<>Reply</>
 		</IconButton>
 	);

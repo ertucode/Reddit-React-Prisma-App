@@ -16,7 +16,7 @@
 	}
 
 	&__comment-body {
-		background-color: #17232d;
+		background-color: var(--searched-comment-bg-color);
 		border-radius: 4px;
 		padding: 1rem;
 		margin: 0.3rem 2rem;

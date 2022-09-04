@@ -102,7 +102,7 @@ $home-size: 1.25rem;
 				}
 
 				&.active {
-					background-color: rgb(18, 34, 66);
+					background-color: var(--active-bg-color);
 				}
 			}
 

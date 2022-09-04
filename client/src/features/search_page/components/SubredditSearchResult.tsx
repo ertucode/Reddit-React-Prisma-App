@@ -128,7 +128,7 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 						<div className="searched-subreddit__right-side">
 							{subreddit.subscribedByMe ? (
 								<button
-									className="generic-btn-dark"
+									className="secondary-btn"
 									onClick={() =>
 										onLeaveClicked(subreddit.name)
 									}
@@ -137,7 +137,7 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 								</button>
 							) : (
 								<button
-									className="generic-btn"
+									className="primary-btn"
 									onClick={() => {
 										onJoinClicked(subreddit.name);
 									}}

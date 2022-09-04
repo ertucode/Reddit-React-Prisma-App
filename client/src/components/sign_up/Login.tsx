@@ -5,10 +5,25 @@ import { useAsyncFn } from "hooks/useAsync";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "contexts/UserContext";
 import { useNotification } from "features/notification/contexts/NotificationProvider";
+import {
+	ReactiveInput,
+	ReactiveInputRefProps,
+} from "features/reactive_form_items/components/ReactiveInput";
+import {
+	ReactivePasswordInput,
+	ReactivePasswordInputRefProps,
+} from "features/reactive_form_items/components/ReactivePasswordInput";
+
+const nameConditions = [
+	{
+		cb: (value: string) => value.length > 4,
+		message: "must be longer than 4 characters",
+	},
+];
 
 export const Login: React.FC = () => {
-	const nameRef = useRef<HTMLInputElement>(null);
-	const passRef = useRef<HTMLInputElement>(null);
+	const nameRef = useRef<ReactiveInputRefProps>(null);
+	const passRef = useRef<ReactivePasswordInputRefProps>(null);
 
 	const navigate = useNavigate();
 
@@ -21,29 +36,40 @@ export const Login: React.FC = () => {
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const name = nameRef.current!.value;
-		const pass = passRef.current!.value;
+		try {
+			const name = nameRef.current!.getValue();
+			const pass = passRef.current!.getValue();
 
-		loginFn(name, pass)
-			.then((u) => {
-				changeCurrentUser({
-					type: "login",
-					payload: {
-						user: u,
-					},
+			loginFn(name, pass)
+				.then((u) => {
+					changeCurrentUser({
+						type: "login",
+						payload: {
+							user: u,
+						},
+					});
+					showNotification({
+						type: "success",
+						message: "Logged in",
+					});
+				})
+				.catch((err) => {
+					showNotification({
+						type: "error",
+						message: `Failed to login (${err})`,
+					});
+					console.log(err);
 				});
-				showNotification({
-					type: "success",
-					message: "Logged in",
-				});
-			})
-			.catch((err) => {
+		} catch (e: any) {
+			if (e?.message === "Invalid input") {
 				showNotification({
 					type: "error",
-					message: `Failed to login (${err})`,
+					message: "Invalid input",
 				});
-				console.log(err);
-			});
+			} else {
+				console.log(e);
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -53,21 +79,29 @@ export const Login: React.FC = () => {
 	});
 
 	return (
-		<div className="sign-up">
-			<form onSubmit={onSubmit}>
-				<label htmlFor="Name">Name</label>
-				<input id="Name" ref={nameRef} required></input>
-				<label htmlFor="Password">Password</label>
-				<input
-					type="password"
-					id="Password"
-					ref={passRef}
-					required
-				></input>
-				<button disabled={loading} type="submit">
-					{loading ? "Loading" : "Login"}
-				</button>
-			</form>
-		</div>
+		<>
+			<div className="sign-up">
+				<form onSubmit={onSubmit}>
+					<ReactiveInput
+						label="Name"
+						ref={nameRef}
+						conditions={nameConditions}
+						required
+					></ReactiveInput>
+					<ReactivePasswordInput
+						label="Password"
+						ref={passRef}
+						required
+					></ReactivePasswordInput>
+					<button
+						disabled={loading}
+						type="submit"
+						className="primary-btn"
+					>
+						{loading ? "Loading" : "Login"}
+					</button>
+				</form>
+			</div>
+		</>
 	);
 };

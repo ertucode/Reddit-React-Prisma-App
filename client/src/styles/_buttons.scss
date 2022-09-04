@@ -1,26 +1,37 @@
-@mixin active-button() {
+@mixin primary-btn() {
 	background-color: var(--btn-bg-color);
 	padding: 0.4rem 1.1rem;
 	color: var(--btn-color);
+	border: 1px solid var(--btn-bg-color);
 	font-weight: 700;
 	font-size: 0.8em;
 	border-radius: 100vmax;
+	cursor: pointer;
 
-	&:hover {
-		background-color: var(--btn-hover-color);
+	transition: outline 50ms;
+
+	&:hover,
+	&:focus-visible {
+		outline: 2px solid var(--btn-color);
+		outline-offset: -4px;
 	}
 }
 
-@mixin inactive-button() {
-	background-color: transparent;
+@mixin secondary-btn() {
+	background-color: var(--btn-color);
 	padding: 0.4rem 1.1rem;
 	color: var(--btn-bg-color);
 	border: 1px solid var(--btn-bg-color);
 	font-weight: 700;
 	font-size: 0.8em;
 	border-radius: 100vmax;
+	cursor: pointer;
 
-	&:hover {
-		background-color: var(--hover-bg-color);
+	transition: outline 50ms;
+
+	&:hover,
+	&:focus-visible {
+		outline: 2px solid var(--btn-bg-color);
+		outline-offset: 0px;
 	}
 }

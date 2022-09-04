@@ -104,16 +104,17 @@ export const UserPage: React.FC = () => {
 						header={`u/${userName}`}
 						rightChildren={
 							!sameUser &&
+							currentUser &&
 							(localUser?.followedByMe ? (
 								<div
-									className="generic-btn-dark"
+									className="secondary-btn"
 									onClick={onUnfollowClicked}
 								>
 									Unfollow
 								</div>
 							) : (
 								<div
-									className="generic-btn"
+									className="primary-btn"
 									onClick={onFollowClicked}
 								>
 									Follow

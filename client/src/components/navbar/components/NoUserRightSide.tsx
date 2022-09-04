@@ -7,7 +7,7 @@ export const NoUserRightSide: React.FC = () => {
 	return (
 		<div className="navbar-item">
 			<button
-				className="generic-btn-dark"
+				className="secondary-btn"
 				onClick={() => {
 					navigate("/login");
 				}}
@@ -16,7 +16,7 @@ export const NoUserRightSide: React.FC = () => {
 				Login
 			</button>
 			<button
-				className="generic-btn"
+				className="primary-btn"
 				onClick={() => {
 					navigate("/sign_up");
 				}}

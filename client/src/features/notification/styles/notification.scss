@@ -23,7 +23,7 @@
 			position: fixed;
 			inset: 0;
 			width: var(--type-width);
-			color: black;
+			color: var(--text-color);
 			display: grid;
 			place-items: center;
 			transition: width 0.2s, font-size 0.2s;
@@ -60,13 +60,8 @@
 			display: flex;
 			align-items: center;
 			overflow-wrap: anywhere;
-			color: white;
+			color: var(--text-color);
 			font-size: 0.9rem;
-		}
-
-		.bar {
-			height: 5px;
-			background-color: white;
 		}
 
 		svg {

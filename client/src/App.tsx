@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import "styles/app.scss";
 
@@ -16,8 +16,13 @@ import { SearchPage } from "features/search_page/components/SearchPage";
 import { HomePage } from "components/main_page/components/HomePage";
 import NotificationProvider from "features/notification/contexts/NotificationProvider";
 import { ScrollToTopButton } from "features/scroll_to_top_button/ScrollToTopButton";
+import { getDarkModeFromStorageAndApply } from "features/toggle_button/DarkModeButton";
 
 function App() {
+	useEffect(() => {
+		getDarkModeFromStorageAndApply();
+	}, []);
+
 	return (
 		<>
 			<UserContextProvider>

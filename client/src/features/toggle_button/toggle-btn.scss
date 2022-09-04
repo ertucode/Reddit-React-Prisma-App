@@ -1,0 +1,44 @@
+$icon-size: 13px;
+$btn-padding: 0.3rem;
+$cursor-padding: 0.3rem;
+
+.toggle-btn {
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		width: 100%;
+		padding: 0;
+	}
+
+	width: calc(2 * ($icon-size + $cursor-padding + $btn-padding));
+	background-color: var(--active-bg-color);
+	border-radius: 100vmax;
+	position: relative;
+	height: calc($icon-size + 2 * $btn-padding + $cursor-padding);
+	display: flex;
+	align-items: center;
+
+	&__cursor {
+		border-radius: 50%;
+		background-color: white;
+		position: absolute;
+		aspect-ratio: 1;
+		width: calc($icon-size + $cursor-padding);
+		transition: transform 250ms;
+		left: $btn-padding;
+
+		display: grid;
+		place-items: center;
+
+		&.checked {
+			transform: translateX(calc($icon-size + $cursor-padding));
+		}
+
+		svg {
+			width: $icon-size;
+			height: $icon-size;
+		}
+	}
+}

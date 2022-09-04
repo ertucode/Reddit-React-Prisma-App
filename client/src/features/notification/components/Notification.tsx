@@ -77,13 +77,6 @@ export default function Notification({
 				{loadSvg(notification.type)}
 				{notification.message}
 			</p>
-
-			{/* <div
-				className={"bar"}
-				style={{
-					width: `${width}%`,
-				}}
-			/> */}
 		</div>
 	);
 }

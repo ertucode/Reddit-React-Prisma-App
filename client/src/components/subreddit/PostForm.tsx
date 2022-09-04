@@ -71,7 +71,7 @@ export const PostForm: React.FC<PostFormProps> = ({
 				value={postBody}
 				onChange={(e) => setPostBody(e.target.value)}
 			></textarea>
-			<button className="generic-btn" disabled={loading} type="submit">
+			<button className="primary-btn" disabled={loading} type="submit">
 				{loading ? "Loading" : "Post"}
 			</button>
 			{error && <div>{error}</div>}

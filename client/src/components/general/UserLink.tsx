@@ -15,6 +15,7 @@ export const UserLink: React.FC<UserLinkProps> = ({ user }) => {
 				e.stopPropagation();
 				window.scrollTo(0, 0);
 			}}
+			className="user-link"
 		>
 			u/{user.name}{" "}
 		</Link>

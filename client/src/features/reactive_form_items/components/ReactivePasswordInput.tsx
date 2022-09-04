@@ -3,26 +3,29 @@ import "../styles/reactive-input.scss";
 
 import { ReactComponent as TickSvg } from "../svg/tick.svg";
 import { ReactComponent as ExclamationSvg } from "../svg/exclamation.svg";
+import { ReactComponent as ShowSvg } from "../svg/show.svg";
 
-interface ReactiveInputProps
+interface ReactivePasswordInputProps
 	extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
 	conditions?: { cb: (val: string) => boolean; message: string }[];
+	type?: "password" | undefined;
 }
 
-export interface ReactiveInputRefProps {
+export interface ReactivePasswordInputRefProps {
 	value: string;
 	valid: boolean;
 	getValue: () => undefined | string;
 }
 
-export const ReactiveInput = React.forwardRef<
-	ReactiveInputRefProps,
-	ReactiveInputProps
+export const ReactivePasswordInput = React.forwardRef<
+	ReactivePasswordInputRefProps,
+	ReactivePasswordInputProps
 >(({ label, conditions = [], ...props }, ref) => {
 	const [value, setValue] = useState<string>("");
 	const [valid, setValid] = useState(true);
 	const [message, setMessage] = useState("");
+	const [show, setShow] = useState(false);
 
 	useEffect(() => {
 		setValid(
@@ -49,6 +52,8 @@ export const ReactiveInput = React.forwardRef<
 		};
 	});
 
+	const { type, onChange, ...rest } = props;
+
 	return (
 		<div className="reactive-input__container">
 			<fieldset
@@ -57,15 +62,27 @@ export const ReactiveInput = React.forwardRef<
 				<input
 					className="reactive-input__input"
 					id={label + 1}
-					{...props}
+					{...rest}
 					placeholder=" "
+					type={show ? "text" : "password"}
 					value={value}
-					onChange={(e) => setValue(e.target.value)}
+					onChange={(e) => {
+						onChange && onChange(e);
+						setValue(e.target.value);
+					}}
 				/>
 				<label className="reactive-input__label" htmlFor={label + 1}>
 					{label}
 				</label>
-
+				<button
+					type="button"
+					className={`reactive-input__show-button ${
+						show ? "" : "hide-pw"
+					}`}
+					onClick={() => setShow((s) => !s)}
+				>
+					<ShowSvg fill="white" />
+				</button>
 				<div className="reactive-input__svg-container">
 					{valid ? <TickSvg strokeWidth={2.5} /> : <ExclamationSvg />}
 				</div>

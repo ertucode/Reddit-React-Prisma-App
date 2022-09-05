@@ -44,7 +44,8 @@ export const IconButton: React.FC<IconButtonProps> = ({
 			onClick={onClick}
 			style={{ fontWeight: "inherit" }}
 		>
-			<Icon fill={color} />
+			{color ? <Icon fill={color} /> : <Icon />}
+
 			{children}
 		</button>
 	);

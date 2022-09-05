@@ -110,6 +110,10 @@ article {
 	white-space: pre-line;
 }
 
+svg {
+	color: var(--text-color);
+}
+
 .primary-btn {
 	@include buttons.primary-btn();
 }

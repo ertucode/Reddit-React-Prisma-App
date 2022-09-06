@@ -81,6 +81,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 					query={query}
 					searchResults={searchResults}
 					onOptionPicked={() => setOpen(false)}
+					onSearchMatchPicked={() => setQuery("")}
 					inputRef={inputRef}
 				/>
 			)}

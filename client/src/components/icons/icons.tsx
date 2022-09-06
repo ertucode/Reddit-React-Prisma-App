@@ -10,7 +10,6 @@ import "./styles/icons.scss";
 
 const ACTIVE_RED = "#FF4500";
 const ACTIVE_BLUE = "#7193FF";
-const INACTIVE = "white";
 
 interface IconButtonProps {
 	Icon: React.FunctionComponent<
@@ -102,7 +101,6 @@ export const ExpandButton: React.FC<MyButton> = ({
 	return (
 		<IconButton
 			Icon={Expand}
-			color={INACTIVE}
 			aria-label="expand"
 			onClick={onClick}
 			className={className}

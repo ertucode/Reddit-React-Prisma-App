@@ -8,6 +8,7 @@ interface SearchBarDropdownProps {
 	query: string;
 	searchResults: ResultType[] | undefined;
 	onOptionPicked: () => void;
+	onSearchMatchPicked: () => void;
 	inputRef: React.RefObject<HTMLInputElement>;
 }
 
@@ -15,6 +16,7 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 	query,
 	searchResults,
 	onOptionPicked,
+	onSearchMatchPicked,
 	inputRef,
 }) => {
 	const navigate = useNavigate();
@@ -37,6 +39,7 @@ export const SearchBarDropdown: React.FC<SearchBarDropdownProps> = ({
 				break;
 		}
 		onOptionPicked();
+		onSearchMatchPicked();
 	};
 
 	useEffect(() => {

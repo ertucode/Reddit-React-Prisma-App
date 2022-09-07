@@ -22,6 +22,7 @@ type FastifyCallback = (
 declare var process: {
 	env: {
 		JWT_SECRET: string;
+		NODE_ENV: string;
 	};
 };
 
@@ -96,7 +97,10 @@ export const loginUser: FastifyCallback = async (req, res) => {
 
 	const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
-	res.setCookie("userToken", token);
+	res.setCookie("userToken", token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV !== "development",
+	});
 
 	const { name } = user;
 
@@ -108,7 +112,10 @@ export const loginUser: FastifyCallback = async (req, res) => {
 };
 
 export const logoutUser: FastifyCallback = async (req, res) => {
-	res.setCookie("userToken", "");
+	res.setCookie("userToken", "", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV !== "development",
+	});
 };
 
 export function saltPassword(password: string) {

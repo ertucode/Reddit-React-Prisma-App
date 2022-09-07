@@ -17,7 +17,6 @@ model Post {
   comments Comment[]
   likes    PostLike[]
   dislikes PostDislike[]
-  scrollIndex  Int      @unique @default(autoincrement())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
@@ -34,7 +33,6 @@ model User {
   name          String        @unique
   password      String        
   email         String        @unique
-  scrollIndex  Int      @unique @default(autoincrement())
 
   createdAt DateTime         @default(now())
   
@@ -58,7 +56,6 @@ model Comment {
   body      String
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
-  scrollIndex  Int      @unique @default(autoincrement())
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   post      Post             @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -115,8 +112,6 @@ model Subreddit {
 
   admins User[] @relation("Admin")
   posts  Post[]
-
-  scrollIndex  Int      @unique @default(autoincrement())
 
   subscribedUsers User[] @relation("Subscription")
 }

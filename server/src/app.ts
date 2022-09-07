@@ -24,6 +24,8 @@ declare var process: {
 		CLIENT_URL: string;
 		COOKIE_SECRET: string;
 		JWT_SECRET: string;
+		NODE_ENV: string;
+		HOST: string;
 	};
 };
 
@@ -40,7 +42,10 @@ app.addHook("onRequest", async (req, res) => {
 	if (userId != null) {
 		req.cookies.userId = userId;
 	} else {
-		res.setCookie("userToken", "");
+		res.setCookie("userToken", "", {
+			httpOnly: true,
+			secure: process.env.NODE_ENV !== "development",
+		});
 	}
 });
 
@@ -62,10 +67,13 @@ app.register(infiniteRoutes);
 export { app };
 export { prisma };
 
-app.listen({ host: "0.0.0.0", port: process.env.PORT }, (err, address) => {
-	if (err) {
-		console.error(err);
-	} else {
-		console.log("Server is running at -> ", address);
+app.listen(
+	{ host: process.env.HOST, port: process.env.PORT },
+	(err, address) => {
+		if (err) {
+			console.error(err);
+		} else {
+			console.log("Server is running at ", address);
+		}
 	}
-});
+);

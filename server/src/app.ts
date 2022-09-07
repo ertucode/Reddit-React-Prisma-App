@@ -65,7 +65,8 @@ app.listen({ port: process.env.PORT }, (err, address) => {
 	if (err) {
 		console.error(err);
 	} else {
-		console.log("Server is running at", address);
-		console.log("The port is", process.env.PORT);
+		console.log("Server is running at -> ", address);
 	}
 });
+
+console.log("The port is", process.env.PORT);

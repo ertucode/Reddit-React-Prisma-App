@@ -56,7 +56,7 @@ app.register(comment_1.commentRoutes);
 app.register(like_1.likeRoutes);
 app.register(search_1.searchRoutes);
 app.register(infinite_scroll_1.infiniteRoutes);
-app.listen({ port: process.env.PORT }, (err, address) => {
+app.listen({ host: "0.0.0.0", port: process.env.PORT }, (err, address) => {
     if (err) {
         console.error(err);
     }
@@ -64,4 +64,3 @@ app.listen({ port: process.env.PORT }, (err, address) => {
         console.log("Server is running at -> ", address);
     }
 });
-console.log("The port is", process.env.PORT);

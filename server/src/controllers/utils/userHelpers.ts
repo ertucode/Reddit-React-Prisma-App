@@ -99,7 +99,6 @@ export const USER_COMMENTS_SELECT = (
 					_count: { select: { likes: true, dislikes: true } },
 					createdAt: true,
 					parentId: true,
-					scrollIndex: true,
 				},
 				...extraCommentOptions,
 			},

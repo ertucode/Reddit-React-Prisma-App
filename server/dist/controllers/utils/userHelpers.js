@@ -95,7 +95,6 @@ const USER_COMMENTS_SELECT = (extraCommentOptions = {}) => {
                     _count: { select: { likes: true, dislikes: true } },
                     createdAt: true,
                     parentId: true,
-                    scrollIndex: true,
                 } }, extraCommentOptions),
         },
     };

@@ -26,6 +26,7 @@ declare var process: {
 		JWT_SECRET: string;
 		NODE_ENV: string;
 		HOST: string;
+		HEROKU_POSTGRESQL_ORANGE: string;
 	};
 };
 
@@ -39,6 +40,7 @@ app.register(cookie, { secret: process.env.COOKIE_SECRET });
 app.addHook("onRequest", async (req, res) => {
 	const userId = getUserIdFromToken(req);
 
+	console.log(req);
 	if (userId != null) {
 		req.cookies.userId = userId;
 	} else {
@@ -77,3 +79,5 @@ app.listen(
 		}
 	}
 );
+
+console.log(process.env.HEROKU_POSTGRESQL_ORANGE);

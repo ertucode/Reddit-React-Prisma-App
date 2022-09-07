@@ -72,7 +72,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.send(app_1.app.httpErrors.badRequest("Wrong password"));
     }
     const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
-    res.setCookie("userToken", token);
+    res.setCookie("userToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+    });
     const { name } = user;
     res.send({
         id: user.id,
@@ -82,7 +85,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.loginUser = loginUser;
 const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.setCookie("userToken", "");
+    res.setCookie("userToken", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+    });
 });
 exports.logoutUser = logoutUser;
 function saltPassword(password) {

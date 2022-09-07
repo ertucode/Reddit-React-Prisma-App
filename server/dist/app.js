@@ -36,7 +36,6 @@ exports.prisma = prisma;
 app.register(cookie_1.default, { secret: process.env.COOKIE_SECRET });
 app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = (0, verifyToken_1.getUserIdFromToken)(req);
-    console.log(req);
     if (userId != null) {
         req.cookies.userId = userId;
     }
@@ -68,4 +67,3 @@ app.listen({ host: process.env.HOST, port: process.env.PORT }, (err, address) =>
         console.log("Server is running at ", address);
     }
 });
-console.log(process.env.HEROKU_POSTGRESQL_ORANGE);

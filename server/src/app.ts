@@ -19,7 +19,7 @@ import { getUserIdFromToken } from "./verifyToken";
 
 declare var process: {
 	env: {
-		SERVER_PORT: number;
+		PORT: number;
 		CLIENT_URL: string;
 		COOKIE_SECRET: string;
 		JWT_SECRET: string;
@@ -61,4 +61,10 @@ app.register(infiniteRoutes);
 export { app };
 export { prisma };
 
-app.listen({ port: process.env.SERVER_PORT });
+app.listen({ port: process.env.PORT }, (err, address) => {
+	if (err) {
+		console.error(err);
+	} else {
+		console.log("Server is running at", address);
+	}
+});

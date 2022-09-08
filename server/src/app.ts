@@ -42,12 +42,6 @@ app.addHook("onRequest", async (req, res) => {
 
 	if (userId != null) {
 		req.cookies.userId = userId;
-	} else {
-		res.setCookie("userToken", "", {
-			httpOnly: true,
-			secure: process.env.NODE_ENV !== "development",
-			sameSite: "none",
-		});
 	}
 });
 

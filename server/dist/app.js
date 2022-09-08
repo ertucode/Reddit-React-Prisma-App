@@ -39,13 +39,6 @@ app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, functio
     if (userId != null) {
         req.cookies.userId = userId;
     }
-    else {
-        res.setCookie("userToken", "", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV !== "development",
-            sameSite: "none",
-        });
-    }
 }));
 app.register(sensible_1.default);
 app.register(cors_1.default, {

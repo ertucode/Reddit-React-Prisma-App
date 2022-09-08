@@ -43,6 +43,7 @@ app.addHook("onRequest", (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.setCookie("userToken", "", {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
+            sameSite: "none",
         });
     }
 }));

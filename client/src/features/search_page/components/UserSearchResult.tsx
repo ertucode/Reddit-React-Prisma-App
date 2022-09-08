@@ -111,6 +111,7 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 							<button
 								className="secondary-btn"
 								onClick={() => onUnfollowClicked(user.name)}
+								disabled={unfollowUserFn.loading}
 							>
 								Unfollow
 							</button>
@@ -118,6 +119,7 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 							<button
 								className="primary-btn"
 								onClick={() => onFollowClicked(user.name)}
+								disabled={followUserFn.loading}
 							>
 								Follow
 							</button>

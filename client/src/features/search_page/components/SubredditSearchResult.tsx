@@ -136,6 +136,7 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 									onClick={() =>
 										onLeaveClicked(subreddit.name)
 									}
+									disabled={leaveSubredditFn.loading}
 								>
 									Leave
 								</button>
@@ -145,6 +146,7 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 									onClick={() => {
 										onJoinClicked(subreddit.name);
 									}}
+									disabled={joinSubredditFn.loading}
 								>
 									Join
 								</button>

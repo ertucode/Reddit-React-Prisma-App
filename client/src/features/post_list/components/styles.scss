@@ -9,11 +9,12 @@
 		color: unset;
 	}
 
-	$small-post-height: 15rem;
+	$small-post-height: 10rem;
 	$small-post-bg-color: var(--card-bg-color);
-	$small-post-transparency-height: 10rem;
+	$small-post-transparency-height: 8rem;
 
-	width: min(90ch, calc(100% - 1rem));
+	width: var(--middle-width);
+	font-size: 0.8rem;
 
 	.small-post {
 		margin-bottom: 0.8rem;
@@ -23,7 +24,7 @@
 		color: white;
 		background-color: $small-post-bg-color;
 
-		border-radius: 0.7rem;
+		border-radius: 0.8rem;
 		border: 1px solid var(--border-color);
 
 		display: grid;

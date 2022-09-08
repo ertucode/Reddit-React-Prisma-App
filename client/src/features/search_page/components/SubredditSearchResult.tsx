@@ -10,6 +10,7 @@ import { NoMatch } from "./SearchPage";
 import { useInfiniteScroll } from "features/infinite_scrolling/hooks/useInfiniteScroll";
 import { getInfiniteSearchResult } from "services/infiniteScroll";
 import useSetListFromData from "features/search_page/hooks/useSetListFromData";
+import { Loading } from "features/loading/Loading";
 
 interface SubredditSearchResultProps {
 	query: string;
@@ -32,7 +33,10 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 
 	const setter = useSetListFromData(localSubs, setLocalSubs);
 
-	const { loading, error, LastDiv } = useInfiniteScroll(getter, setter);
+	const { loading, error, LastDiv, isDone } = useInfiniteScroll(
+		getter,
+		setter
+	);
 
 	const joinSubredditFn = useAsyncFn(joinSubreddit);
 	const leaveSubredditFn = useAsyncFn(leaveSubreddit);
@@ -150,9 +154,9 @@ export const SubredditSearchResult: React.FC<SubredditSearchResultProps> = ({
 				))}
 			{LastDiv}
 			{loading ? (
-				<div>"loading"</div>
+				<Loading />
 			) : (
-				localSubs.length === 0 && <NoMatch type="subreddit" />
+				localSubs.length === 0 && isDone && <NoMatch type="subreddit" />
 			)}
 		</div>
 	);

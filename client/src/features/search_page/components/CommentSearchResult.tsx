@@ -1,6 +1,7 @@
 import { CommentHeader } from "components/post/CommentHeader";
 import { PostHeader } from "components/post/PostHeader";
 import { useInfiniteScroll } from "features/infinite_scrolling/hooks/useInfiniteScroll";
+import { Loading } from "features/loading/Loading";
 import useSetListFromData from "features/search_page/hooks/useSetListFromData";
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -78,7 +79,7 @@ export const CommentSearchResult: React.FC<CommentSearchResultProps> = ({
 				);
 			})}
 			{LastDiv}
-			{loading && <div>"loading"</div>}
+			{loading && <Loading />}
 		</div>
 	);
 };

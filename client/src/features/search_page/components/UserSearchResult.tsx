@@ -1,5 +1,7 @@
 import { userLink } from "components/general/UserLink";
 import { useInfiniteScroll } from "features/infinite_scrolling/hooks/useInfiniteScroll";
+import { Loading } from "features/loading/Loading";
+import { useNotification } from "features/notification/contexts/NotificationProvider";
 import useSetListFromData from "features/search_page/hooks/useSetListFromData";
 import { useAsyncFn } from "hooks/useAsync";
 import React, { useCallback, useState } from "react";
@@ -34,6 +36,8 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 
 	const { loading, error, LastDiv } = useInfiniteScroll(getter, setter);
 
+	const showNotification = useNotification();
+
 	const onFollowClicked = async (name: string) => {
 		followUserFn
 			.execute(name)
@@ -46,8 +50,18 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 						return prevUser;
 					})
 				);
+				showNotification({
+					type: "success",
+					message: `Followed u/${name}`,
+				});
 			})
-			.catch((e) => console.log(e));
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to follow u/${name}`,
+				});
+				console.log(e);
+			});
 	};
 	const onUnfollowClicked = async (name: string) => {
 		unfollowUserFn
@@ -64,8 +78,18 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 						return prevUser;
 					})
 				);
+				showNotification({
+					type: "success",
+					message: `Unfollowed u/${name}`,
+				});
 			})
-			.catch((e) => console.log(e));
+			.catch((e) => {
+				showNotification({
+					type: "error",
+					message: `Failed to unfollow u/${name}`,
+				});
+				console.log(e);
+			});
 	};
 
 	return error ? (
@@ -102,7 +126,7 @@ export const UserSearchResult: React.FC<UserSearchResultProps> = ({
 				</div>
 			))}
 			{LastDiv}
-			{loading && <div>Loading</div>}
+			{loading && <Loading />}
 		</div>
 	);
 };

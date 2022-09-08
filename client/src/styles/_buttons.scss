@@ -8,12 +8,12 @@
 	border-radius: 100vmax;
 	cursor: pointer;
 
-	transition: outline 50ms;
+	transition: opacity 50ms;
 
 	&:hover,
 	&:focus-visible {
-		outline: 2px solid var(--btn-color);
-		outline-offset: -4px;
+		background-color: var(--btn-hover-color-primary);
+		outline: none;
 	}
 }
 
@@ -27,11 +27,11 @@
 	border-radius: 100vmax;
 	cursor: pointer;
 
-	transition: outline 50ms;
+	transition: opacity 50ms;
 
 	&:hover,
 	&:focus-visible {
-		outline: 2px solid var(--btn-bg-color);
-		outline-offset: 0px;
+		background-color: var(--btn-hover-color-secondary);
+		outline: none;
 	}
 }

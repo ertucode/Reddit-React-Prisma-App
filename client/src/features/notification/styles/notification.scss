@@ -41,7 +41,7 @@
 			transform: scale(1);
 		}
 
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 0 3px var(--box-shadow);
 		overflow: hidden;
 		margin-bottom: 20px;
 		transition: transform 0.4s;
@@ -61,7 +61,7 @@
 			align-items: center;
 			overflow-wrap: anywhere;
 			color: var(--text-color);
-			font-size: 0.9rem;
+			font-size: 0.7rem;
 		}
 
 		svg {

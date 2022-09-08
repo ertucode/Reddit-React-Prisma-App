@@ -84,10 +84,22 @@ export default function Notification({
 function loadSvg(type: NotificationTypes) {
 	switch (type) {
 		case "success":
-			return <SuccessSvg fill="white" stroke="green" strokeWidth="0" />;
+			return (
+				<SuccessSvg
+					fill="currentColor"
+					stroke="var(--notification-svg-success-stroke)"
+					strokeWidth="0"
+				/>
+			);
 		case "error":
-			return <ErrorSvg fill="white" stroke="red" strokeWidth="0" />;
+			return <ErrorSvg fill="currentColor" />;
 		default:
-			return <SuccessSvg fill="white" stroke="green" strokeWidth="0" />;
+			return (
+				<SuccessSvg
+					fill="currentColor"
+					stroke="var(--notification-svg-success-stroke)"
+					strokeWidth="0"
+				/>
+			);
 	}
 }

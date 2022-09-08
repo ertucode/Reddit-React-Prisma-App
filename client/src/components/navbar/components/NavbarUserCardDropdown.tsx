@@ -31,6 +31,7 @@ export const NavbarUserCardDropdown: React.FC<NavbarUserCardDropdownProps> = ({
 	function onLogout() {
 		logout()
 			.then(() => {
+				window.location.reload();
 				changeCurrentUser({ type: "logout" });
 				showNotification({
 					type: "success",

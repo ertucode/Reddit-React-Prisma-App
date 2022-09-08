@@ -8,6 +8,7 @@ import { useUser } from "contexts/UserContext";
 import { NavigationDropdown } from "./NavigationDropdown";
 import { NavbarUserCard } from "./NavbarUserCard";
 import { NoUserRightSide } from "./NoUserRightSide";
+import { Loading } from "features/loading/Loading";
 
 export const Navbar: React.FC = () => {
 	const { currentUser, loading: userLoading } = useUser();
@@ -28,8 +29,13 @@ export const Navbar: React.FC = () => {
 			<div className="navbar-item">
 				<SearchBar ariaLabel="Search site" />
 			</div>
-			{!userLoading &&
-				(!currentUser ? <NoUserRightSide /> : <NavbarUserCard />)}
+			{userLoading ? (
+				<Loading />
+			) : !currentUser ? (
+				<NoUserRightSide />
+			) : (
+				<NavbarUserCard />
+			)}
 		</div>
 	);
 };

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 import { PostListWrapperWithInfiniteScroll } from "features/post_list/components/PostListWrapperWithInfiniteScroll";
 import { getInfinitePosts } from "services/infiniteScroll";
+import { Loading } from "features/loading/Loading";
 
 export const HomePage: React.FC = () => {
 	const { currentUser, loading: loadingUser } = useUser();
@@ -16,12 +17,13 @@ export const HomePage: React.FC = () => {
 
 	return (
 		<div className="main-page-container">
-			{!loadingUser &&
-				(currentUser ? (
-					<PostListWrapperWithInfiniteScroll getter={getter} />
-				) : (
-					<NotLoggedHomePage />
-				))}
+			{loadingUser ? (
+				<Loading />
+			) : currentUser ? (
+				<PostListWrapperWithInfiniteScroll getter={getter} />
+			) : (
+				<NotLoggedHomePage />
+			)}
 		</div>
 	);
 };

@@ -17,6 +17,7 @@ interface IPostContext {
 		postId: string,
 		change: ToggleCommentLikeDislike
 	) => void;
+	postLoading: boolean;
 }
 
 interface ToggleCommentLikeDislike {
@@ -76,6 +77,7 @@ const PostContext = React.createContext<IPostContext>({
 	rootComments: [],
 	changeLocalComments: () => {},
 	toggleLocalPostLike: () => {},
+	postLoading: true,
 });
 
 export function usePost() {
@@ -85,7 +87,7 @@ export function usePost() {
 export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 	const { id } = useParams();
 	const {
-		loading,
+		loading: postLoading,
 		error,
 		value: _post,
 	} = useAsync<IPost>(() => getPost(id as string), [id]);
@@ -155,9 +157,9 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 				rootComments: commentsByParentId["null"] || [],
 				changeLocalComments,
 				toggleLocalPostLike,
+				postLoading,
 			}}
 		>
-			{loading && <h1>Loading</h1>}
 			{error && <h1>Error</h1>}
 			{children}
 		</PostContext.Provider>

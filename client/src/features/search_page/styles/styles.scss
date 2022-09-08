@@ -2,7 +2,8 @@
 
 .page-navigation-container {
 	overflow-x: auto;
-	width: min(90ch, 100% - 1rem);
+	display: grid;
+	place-items: center;
 }
 
 .page-navigation {

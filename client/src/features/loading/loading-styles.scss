@@ -1,0 +1,38 @@
+@mixin animate_opacities($count, $animation-duration, $offset) {
+	@for $i from 1 through $count {
+		div:nth-child(#{$i}) {
+			animation: opacity
+				($animation-duration + ms)
+				(($offset * $i - 1) + ms)
+				ease-in-out
+				infinite;
+		}
+	}
+}
+
+.loading-container {
+	padding: 1rem;
+	display: flex;
+	gap: 0.5em;
+
+	div {
+		width: 0.5em;
+		aspect-ratio: 1;
+		background-color: var(--text-color);
+		border-radius: 50%;
+	}
+
+	@include animate_opacities(3, 1400, 100);
+}
+
+@keyframes opacity {
+	0% {
+		opacity: 0.1;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

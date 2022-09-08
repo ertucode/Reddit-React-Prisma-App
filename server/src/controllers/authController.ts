@@ -98,9 +98,7 @@ export const loginUser: FastifyCallback = async (req, res) => {
 	const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
 	res.setCookie("userToken", token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV !== "development",
-		sameSite: "none",
+		...cookieCredentials(),
 		maxAge: 1000 * 60 * 60 * 24 * 365 * 7, // 7 days
 	});
 
@@ -114,11 +112,7 @@ export const loginUser: FastifyCallback = async (req, res) => {
 };
 
 export const logoutUser: FastifyCallback = async (req, res) => {
-	res.setCookie("userToken", "", {
-		httpOnly: true,
-		secure: process.env.NODE_ENV !== "development",
-		sameSite: "none",
-	});
+	res.setCookie("userToken", "", cookieCredentials());
 };
 
 export function saltPassword(password: string) {
@@ -126,3 +120,13 @@ export function saltPassword(password: string) {
 	const hash = bcrypt.hashSync(password, salt);
 	return hash;
 }
+
+export const cookieCredentials = () => {
+	if (process.env.NODE_ENV === "development") {
+		return {
+			sameSite: "none",
+		} as const;
+	} else {
+		return { httpOnly: true, secure: true, sameSite: "none" } as const;
+	}
+};

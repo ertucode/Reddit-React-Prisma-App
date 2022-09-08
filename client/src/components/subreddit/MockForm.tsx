@@ -10,7 +10,7 @@ export const MockForm: React.FC = () => {
 	const { changeLocalPosts } = useMultiplePosts();
 
 	return (
-		<div className="mock-form">
+		<div className="mock-form middle-container">
 			<input
 				placeholder="Create Post"
 				aria-label="Click to create a post"

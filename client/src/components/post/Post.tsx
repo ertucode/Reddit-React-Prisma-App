@@ -13,12 +13,18 @@ import {
 	loginToVote,
 	UpvoteDownvote,
 } from "features/upvote_downvote/UpvoteDownvote";
+import { Loading } from "features/loading/Loading";
 
 interface PostProps {}
 
 export const Post: React.FC<PostProps> = () => {
-	const { post, rootComments, changeLocalComments, toggleLocalPostLike } =
-		usePost();
+	const {
+		post,
+		rootComments,
+		changeLocalComments,
+		toggleLocalPostLike,
+		postLoading,
+	} = usePost();
 	const { loading, execute: createCommentFn } = useAsyncFn(createComment);
 	const togglePostLikeDislikeFn = useAsyncFn(togglePostLikeDislike);
 
@@ -78,9 +84,9 @@ export const Post: React.FC<PostProps> = () => {
 				</section>
 			</div>
 		</div>
-	) : (
-		<div>Loading</div>
-	);
+	) : postLoading ? (
+		<Loading />
+	) : null;
 };
 
 export function loginToCreateComment(

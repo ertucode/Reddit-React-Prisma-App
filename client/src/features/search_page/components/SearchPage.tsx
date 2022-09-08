@@ -30,7 +30,7 @@ export const SearchPage: React.FC<SearchPageProps> = () => {
 
 	return (
 		<>
-			<div className="page-navigation-container">
+			<div className="page-navigation-container middle-container">
 				<ul className="page-navigation">
 					<li>
 						<NavLink

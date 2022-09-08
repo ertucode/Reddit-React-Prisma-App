@@ -27,14 +27,17 @@ body {
 	--navbar-height: 48px;
 
 	--svg-width: 24px;
+
+	--middle-width: min(55rem, 100% - 1rem);
 }
 
 body.dark {
 	--body-bg-color: #030303;
 	--card-bg-color: #1a1a1b;
-	--input-color: #c9ccce;
+	--input-color: #d6e6f1;
 	--btn-bg-color: #ddd;
-	--btn-hover-color: rgb(231, 200, 200);
+	--btn-hover-color-primary: rgb(231, 200, 200);
+	--btn-hover-color-secondary: #222121;
 	--btn-color: #1a1a1b;
 	--border-color: #343536;
 	--secondary-border-color: #aaa;
@@ -47,6 +50,10 @@ body.dark {
 	--searched-comment-bg-color: #17232d;
 
 	--user-link-color: rgba(138, 247, 140, 0.997);
+
+	--notification-svg-success-stroke: green;
+
+	--box-shadow: rgba(255, 255, 255, 0.3);
 }
 
 body.light {
@@ -54,8 +61,10 @@ body.light {
 	--card-bg-color: white;
 
 	--input-color: #1c1c1c;
+
 	--btn-bg-color: #0079d3;
-	--btn-hover-color: #0078d3d5;
+	--btn-hover-color-primary: #0078d3d5;
+	--btn-hover-color-secondary: rgb(242, 242, 248);
 	--btn-color: white;
 	--border-color: #ccc;
 	--secondary-border-color: #aaa;
@@ -67,6 +76,10 @@ body.light {
 	--searched-comment-bg-color: #f6f7f8;
 
 	--user-link-color: rgb(4, 35, 139);
+
+	--notification-svg-success-stroke: #90ee90;
+
+	--box-shadow: rgba(0, 0, 0, 0.3);
 }
 
 .site-body {
@@ -172,6 +185,10 @@ svg {
 	-webkit-user-select: none; /* Safari */
 	-ms-user-select: none; /* IE 10 and IE 11 */
 	user-select: none; /* Standard syntax */
+}
+
+.middle-container {
+	width: var(--middle-width);
 }
 
 /* SCROLLBAR */

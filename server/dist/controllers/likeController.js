@@ -32,20 +32,19 @@ const toggleCommentLike = (req, res) => __awaiter(void 0, void 0, void 0, functi
         where: { userId_commentId: data },
     });
     if (like == null) {
-        const dislike = yield app_1.prisma.commentDislike.findUnique({
-            where: { userId_commentId: data },
-        });
         let info = {};
-        if (dislike != null) {
-            yield (0, commitToDb_1.commitToDb)(app_1.prisma.commentDislike.delete({
+        try {
+            yield app_1.prisma.commentDislike.delete({
                 where: {
                     userId_commentId: data,
                 },
-            }));
+            });
             info = { dislikeChange: -1 };
         }
-        else {
-            info = { dislikeChange: 0 };
+        catch (e) {
+            if (e.code === "P2025") {
+                info = { dislikeChange: 0 };
+            }
         }
         return yield (0, commitToDb_1.commitToDb)(app_1.prisma.commentLike.create({ data }).then(() => {
             return Object.assign({ likeChange: 1 }, info);
@@ -84,20 +83,19 @@ const toggleCommentDislike = (req, res) => __awaiter(void 0, void 0, void 0, fun
         where: { userId_commentId: data },
     });
     if (dislike == null) {
-        const like = yield app_1.prisma.commentLike.findUnique({
-            where: { userId_commentId: data },
-        });
         let info = {};
-        if (like != null) {
-            yield (0, commitToDb_1.commitToDb)(app_1.prisma.commentLike.delete({
+        try {
+            yield app_1.prisma.commentLike.delete({
                 where: {
                     userId_commentId: data,
                 },
-            }));
+            });
             info = { likeChange: -1 };
         }
-        else {
-            info = { likeChange: 0 };
+        catch (e) {
+            if (e.code === "P2025") {
+                info = { likeChange: 0 };
+            }
         }
         return yield (0, commitToDb_1.commitToDb)(app_1.prisma.commentDislike.create({ data }).then(() => {
             return Object.assign({ dislikeChange: 1 }, info);
@@ -136,20 +134,19 @@ const togglePostLike = (req, res) => __awaiter(void 0, void 0, void 0, function*
         where: { userId_postId: data },
     });
     if (like == null) {
-        const dislike = yield app_1.prisma.postDislike.findUnique({
-            where: { userId_postId: data },
-        });
         let info = {};
-        if (dislike != null) {
-            yield (0, commitToDb_1.commitToDb)(app_1.prisma.postDislike.delete({
+        try {
+            yield app_1.prisma.postDislike.delete({
                 where: {
                     userId_postId: data,
                 },
-            }));
+            });
             info = { dislikeChange: -1 };
         }
-        else {
-            info = { dislikeChange: 0 };
+        catch (e) {
+            if (e.code === "P2025") {
+                info = { dislikeChange: 0 };
+            }
         }
         return yield (0, commitToDb_1.commitToDb)(app_1.prisma.postLike.create({ data }).then(() => {
             return Object.assign({ likeChange: 1 }, info);
@@ -188,20 +185,19 @@ const togglePostDislike = (req, res) => __awaiter(void 0, void 0, void 0, functi
         where: { userId_postId: data },
     });
     if (dislike == null) {
-        const like = yield app_1.prisma.postLike.findUnique({
-            where: { userId_postId: data },
-        });
         let info = {};
-        if (like != null) {
-            yield (0, commitToDb_1.commitToDb)(app_1.prisma.postLike.delete({
+        try {
+            yield app_1.prisma.postLike.delete({
                 where: {
                     userId_postId: data,
                 },
-            }));
+            });
             info = { likeChange: -1 };
         }
-        else {
-            info = { likeChange: 0 };
+        catch (e) {
+            if (e.code === "P2025") {
+                info = { likeChange: 0 };
+            }
         }
         return yield (0, commitToDb_1.commitToDb)(app_1.prisma.postDislike.create({ data }).then(() => {
             return Object.assign({ dislikeChange: 1 }, info);

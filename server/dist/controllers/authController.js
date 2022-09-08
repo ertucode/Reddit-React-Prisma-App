@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saltPassword = exports.logoutUser = exports.loginUser = exports.createUser = void 0;
+exports.cookieCredentials = exports.saltPassword = exports.logoutUser = exports.loginUser = exports.createUser = void 0;
 const commitToDb_1 = require("./commitToDb");
 const app_1 = require("../app");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -72,12 +72,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.send(app_1.app.httpErrors.badRequest("Wrong password"));
     }
     const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
-    res.setCookie("userToken", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "none",
-        maxAge: 1000 * 60 * 60 * 24 * 365 * 7, // 7 days
-    });
+    res.setCookie("userToken", token, Object.assign(Object.assign({}, (0, exports.cookieCredentials)()), { maxAge: 1000 * 60 * 60 * 24 * 365 * 7 }));
     const { name } = user;
     res.send({
         id: user.id,
@@ -87,11 +82,7 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.loginUser = loginUser;
 const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.setCookie("userToken", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "none",
-    });
+    res.setCookie("userToken", "", (0, exports.cookieCredentials)());
 });
 exports.logoutUser = logoutUser;
 function saltPassword(password) {
@@ -100,3 +91,14 @@ function saltPassword(password) {
     return hash;
 }
 exports.saltPassword = saltPassword;
+const cookieCredentials = () => {
+    if (process.env.NODE_ENV === "development") {
+        return {
+            sameSite: "none",
+        };
+    }
+    else {
+        return { httpOnly: true, secure: true, sameSite: "none" };
+    }
+};
+exports.cookieCredentials = cookieCredentials;

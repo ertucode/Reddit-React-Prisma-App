@@ -49,23 +49,19 @@ export const toggleCommentLike: FastifyCallback = async (req, res) => {
 	});
 
 	if (like == null) {
-		const dislike = await prisma.commentDislike.findUnique({
-			where: { userId_commentId: data },
-		});
-
 		let info = {};
 
-		if (dislike != null) {
-			await commitToDb(
-				prisma.commentDislike.delete({
-					where: {
-						userId_commentId: data,
-					},
-				})
-			);
+		try {
+			await prisma.commentDislike.delete({
+				where: {
+					userId_commentId: data,
+				},
+			});
 			info = { dislikeChange: -1 };
-		} else {
-			info = { dislikeChange: 0 };
+		} catch (e: any) {
+			if (e.code === "P2025") {
+				info = { dislikeChange: 0 };
+			}
 		}
 
 		return await commitToDb(
@@ -118,23 +114,19 @@ export const toggleCommentDislike: FastifyCallback = async (req, res) => {
 	});
 
 	if (dislike == null) {
-		const like = await prisma.commentLike.findUnique({
-			where: { userId_commentId: data },
-		});
-
 		let info = {};
 
-		if (like != null) {
-			await commitToDb(
-				prisma.commentLike.delete({
-					where: {
-						userId_commentId: data,
-					},
-				})
-			);
+		try {
+			await prisma.commentLike.delete({
+				where: {
+					userId_commentId: data,
+				},
+			});
 			info = { likeChange: -1 };
-		} else {
-			info = { likeChange: 0 };
+		} catch (e: any) {
+			if (e.code === "P2025") {
+				info = { likeChange: 0 };
+			}
 		}
 
 		return await commitToDb(
@@ -187,23 +179,18 @@ export const togglePostLike: FastifyCallback = async (req, res) => {
 	});
 
 	if (like == null) {
-		const dislike = await prisma.postDislike.findUnique({
-			where: { userId_postId: data },
-		});
-
 		let info = {};
-
-		if (dislike != null) {
-			await commitToDb(
-				prisma.postDislike.delete({
-					where: {
-						userId_postId: data,
-					},
-				})
-			);
+		try {
+			await prisma.postDislike.delete({
+				where: {
+					userId_postId: data,
+				},
+			});
 			info = { dislikeChange: -1 };
-		} else {
-			info = { dislikeChange: 0 };
+		} catch (e: any) {
+			if (e.code === "P2025") {
+				info = { dislikeChange: 0 };
+			}
 		}
 
 		return await commitToDb(
@@ -256,23 +243,18 @@ export const togglePostDislike: FastifyCallback = async (req, res) => {
 	});
 
 	if (dislike == null) {
-		const like = await prisma.postLike.findUnique({
-			where: { userId_postId: data },
-		});
-
 		let info = {};
-
-		if (like != null) {
-			await commitToDb(
-				prisma.postLike.delete({
-					where: {
-						userId_postId: data,
-					},
-				})
-			);
+		try {
+			await prisma.postLike.delete({
+				where: {
+					userId_postId: data,
+				},
+			});
 			info = { likeChange: -1 };
-		} else {
-			info = { likeChange: 0 };
+		} catch (e: any) {
+			if (e.code === "P2025") {
+				info = { likeChange: 0 };
+			}
 		}
 
 		return await commitToDb(

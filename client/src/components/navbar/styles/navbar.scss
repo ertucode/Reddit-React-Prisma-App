@@ -116,6 +116,8 @@ $navbar-height: 48px;
 		top: $navbar-height;
 		right: 0;
 		width: 200px;
+		max-height: 70vh;
+		overflow-y: auto;
 
 		border: 1px solid var(--border-color);
 		border-radius: 4px;

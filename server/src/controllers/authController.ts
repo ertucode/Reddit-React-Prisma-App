@@ -100,6 +100,8 @@ export const loginUser: FastifyCallback = async (req, res) => {
 	res.setCookie("userToken", token, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV !== "development",
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 365 * 7, // 7 days
 	});
 
 	const { name } = user;
@@ -115,6 +117,7 @@ export const logoutUser: FastifyCallback = async (req, res) => {
 	res.setCookie("userToken", "", {
 		httpOnly: true,
 		secure: process.env.NODE_ENV !== "development",
+		sameSite: "none",
 	});
 };
 

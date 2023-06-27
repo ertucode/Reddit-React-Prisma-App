@@ -51,6 +51,7 @@ const NUM_OF_ADMIN_SUBSCRIPTIONS = 4;
 const NUM_OF_ADMIN_FOLLOWS = 2;
 
 async function seed() {
+    console.log('deleting everything')
 	await prisma.post.deleteMany();
 	await prisma.user.deleteMany();
 	await prisma.subreddit.deleteMany();
@@ -58,6 +59,7 @@ async function seed() {
 	const users: User[] = [];
 	const randomUsers = await fetchUsers(NUM_OF_USERS);
 
+    console.log('creating users')
 	for await (const u of randomUsers) {
 		const user = await prisma.user.upsert({
 			where: { name: u.name },
@@ -70,6 +72,7 @@ async function seed() {
 		}
 	}
 
+    console.log('creating subreddits')
 	const subreddits: Subreddit[] = [];
 
 	const dictionary = await fetchRandomWords(NUM_OF_RANDOM_WORDS);
@@ -91,6 +94,7 @@ async function seed() {
 		}
 	}
 
+    console.log('creating posts')
 	const posts = await myPrisma.createRandomPosts(
 		dictionary,
 		NUM_OF_POSTS,
@@ -98,6 +102,7 @@ async function seed() {
 		users
 	);
 
+    console.log('creating comments')
 	const comments1 = await myPrisma.createRandomParentComments(
 		dictionary,
 		NUM_OF_COMMENT1,
@@ -119,6 +124,7 @@ async function seed() {
 
 	const allComments = [...comments1, ...comments2, ...comments3];
 
+    console.log('creating likes and dislikes')
 	await myPrisma.createManyCommentLikes(
 		NUM_OF_COMMENT_LIKES,
 		users,
@@ -139,6 +145,7 @@ async function seed() {
 	// await myPrisma.createManyFollows(NUM_OF_FOLLOWS, users, users);
 
 	// ADMIN
+    console.log('creating the admin acc')
 	const admin = await prisma.user.create({
 		data: {
 			name: "admin",

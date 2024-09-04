@@ -43,7 +43,6 @@ tar cf - build | gzip -3 | ssh ertu.codes '
   cd /var/www && mkdir reddit.ertu.codes && gunzip | tar xf - -C reddit.ertu.codes --strip-components=1' # maybe outdated
 ```
 
-- sudo ln -s /etc/caddy/sites-available/reddit-client /etc/caddy/sites-enabled/reddit-client
 - cd /etc/caddy/sites-available
 - sudo vim reddit-client
 ```caddy
@@ -56,3 +55,5 @@ reddit.ertu.codes {
         try_files {path} /index.html
 }
 ```
+- sudo ln -s /etc/caddy/sites-available/reddit-client /etc/caddy/sites-enabled/reddit-client
+
